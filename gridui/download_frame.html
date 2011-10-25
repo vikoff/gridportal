@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>Загрузка файлов</title>
+<link rel="stylesheet" href="table.css" type="text/css" media="all" />
+<link rel="stylesheet" href="style.css" type="text/css" media="all" />
+<script type="text/javascript" src="ui_gia.js"></script>
+<script type="text/javascript" src="ui_func.js"></script>
+
+<script type="text/javascript">
+var init_path="";
+
+
+function create_dir_table(path) {
+	var remDoc = self.main.document;
+        var tab = remDoc.getElementById("table");
+        
+        var oLink, oImg, row, cell;
+        var e;
+        var ind = 0;
+        var dir = ui_dir_list_s(path);
+        if(! dir) return false;
+        dir.sort("tn");
+        var m = /Gecko\//.test(navigator.userAgent) ? 1 : 0;
+        while(tab.tBodies[0].rows.length > 0){
+                        tab.tBodies[0].deleteRow(0);
+        }
+
+        if (path != init_path){
+                row = tab.tBodies[0].insertRow(-1);
+                var i = path.lastIndexOf("/", path.length-2);
+                oLink = remDoc.createElement("A");
+                oLink.name = (i == -1) ? path : path.substr(0,i+1);
+                oLink.onclick = function() {create_dir_table(this.name)};
+                oImg = remDoc.createElement("IMG");
+                oImg.src = "img/closed_top.gif";
+                oImg.border=0;
+                oLink.appendChild(oImg);
+                cell = row.insertCell(-1);
+                cell.style.width = "23px";
+		cell.appendChild(oLink);
+
+                oLink = remDoc.createElement("A");
+                oLink.name = (i == -1) ? path : path.substr(0,i+1);
+                oLink.onclick = function() {create_dir_table(this.name)};
+                oLink.innerHTML = "..";
+                row.insertCell(-1).appendChild(oLink);
+                row.insertCell(-1);
+                row.insertCell(-1);
+                ind++;
+        }
+        while(e = dir.next()) {
+                if(!e) break;
+                if(e.type != "File"  && e.type != "Dir") continue;
+                row = tab.tBodies[0].insertRow(-1);
+                switch (e.type){
+                        case "File":
+                                var chk = createDocNamedElement(remDoc, "INPUT", "get");
+                                chk.type = m ? "checkbox" : "radio";
+                                chk.value = path + e.name;
+                		cell = row.insertCell(-1);
+		                cell.style.width = "23px";
+				cell.appendChild(chk);
+                                row.insertCell(-1).innerHTML = e.name;
+                        break;
+                        case "Dir":
+                                oLink = remDoc.createElement("A");
+                                oLink.name = path + e.name + "/";
+                                oLink.onclick = function() {create_dir_table(this.name)};
+                                oImg = remDoc.createElement("IMG");
+                                oImg.src = "img/closed.gif";
+                                oImg.border=0;
+                                oLink.appendChild(oImg);
+		                cell = row.insertCell(-1);
+                		cell.style.width = "23px";
+				cell.appendChild(oLink);
+
+                                oLink = remDoc.createElement("A");
+                                oLink.name = path + e.name + "/";
+                                oLink.onclick = function() {create_dir_table(this.name)};
+                                oLink.innerHTML = e.name;
+                                row.insertCell(-1).appendChild(oLink);
+                                row.className = "task";
+
+                        break;
+                }
+                row.insertCell(-1).innerHTML = e.size;
+                row.insertCell(-1).innerHTML = e.mtime.toLocaleString();
+                ind++;
+        }
+        if (!tab.tBodies[0].rows.length){
+                row = tab.tBodies[0].insertRow(-1);
+                cell = row.insertCell(-1);
+                cell = row.insertCell(-1);
+                cell.innerHTML = "Нет файлов и вложенных каталогов";
+        }
+                return false;
+}
+
+
+function init() {
+        var path = location.toString();
+        var i = path.indexOf("?");
+        if(i == -1) return false;
+        init_path = path.substring(i + 1);
+        create_dir_table(init_path);
+        return true;
+}
+
+function refresh() {
+        var tab = self.main.document.getElementById("table");
+        for (var i=tab.tBodies[0].rows.length-1; i>=0; i--){
+                tab.tBodies[0].deleteRow(i);
+        }
+        init();
+        return true;
+}
+
+function download() {
+	var e,i;
+	var cnt=false;
+	var tab = self.main.document.getElementById("table");
+	for (i=tab.tBodies[0].rows.length-1; i>=0; i--){
+		e = tab.tBodies[0].rows[i].cells[0].firstChild;
+		if (e && e.checked){
+			cnt = true;
+			break;
+		}
+	}
+
+	if (cnt) self.main.document.download.submit();
+	return true;
+}
+
+</script>
+</head>
+<frameset rows="40,*" marginborder="0" FRAMEBORDER="0" FRAMESPACING="0" BORDER="0" onload="init()">
+  <frame src="download_header.html" frameborder="0" name="header" MARGINHEIGHT="0" MARGINWIDTH="0" SCROLLING="no">
+  <frame src="download_main.html" frameborder="0" name="main" MARGINHEIGHT="0" MARGINWIDTH="0" SCROLLING="auto">
+</frameset>
+
+</html>

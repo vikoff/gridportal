@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>Загрузка файлов</title>
+<link rel="stylesheet" href="table.css" type="text/css" media="all" />
+<link rel="stylesheet" href="style.css" type="text/css" media="all" />
+<script type="text/javascript" src="ui_gia.js"></script>
+<script type="text/javascript" src="ui_func.js"></script>
+
+<script type="text/javascript">
+var init_path="";
+var listPath;
+
+
+function create_dir_table(path) {
+	var oLink, oImg, row, cell;
+	var ind = 0;
+	var remDoc = self.main.document;
+
+	var dir = ui_dir_list_s(path);
+	if(! dir) return false;
+	dir.sort("tn");
+	var tab = remDoc.getElementById("table");
+	var e;
+	while(tab.tBodies[0].rows.length > 0){
+	                tab.tBodies[0].deleteRow(0);
+	}
+
+	if (path != init_path){
+		row = tab.tBodies[0].insertRow(-1);
+		cell = row.insertCell(-1);
+		cell.style.width = "23px";
+		var i = path.lastIndexOf("/", path.length-2);
+		oLink = remDoc.createElement("A");
+		oLink.name = (i == -1) ? path : path.substr(0,i+1);
+		oLink.onclick = function() {create_dir_table(this.name)};
+		oImg = remDoc.createElement("IMG");
+		oImg.src = "img/closed_top.gif";
+		oImg.border=0;
+		oLink.appendChild(oImg);
+		cell = row.insertCell(-1);
+		cell.style.width = "23px";
+		cell.appendChild(oLink);
+
+		oLink = remDoc.createElement("A");
+		oLink.name = (i == -1) ? path : path.substr(0,i+1);
+		oLink.onclick = function() {create_dir_table(this.name)};
+		oLink.innerHTML = "..";
+		row.insertCell(-1).appendChild(oLink);
+		row.insertCell(-1);
+		row.insertCell(-1);
+		ind++;
+	}
+	while(e = dir.next()) {
+		if(!e) break;
+		if(e.type != "File"  && e.type != "Dir") continue;
+// add row
+		row = tab.tBodies[0].insertRow(-1);
+// add checkbox (radio)
+		var chk =  createDocNamedElement(remDoc,"INPUT", "get");
+		chk.type = "checkbox";
+		var nm =  path + e.name ;
+		if (e.type == "Dir") nm += "/";
+		chk.value = nm;
+		cell = row.insertCell(-1);
+		cell.style.width = "23px";
+		cell.appendChild(chk);
+		switch (e.type){
+			case "Dir":
+// add icon
+				oLink = remDoc.createElement("A");
+				oLink.name = nm;
+				oLink.onclick = function() {create_dir_table(this.name)};
+				oImg = remDoc.createElement("IMG");
+				oImg.src = "img/closed.gif";
+				oImg.border=0;
+				oLink.appendChild(oImg);
+				cell = row.insertCell(-1);
+				cell.style.width = "23px";
+				cell.appendChild(oLink);
+
+// add  name
+				oLink = remDoc.createElement("A");
+				oLink.name = nm;
+				oLink.onclick = function() {create_dir_table(this.name)};
+				oLink.innerHTML = e.name;
+				row.insertCell(-1).appendChild(oLink);
+
+				row.className = "task";
+			break;
+			case "File":
+// add icon
+				oImg = remDoc.createElement("IMG");
+				oImg.src = "img/document.gif";
+				row.insertCell(-1).appendChild(oImg);
+				row.insertCell(-1).innerHTML = e.name;
+			break;
+		}
+// add atributes
+		row.insertCell(-1).innerHTML = e.size;
+		row.insertCell(-1).innerHTML = e.mtime.toLocaleString();
+		ind++;
+	}
+	if (!tab.tBodies[0].rows.length){
+		row = tab.tBodies[0].insertRow(-1);
+		cell = row.insertCell(-1);
+		cell = row.insertCell(-1);
+		cell.innerHTML = "Нет файлов и вложенных каталогов";
+	}
+
+
+//	var list = self.left.document.getElementById("list");
+//	list.name = path;
+//	for(var i = 0; i < list.childNodes.length; i++) {
+//		var inarr = list.childNodes[i].getElementsByTagName("input");
+//		inarr[0].name = path;
+//	}
+	listPath = path;
+        i = path.indexOf("/", 0);
+	self.header.document.getElementById("path").value = (i == -1) ? path : path.substr(i+1);;
+    	return true;
+}
+
+function init() {
+	var path = self.location.toString();
+	var i = path.indexOf("?");
+	if(i == -1) return false;
+	init_path = path.substring(i + 1);
+	create_dir_table(init_path);
+        return true;
+}
+</script>
+</head>
+  <frameset rows="42,*" marginborder="0" FRAMEBORDER="0" FRAMESPACING="0" BORDER="0"  onload="init()">
+	<frame src="files_header.html" frameborder="0" marginwidth="0" marginheight="0" name="header"  SCROLLING="no" />
+	<frame src="files_main.html" frameborder="0" marginwidth="0" marginheight="0" name="main"  SCROLLING="auto" />
+  </frameset>
+
+</html>

@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>Передача сертификата на сервер</title>
+<link rel="stylesheet" href="style.css" type="text/css" media="all" />
+<script type="text/javascript" src="ui_gia.js"></script>
+<script type="text/javascript" src="ui_func.js"></script>
+<script type="text/javascript">
+function upload_add_file() {
+	var list = document.getElementById("list");
+	var file = createNamedElement("input", list.name + "/cert.p12");
+	file.type = "file";
+	file.className = "file-input";
+	file.size = "80";
+    	list.appendChild(file);
+	return true;
+}
+function init() {
+	var path = location.toString();
+	var i = path.indexOf("?");
+	if(i == -1) return false;
+	path = path.substring(i + 1);
+	document.getElementById("list").name = path;
+	upload_add_file();
+        return true;
+}
+function check_file_type () {
+	var e=document.getElementById("list");
+	var reg=/\.p12"?$/;
+	return (reg.test(e.firstChild.value));
+}	 
+
+function uploadDone() {
+        var out = parent.document.getElementById("upSert_out");
+	out.innerHTML = "Сертификат успешно передан на сервер ВИГ";
+
+        return true;
+}
+
+function loadF(){
+        if (window.frames.upload_target.document.body.innerHTML!="") uploadDone();
+        return true;
+}
+function submitF() {
+        window.frames.upload_target.location.href = "_blank.html";
+	if (check_file_type()){
+		document.forms[0].submit();
+	} else {
+		alert ('Неверный тип файла');
+	}
+        return true;
+}
+
+</script>
+<style>
+ body{
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+        font-size: 0.7em;
+        text-align:justify;
+        color:darkblue;
+	background-color:#FFFFFF;
+}
+h1{
+        font-family: Arial,Verdana,Helvetica, sans-serif;
+        font-size:1.5em;
+        font-weight: bold;
+        text-align:center;
+        padding-top:5px;
+        padding-bottom:5px;
+}
+
+</style>
+
+</head><body onload="init()"><div>
+Выберите файл с сертификатом в формате PKCS (.p12) 
+<form name="upl_cert" method="post" action="fileio.cgi" enctype="multipart/form-data" class="upload-form" target="upload_target">
+<div class="upload-list" id="list"></div>
+<input type="button" value="Передать" onclick="submitF();return false;" />
+<input type="reset" value="Очистить поле" />
+</form></div>
+<iframe onLoad="loadF()" id="upload_target" name="upload_target" src="" style="width:0;height:0;border:0 solid #000" ></iframe>
+</body></html>

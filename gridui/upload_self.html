@@ -1,0 +1,243 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>Передача файлов</title>
+<link rel="stylesheet" href="style.css" type="text/css" media="all" />
+<link rel="stylesheet" href="table.css" type="text/css" media="all" />
+<script type="text/javascript" src="ui_gia.js"></script>
+<script type="text/javascript" src="ui_func.js"></script>
+<script type="text/javascript">
+
+var param={};
+
+function fixname() {
+	if(/MSIE.*Windows/.test(navigator.userAgent)) {
+    		var list = document.getElementById("list");
+		for(a = 0; a < list.childNodes.length; a++) {
+			var inarr = list.childNodes[a].getElementsByTagName("input");
+			if(/\/$/.test(inarr[0].name)) {
+				var tmp = inarr[0].value;
+				inarr[0].name += tmp.substring(tmp.lastIndexOf("\\") + 1);
+    			}
+		}
+	}
+	return true;
+}
+
+
+
+function upload_add_file() {
+
+	//now create a text indicator to show the file
+	newfile = document.createElement("li");	
+
+	//get our form containing the file we want to upload
+	filediv = document.getElementById("uploadFileForm");
+	var sp = filediv.getElementsByTagName("span");
+//	var ufarr = filediv.getElementsByTagName("input");
+//	var uf = ufarr[0];
+	var uf = getElementsByClassName("file_select","input",filediv)[0];
+
+	if (!uf || !uf.value) return false;
+
+	//add a new hidden form element and the 
+	var txtdiv = document.getElementById("list");
+
+
+	//this is kind of awkward, but I couldn't get a file input to clone
+	//properly in i.e.  Basically we move the file object used to select files
+	//down and change it's name, then create a new one in it's place
+
+	//copy the current one and change its name
+	uf.name = txtdiv.name;
+	uf.style.visibility="hidden";
+	uf.style.position="absolute";
+	uf.style.left="0";
+	uf.style.top="0";
+	newfile.appendChild(uf);	
+
+	//create a new one
+	var uploadfile = document.createElement("input");
+	uploadfile.type = "file";
+
+	uploadfile.className = "file_select";
+	uploadfile.onchange = function() {upload_add_file()};
+
+//	filediv.appendChild(uploadfile);
+	sp[0].appendChild(uploadfile);
+
+	//the link for clearing the file
+	var cleardiv = document.createElement("div");
+	cleardiv.className = "clear";
+
+
+//	var clearStr = uf.value.split("\\").join("\\\\");
+	var clearStr = uf.value;
+
+	var clearlink = document.createElement("A");
+	clearlink.name = clearStr;
+	clearlink.onclick = function() {clearUpload(this.name)};
+	var oImg = document.createElement("IMG");
+	oImg.src = "img/remove_16.png";
+	oImg.border=0;
+	oImg.alt="Удалить";
+	oImg.title="Удалить";
+	
+	clearlink.appendChild(oImg);
+
+//	clearlink.setAttribute("href","javascript:clearUpload('" + clearStr + "')");
+//	clearlink.appendChild(document.createTextNode("[Убрать]"));
+	cleardiv.appendChild(clearlink);
+	newfile.appendChild(cleardiv);
+
+
+	if (uf.value.indexOf("/") != -1) var stArr = uf.value.split("/");
+	else var stArr = uf.value.split("\\");
+	var len = stArr.length - 1;
+	newfile.appendChild(document.createTextNode(stArr[len]));
+
+
+
+	//add to the parent
+	txtdiv.appendChild(newfile);	
+
+	return true;
+}
+
+function clearUpload(fp) {
+
+        //get all bullets in our area
+        var txtdiv = document.getElementById("list");
+        var liarr = txtdiv.getElementsByTagName("li");
+
+        var num = liarr.length;
+
+        //cycle thru the bullets
+        for (var i=0;i<num;i++) {
+
+                //find the hidden input file field.  If it's value matches our file pointer
+                //then remove it from the list
+                var curli = liarr[i];
+                var filearr = curli.getElementsByTagName("input");
+                var curfile = filearr[0];
+
+                //we have a match, remove this node
+                if (curfile.value==fp) {
+			txtdiv.removeChild(curli);
+			break;
+		}
+
+        }
+}
+
+
+function remove(){
+	var list = document.getElementById("list");
+	while (list.lastChild) {
+		list.removeChild(list.lastChild);
+	}
+}
+
+function closeWin(){
+        window.opener.focus();
+        window.opener.wndUpl = null;
+        setTimeout(function(){window.close()}, 100); // KHTML workaround
+//        window.close();
+        return true;
+}
+
+function initList() {
+        var tmp1={};
+        var tmp2={};
+        var path = decodeURI(location.search.toString());
+        var i = path.indexOf("?");
+        if(i == -1) return false;
+
+        tmp1 = (path.substr(1)).split('&');
+        for(var i=0; i < tmp1.length; i++){
+                tmp2 = tmp1[i].split('=');
+                param[tmp2[0]] = tmp2[1];
+        }
+	document.getElementById("list").name = param["init_path"];
+
+
+        return true;
+}
+
+
+function uploadDone() {
+	window.opener.refresh();
+	closeWin();
+	return true;
+}
+
+function submitF() {
+	window.frames.upload_target.location.href = "_blank.html";
+	document.forms[0].submit();
+	return true;
+}
+
+function loadF(){
+	if (window.frames.upload_target.document.body.innerHTML!="") uploadDone();
+	return true;
+}
+
+</script>
+<style>
+ body{
+       font-family:courier new, fixed;
+       font-size: 0.7em;
+       text-align:left;
+       color:darkblue;
+       background-color:#FFFFFF; }
+h1{
+        font-family: Arial,Verdana,Helvetica, sans-serif;
+        font-size:1.5em;
+        font-weight: bold;
+        text-align:center;
+	padding-top:5px;
+	margin-bottom:15px;
+}
+
+#list li {
+	list-style-type:none;
+	border-bottom:1px solid #DADADA;
+	margin-bottom:2px;
+}
+.attach { position:relative; width:340px; height:30px; }
+	.attach span.file { position:absolute; left:0px; top:0; width:115px; height:100%; overflow:hidden; }
+	.attach span.file * { cursor:pointer; }
+	.attach span.file:hover * { color:gray; }
+	.attach input.file_select_btn { overflow:visible; width:100%; height:100%; }
+	.attach input.file_select { position:absolute; font-size:150px; right:0; top:0; opacity:0; -moz-opacity:0; filter:alpha(opacity=0); 
+}
+.but {
+	position:relative;
+	left:120px;
+}
+.but input{
+	width:30px;
+	height:30px;
+}
+</style>
+                         
+</head><body onload="initList()">
+<h1>Выберите файлы для передачи на сервер</h1>
+<form method="post" action="fileio.cgi" enctype="multipart/form-data" class="upload-form" id="upl" target="upload_target">
+<div id="uploadFileForm" class="attach">
+ <span class="file" title="Выбрать файл">
+   <input type="file" class="file_select" onChange="upload_add_file()" />
+   <input type="button" class="file_select_btn" value="Выбрать файл"  />
+ </span>
+ <span class="but">
+<input type="image" src="img/btn-run.png" alt="Передать файлы" title="Передать файлы" onclick="fixname();submitF();return false" />
+<input type="image" src="img/btn-rst.png" alt="Очистить список" title="Очистить список" onclick="remove();return false" />
+<input type="image" src="img/btn-cancel.png" alt="Закрыть" title="Закрыть" onclick="closeWin();return false" />
+ </span>
+</div>
+
+<div class="upload-list" id="list" name="/"></div>
+</form>
+
+<iframe onLoad="loadF()" id="upload_target" name="upload_target" src="" style="width:0;height:0;border:0 solid #000" ></iframe>
+
+</body></html>

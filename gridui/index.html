@@ -1,0 +1,955 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>Веб-интерфейс Грид для национальной нанотехнологической сети</title>
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+<link rel="icon" href="img/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="style.css" type="text/css" media="all" />
+<link rel="stylesheet" href="table.css" type="text/css" media="all" />
+<link rel="stylesheet" href="menu.css" type="text/css" media="all" />
+<link rel="stylesheet" href="wid.css" type="text/css" media="all" />
+
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="data.js"></script>
+<script type="text/javascript" src="ui_func.js"></script>
+<script type="text/javascript" src="task_editor.conf"></script>
+<script type="text/javascript" src="task_editor.js"></script>
+<script type="text/javascript" src="uw_table.js"></script>
+<script type="text/javascript" src="ui_gia.js"></script>
+<script type="text/javascript" src="ui_wid.js"></script>
+<script type="text/javascript" src="plugins/config.js"></script>
+<script type="text/javascript" src="uw_cat.js"></script>
+
+<script type="text/javascript">
+function tree_toggle(event) {
+	event = event || window.event;
+	var clickedElem = event.target || event.srcElement;
+
+	if (!hasClass(clickedElem, 'Expand')) {
+		return; // клик не там
+	}
+
+	// Node, на который кликнули
+	var node = clickedElem.parentNode;
+	if (hasClass(node, 'ExpandLeaf')) {
+		return; // клик на листе
+	}
+
+	// определить новый класс для узла
+	var newClass = hasClass(node, 'ExpandOpen') ? 'ExpandClosed' : 'ExpandOpen';
+	// заменить текущий класс на newClass
+	// регексп находит отдельно стоящий open|close и меняет на newClass
+	var re =  /(^|\s)(ExpandOpen|ExpandClosed)(\s|$)/;
+	node.className = node.className.replace(re, '$1'+newClass+'$3');
+}
+function submit_on_enter(event, cmd) {
+	event = event || window.event;
+	if(event.keyCode == 13) run_ui_proxy_comand(cmd);
+}
+</script>
+
+<script type="text/javascript">
+
+var dag = null;
+var jdl = null;
+var jtable = null;
+var stable = null;
+var appCnt = 0;		// Счётчик для регистрации плагинов
+var timeout_id = null;	// id для таймаута
+
+function init_dag(dv) {
+    dag = new uw_dagedit(dv);
+    dag.toolbar.addtool("Добавить узел", "img/nodeadd.png", "dag.addnode()");
+    dag.toolbar.addtool("Удалить выбранный узел", "img/nodedel.png", "dag.delnode(dag.snode)");
+    dag.toolbar.addtool("Клонировать выбранный узел", "img/clone.png", "dag.clonenode(dag.snode)");
+    dag.toolbar.addtool("Создать зависимость", "img/linkadd1.png", "if(dag.links && ! dag.links.dst) {dag.dellink(dag.links)} else {dag.addlink(dag.snode)}");
+}
+
+function init_jdl(container) {
+            jdl = new task_editor.TaskEditor(container);
+            jdl.run();
+}
+
+function init_fopen(dv){
+        var fopen = new uw_dagtoolbar(null, "filetoolbar");
+	document.getElementById(dv).appendChild(fopen.dom);
+	return fopen;
+}
+
+var menu_items = new Array ();
+  menu_items.push(new menu_comand("grpInit","Начало", new Array ()));
+  menu_items.push(new menu_comand("grpProxy","Безопасность",new Array ()));
+  menu_items.push(new menu_comand("grpTasks","Задачи (ЯОЗ)", new Array ()));
+  menu_items.push(new menu_comand("grpJobs","Задания (НАГ)", new Array ()));
+  menu_items.push(new menu_comand("grpIO","Входные/выходные файлы", new Array ()));
+  menu_items.push(new menu_comand("grpRun","Выполнение заданий", new Array ()));
+  menu_items.push(new menu_comand("grpApp","Приложения", new Array ()));
+
+  menu_items[1].par.push(new menu_comand("upSert","Сертификаты",""));
+  menu_items[1].par.push(new menu_comand("credInit","Прокси-сертификат",""));
+  menu_items[1].par.push(new menu_comand("credAddRoles","Группы и роли",""));
+
+  menu_items[2].par.push(new menu_comand("jdlEditor","Графический редактор",""));
+  menu_items[2].par.push(new menu_comand("editJDL","Текстовый редактор",""));
+  menu_items[2].par.push(new menu_comand("upJDL","Управление файлами",""));
+
+  menu_items[3].par.push(new menu_comand("dagEditor","Графический редактор",""));
+  menu_items[3].par.push(new menu_comand("editDAG","Текстовый редактор",""));
+  menu_items[3].par.push(new menu_comand("upDAG","Управление файлами",""));
+
+  menu_items[4].par.push(new menu_comand("editFile","Текстовый редактор",""));
+  menu_items[4].par.push(new menu_comand("upFile","Управление файлами",""));
+
+  menu_items[5].par.push(new menu_comand("siteList","Доступные ресурсы",""));
+  menu_items[5].par.push(new menu_comand("siteListMatch","Проверка ресурсов",""));
+  menu_items[5].par.push(new menu_comand("jobRun","Запустить задание",""));
+  menu_items[5].par.push(new menu_comand("jobList","Список заданий",""));
+
+var divs = new Array ();
+
+divs["upSert_in"] =  "<h1>Пересылка сертификата и загрузка его на MyProxy</h1>" +
+                "<iframe src='certload.html?cert' width='100%' height='70' scrolling='auto' frameborder='0' marginheight='0' marginwidth='0' style='margin:0;border:0;padding:0'></iframe>" +
+		"<p>Пароль: <input type='password' size='40' id='my_cert_pwd' onkeydown='submit_on_enter(event, \"credMyProxy\");return true'/>" +
+		"<input style='display:inline' type='button' value='Загрузить на MyProxy' onclick='run_ui_proxy_comand(\"credMyProxy\");return false;' />";
+
+divs["credInit_in"] = "<h1>Работа с прокси-сертификатом</h1> " +
+		"<p>Выберите виртуальную организацию: " +
+		"<select size='1' id='vo_list' style='margin:0;padding:0;width:150px;display:inline' onchange='set_cookie(\"gridui-vo\", this.value)'></select>" +
+		"<p>Время действия прокси-сертификата в формате чч:мм (по умолчанию 24:00): "+
+		"<input type='text' style='width:80px' id='valid' />" +
+		"<p>Пароль: <input type='password' size='40' id='cert_pwd' onkeydown='submit_on_enter(event, \"credInit\");return true' />" +
+		"<p><input type='button' value='Получить прокси' onclick='run_ui_proxy_comand(\"credInit\");return false' />" +
+		"<input type='button' value='Проверить прокси' onclick='run_ui_proxy_comand(\"credInfo\");return false'  />" +
+		"<input type='button' value='Удалить прокси' onclick='run_ui_proxy_comand(\"credDestroy\");return false'  />";
+divs["credAddRoles_in"] = "<h1>Добавить VOMS-расширения в прокси-сертификат</h1>" +
+		"<div align='center'><table><tr><th>Текущие расширения прокси-сертификата</th><th>&nbsp;</th><th>Группы и роли ВО</th></tr>" +
+		"<tr><td><select class='role_select' size='11' id='cur_role_list'></select></td>" +
+		"<td valign='middle' align='center'><input type='image' src='img/left_32.png' onclick='run_ui_role_comand(\"credAddRoles\");return false' /></td>" +
+		"<td ><select class='role_select' size='11' id='role_list' multiple></select></td></tr>" +
+		"<tr ><td>&nbsp;</td><td align='center'><input type='button' value='Обновить списки' onclick='run_ui_role_comand(\"credListRoles\");return false' /></td>" +
+		"<td>&nbsp;</td></tr></table></div>";
+
+divs["jdlEditor_in"] = "<h1>Редактирование файлов описания задач</h1> " +
+		"<div style='height:645px'>" +
+		"  <div id='fjdl_graph_open' style='position:relative'></div>" +
+		"  <div style='width:99%;height:600px;position:relative;top:42px' id='edit_jdl_area'>" +
+		"</div>";
+divs["editJDL_in"] = "<h1>Редактирование файлов описания задач в текстовом режиме</h1> " +
+		"<div style='height:545px'>" +
+		"  <div id='fjdl_open' style='position:relative'></div>" +
+		"  <div style='width:100%;height:500px;position:relative;top:42px'><pre style='display:inline'>" +
+		"  <textarea rows=30 id='file_jdl_content' style='width:99%;height:99%;margin:0;padding:0;position:absolute;top:0;left:0' onchange = 'this.name = \"changed\";return false'></textarea></pre></div>" +
+		"</div>";
+divs["upJDL_in"] =  "<h1>Управление файлами описания задач</h1> " +
+                "<iframe src='files_frame.html?jdl-" + ada +"/' width='100%' height='600px' scrolling='auto' frameborder='0' marginheight='0' marginwidth='0' style='margin:0;border:0;padding:0'></iframe>";
+divs["dagEditor_in"] = "<h1>Редактирование файлов описания заданий (графический интерфейс)</h1>" +
+		"<div style='height:645px'>" +
+		"  <div id='fdag_graph_open' style='position:relative'></div>" +
+		"  <div style='width:99%;height:600px;position:relative;top:42px' id='edit_dag_area'>" +
+		"</div>";
+divs["editDAG_in"] = "<h1>Редактирование файлов описания заданий в текстовом режиме</h1>" +
+		"<div style='height:545px'>" +
+		"  <div id='fdag_open' style='position:relative'></div>" +
+		"  <div style='width:100%;height:500px;position:relative;top:42px'><pre style='display:inline'>" +
+		"  <textarea rows=30 id='file_dag_content' style='width:99%;height:99%;margin:0;padding:0;position:absolute;top:0;left:0' onchange = 'this.name = \"changed\";return false'></textarea></pre></div>" +
+		"</div>";
+divs["upDAG_in"] = "<h1>Управление файлами описания заданий</h1> " +
+		"<iframe src='files_frame.html?dag-" + ada + "/' width='100%' height='600px' scrolling='auto' frameborder='0' marginheight='0' marginwidth='0' style='margin:0;border:0;padding:0'></iframe>";
+divs["upFile_in"] = "<h1>Управление файлами и каталогами для входных/выходных файлов</h1> " +
+		"<iframe src='files_frame.html?files/' width='100%' height='600px' scrolling='auto' frameborder='0' marginheight='0' marginwidth='0' style='margin:0;border:0;padding:0'></iframe>";
+divs["editFile_in"] = "<h1>Редактирование входных/выходных файлов<br>(только текстовые файлы)</h1> " +
+		"<div style='height:545px'>" +
+		"  <div id='fio_open' style='position:relative'></div>" +
+		"  <div style='width:100%;height:500px;position:relative;top:42px'><pre style='display:inline'>" +
+		"  <textarea rows=30 id='file_io_content' style='width:99%;height:99%;margin:0;padding:0;position:absolute;top:0;left:0' onchange = 'this.name = \"changed\";return false'></textarea></pre></div>" +
+		"</div>";
+divs["siteList_in"] = "<h1>Список доступных ресурсов ГридННС</h1> " +
+		"<div style='height:40px'><div id='get_list' style='position:relative'></div></div>" +
+		"<table class='sort-table' id='list_site' cellspacing='0'><colgroup><col /><col /><col /></colgroup>" +
+		"<thead><tr><td>Название узла</td><td>Имя очереди</td><td>Планировщик</td></tr></thead>" +
+		"<tbody></tbody><tfoot><tr><td colspan='3' style='background-color:lightskyblue'>Всего 0 ресурсов ...</td></tr></tfoot></table>" ;
+
+divs["siteListMatch_in"] = "<h1>Список ресурсов, подходящих для выполнения задач, входящих в задание</h1>" +
+		"<div style='height:70px'><div id='job_site_open' style='position:relative'></div></div>" +
+		"<div id='site_table_run' style='width:100%'></div>";
+divs["jobRun_in"] = "<h1>Запуск задания на ресурс, выбранный системой запуска заданий</h1> " +
+		"<div style='height:70px'><div id='jrun_open' style='position:relative'></div></div>";
+divs["jobList_in"] = "<h1>Список запущенных заданий</h1> " +
+                "<p><input type='button'  value='Обновить список' onclick='run_ui_list_comand(\"jobList\")' /></p>" +
+		"<input type='button'  class='cmd_but' value='Выбрать все' onclick='select_all_rows(1)' /> " +
+		"<input type='button'  class='cmd_but' value='Сбросить все' onclick='select_all_rows(0)' />" +
+		"<table class='sort-table' id='list_job' cellspacing='0'><colgroup><col width='0'></col><col width='0' ></col><col width='0'></col><col></col><col></col><col></col><col></col><col></col><col></col><col width='0' ></col></colgroup>" +
+		"<thead><tr><td>&nbsp;</td><td>Задачи</td><td>Инфо</td><td>Имя</td><td>Название узла</td><td>Дата запуска</td><td>Статус задания</td><td>Статус обновлён</td><td>Ошибка</td><td>Результаты</td></tr></thead>" +
+		"<tbody></tbody><tfoot><tr><td colspan='10' style='background-color:lightskyblue'>Всего 0 активных заданий ...</td></tr></tfoot></table> " +
+		"<input type='button'  class='cmd_but' value='Выбрать все' onclick='select_all_rows(1)' /> " +
+		"<input type='button'  class='cmd_but' value='Сбросить все' onclick='select_all_rows(0)' />" +
+		"<p><input type='button' disabled class='list_button' value='Проверить статус' onclick='run_ui_list_comand(\"jobStatus\");return false' /> " +
+		"<input type='button' disabled class='list_button' value='Снять задания' onclick='run_ui_list_comand(\"jobAbort\");return false' /> " +
+		"<input type='button' disabled class='list_button' value='Проверить результаты' onclick='run_ui_list_comand(\"jobOutput\");return false' /> " +
+		"<input type='button' disabled class='list_button r_button' value='Удалить из списка' onclick='run_ui_list_comand(\"jobDelete\");return false' /></p>";
+
+function select_all_rows(val) {
+	for (var k=0; k< jtable.jobs.length; k++){
+		jtable.jobs[k].checked = val;
+	}
+	jtable.redrawTable();
+	return true;
+}
+
+function show_process(cmd,on){
+	var e = document.getElementById(ui_div(cmd));
+	var expand = e.getElementsByTagName('DIV')[0];
+	expand.className = on ? 'ExpandLoading' : 'Expand';
+	return true;
+}
+
+function start_busy(cmd){
+	if (!document.getElementById(ui_div(cmd) + "_busy")) {
+		var e = document.getElementById(ui_div(cmd) + "_in");
+		var oDiv = document.createElement("div");
+		oDiv.className = "busy";
+		oDiv.id = ui_div(cmd) + "_busy";
+		var oImg = document.createElement("img");
+		oImg.className = "busy";
+		oImg.src = "img/busyring.gif";
+	        oDiv.appendChild(oImg);
+		e.appendChild(oDiv);
+		show_process(cmd,true);
+	}
+	return true;
+}
+
+function end_busy(cmd){
+	var e = document.getElementById(ui_div(cmd) + "_busy");
+	if(e) e.parentNode.removeChild(e);
+	show_process(cmd,false);
+	return true;
+}
+
+function file_open_download(path) {
+        var wnd = window.open("download_frame.html?" + path, "_blank", "menubar=no,toolbar=no,location=no,directories=no,status=no,width=600,height=400,left=100,top=100");
+	return true;
+}
+  
+function ui_div(ui_comand){
+	switch (ui_comand){
+		case "jobStatus":
+		case "jobAbort":
+		case "jobOutput":
+		case "jobDelete":
+		case "jobLog":
+		case "taskLog":
+			return "jobList";
+		break;
+		case "credVOList":
+		case "credInfo":
+		case "credDestroy":
+		case "credRenew":
+			return "credInit";
+		break;
+		case "credListRoles":
+			return "credAddRoles";
+		break;
+		case "credMyProxy":
+			return "upSert";
+		break;
+		case "siteInfo":
+       			return "siteListMatch";
+	        break;
+                default:
+			return ui_comand;
+		break;
+	}
+}     
+
+function show_d(d) {
+	var e=document.getElementById("result");
+	var l = e.childNodes.length;
+	for (var i = 0; i < l; i++) {
+		if (e.childNodes[i].nodeType != 1 || (e.childNodes[i].className != "in" && e.childNodes[i].className != "out")) continue;
+		e.childNodes[i].style.display = "none";
+	}
+	e=document.getElementById(d + "_in");
+	if(e) e.style.display='block';
+	e=document.getElementById(d + "_out");
+	if(e) e.style.display='block';
+        return true;
+}
+
+function add_divs(){
+var newDiv;
+	var e = document.getElementById("result");
+	for ( var i in menu_items) {
+		newDiv = document.createElement("div");
+		newDiv.className = "in";
+		newDiv.id = menu_items[i].id + "_in";
+		newDiv.style.display = "none";
+		newDiv.style.textIndent = "1.5em";
+		e.appendChild(newDiv);
+		for ( var j in menu_items[i].par) {
+			newDiv = document.createElement("div");
+			newDiv.className = "in";
+			newDiv.id = menu_items[i].par[j].id + "_in";
+			newDiv.style.display = "none";
+			e.appendChild(newDiv);
+			newDiv = document.createElement("div");
+			newDiv.className = "out";
+			newDiv.id = menu_items[i].par[j].id + "_out";
+			newDiv.style.display = "none";
+			e.appendChild(newDiv);
+		}
+	}
+	return true;
+}
+
+function init_divs() {
+	var e=document.getElementById("result");
+	var l = e.childNodes.length;
+	for (var i = 0; i < l; i++) {
+		var dv = e.childNodes[i];
+		if (dv.nodeType != 1 || dv.className != "in") continue;
+		if (divs[dv.id] != null){
+			dv.innerHTML = divs[dv.id];
+			switch (dv.id) {
+			case "credInit_in":
+				load_vo_list("vo_list");
+				break;
+			case "jdlEditor_in":
+				jdl_graph_file = init_fopen("fjdl_graph_open");
+				init_jdl(document.getElementById("edit_jdl_area"));
+				jdl_graph_file.addtext("edit_jdl_name");
+				jdl_graph_file.addtool("Открыть файл","img/btn-open1.png","file_select({init_path:\"jdl-" + ada + "/\",fpath:\"edit_jdl_name\",fcontent:\"jdl\",func:\"file_open\",btntext:\"Открыть  \"})");
+				jdl_graph_file.addtool("Сохранить файл","img/btn-save.png","file_save({init_path:\"jdl-" + ada + "/\",fpath:\"edit_jdl_name\",fcontent:\"jdl\"})");
+				jdl_graph_file.addtool("Сохранить файл как...","img/btn-saveas.png","file_select({init_path:\"jdl-" + ada + "/\",fpath:\"edit_jdl_name\",fcontent:\"jdl\",func:\"file_save\",btntext:\"Сохранить\"})");
+				jdl_graph_file.addtool("Очистить поле","img/btn-rst.png","file_reset({init_path:\"jdl-" + ada + "/\",fpath:\"edit_jdl_name\",fcontent:\"jdl\"})");
+				jdl_graph_file.addtool("Просмотреть ","img/btn-find.png","preview_obj_file(jdl)");
+//				jdl_graph_file.addtool("Удалить файл","img/btn-delete.png","file_remove({init_path:\"jdl-" + ada + "/\",fpath:\"edit_jdl_name\",fcontent:\"jdl\"})");
+				break;
+			case "editJDL_in":
+				jdl_file = init_fopen("fjdl_open");
+				jdl_file.addtext("file_jdl_name");
+				jdl_file.addtool("Открыть файл","img/btn-open1.png","file_select({init_path:\"jdl-" + ada + "/\",fpath:\"file_jdl_name\",fcontent:\"file_jdl_content\",func:\"file_open\",btntext:\"Открыть  \"})");
+				jdl_file.addtool("Сохранить файл","img/btn-save.png","file_save({init_path:\"jdl-" + ada + "/\",fpath:\"file_jdl_name\",fcontent:\"file_jdl_content\"})");
+				jdl_file.addtool("Сохранить файл как...","img/btn-saveas.png","file_select({init_path:\"jdl-" + ada + "/\",fpath:\"file_jdl_name\",fcontent:\"file_jdl_content\",func:\"file_save\",btntext:\"Сохранить\"})");
+				jdl_file.addtool("Очистить поле","img/btn-rst.png","file_reset({init_path:\"jdl-" + ada + "/\",fpath:\"file_jdl_name\",fcontent:\"file_jdl_content\"})");
+//				jdl_file.addtool("Удалить файл","img/btn-delete.png","file_remove({init_path:\"jdl-" + ada + "/\",fpath:\"file_jdl_name\",fcontent:\"file_jdl_content\"})");
+				break;
+			case "dagEditor_in":
+				dag_graph_file = init_fopen("fdag_graph_open");
+				init_dag(document.getElementById("edit_dag_area"));
+				dag_graph_file.addtext("edit_dag_name");
+				dag_graph_file.addtool("Открыть файл","img/btn-open1.png","file_select({init_path:\"dag-" + ada + "/\",fpath:\"edit_dag_name\",fcontent:\"dag\",func:\"file_open\",btntext:\"Открыть  \"})");
+				dag_graph_file.addtool("Сохранить файл","img/btn-save.png","file_save({init_path:\"dag-" + ada + "/\",fpath:\"edit_dag_name\",fcontent:\"dag\"})");
+				dag_graph_file.addtool("Сохранить файл как...","img/btn-saveas.png","file_select({init_path:\"dag-" + ada + "/\",fpath:\"edit_dag_name\",fcontent:\"dag\",func:\"file_save\",btntext:\"Сохранить\"})");
+				dag_graph_file.addtool("Очистить поле","img/btn-rst.png","file_reset({init_path:\"dag-" + ada + "/\",fpath:\"edit_dag_name\",fcontent:\"dag\"})");
+				dag_graph_file.addtool("Просмотреть ","img/btn-find.png","preview_obj_file(dag)");
+//				dag_graph_file.addtool("Удалить файл","img/btn-delete.png","file_remove({init_path:\"dag-" + ada + "/\",fpath:\"edit_dag_name\",fcontent:\"dag\"})");
+				break;
+				break;
+			case "editDAG_in":
+				dag_file = init_fopen("fdag_open");
+				dag_file.addtext("file_dag_name");
+				dag_file.addtool("Открыть файл","img/btn-open1.png","file_select({init_path:\"dag-" + ada + "/\",fpath:\"file_dag_name\",fcontent:\"file_dag_content\",func:\"file_open\",btntext:\"Открыть  \"})");
+				dag_file.addtool("Сохранить файл","img/btn-save.png","file_save({init_path:\"dag-" + ada + "/\",fpath:\"file_dag_name\",fcontent:\"file_dag_content\"})");
+				dag_file.addtool("Сохранить файл как...","img/btn-saveas.png","file_select({init_path:\"dag-" + ada + "/\",fpath:\"file_dag_name\",fcontent:\"file_dag_content\",func:\"file_save\",btntext:\"Сохранить\"})");
+				dag_file.addtool("Очистить поле","img/btn-rst.png","file_reset({init_path:\"dag-" + ada + "/\",fpath:\"file_dag_name\",fcontent:\"file_dag_content\"})");
+//				dag_file.addtool("Удалить файл","img/btn-delete.png","file_remove({init_path:\"dag-" + ada + "/\",fpath:\"file_dag_name\",fcontent:\"file_dag_content\"})");
+				break;
+			case "editFile_in":
+				jdl_file = init_fopen("fio_open");
+				jdl_file.addtext("file_io_name");
+				jdl_file.addtool("Открыть файл","img/btn-open1.png","file_select({init_path:\"files/\",fpath:\"file_io_name\",fcontent:\"file_io_content\",func:\"file_open\",btntext:\"Открыть  \"})");
+				jdl_file.addtool("Сохранить файл","img/btn-save.png","file_save({init_path:\"files/\",fpath:\"file_io_name\",fcontent:\"file_io_content\"})");
+				jdl_file.addtool("Сохранить файл как...","img/btn-saveas.png","file_select({init_path:\"files/\",fpath:\"file_io_name\",fcontent:\"file_io_content\",func:\"file_save\",btntext:\"Сохранить\"})");
+				jdl_file.addtool("Очистить поле","img/btn-rst.png","file_reset({init_path:\"files/\",fpath:\"file_io_name\",fcontent:\"file_io_content\"})");
+//				jdl_file.addtool("Удалить файл","img/btn-delete.png","file_remove({init_path:\"files/\",fpath:\"file_io_name\",fcontent:\"file_io_content\"})");
+				break;
+			case "siteList_in":
+				site_list = init_fopen("get_list");
+				site_list.addtool("Обновить","img/btn-refresh.png","get_site_list()");
+				break;
+			case "siteListMatch_in":
+				stable = new uw_sitelist("site_table_run");
+				run_file_site = init_fopen("job_site_open");
+				run_file_site.addtext("job_check_file");
+				run_file_site.addtool("Выбрать файл описания задания","img/btn-open1.png","file_select({init_path:\"dag-" + ada + "/\",fpath:\"job_check_file\",func:\"file_open\"})");
+				run_file_site.addtool("Получить список ресурсов","img/btn-info.png",'get_site_listmatch(\"job_check_file\", \"dag\")');
+				run_file_site.addtool("Запустить задание на выбранный ресурс","img/btn-run.png",'run_job_from_list( stable,\"job_check_file\",\"dag\")');
+				break;
+			case "jobRun_in":
+				run_file = init_fopen("jrun_open");
+				run_file.addtext("job_run_file");
+				run_file.addtool("Выбрать файл описания задания","img/btn-open1.png","file_select({init_path:\"dag-" + ada + "/\",fpath:\"job_run_file\",func:\"file_open\"})");
+				run_file.addtool("Запустить задание","img/btn-run.png",'run_job(\"job_run_file\", \"dag\")');
+				break;
+			case "jobList_in":
+				jtable = new uw_joblist("list_job");
+				break;
+			}
+		} else {
+			if (/^grp./.test(dv.id)) {
+				var tm=dv.id.split("_");
+				dv.innerHTML=help_items[tm[0]];
+			}
+			else {
+				dv.innerHTML=help_items["grpInit"];
+			}
+		}
+	}
+	return true;
+}
+
+function uw_add_menu_item(isLast, ar, st){
+var li,a,div;
+
+	li = document.createElement("li");
+	if (st != "isRoot"){
+		div = document.createElement("div");
+		div.className = "Expand";
+               	li.appendChild(div);
+	}
+	div = document.createElement("div");
+	div.className = "Content";
+	a = document.createElement("a");
+	a.innerHTML = ar.name;
+	a.href = "#";
+	a.name = ar.id;
+        a.onclick = function() {open_div(this.name);return false;};
+	div.appendChild(a);
+
+	li.className = st;
+	if (isLast){
+		li.className +=" IsLast";
+	} 
+	li.id = ar.id;
+	li.appendChild(div);
+	return li;
+}
+
+function uw_add_menu(el,ar, lv){
+	var ul, li, cl;
+	ul= document.createElement("ul");
+	ul.className="Container";
+
+	for ( var i=0, len=ar.length; i<len; i++){
+		if (i == 0 && typeof lv != "undefined") {
+			cl=lv;
+		} else {
+//			cl=(ar[i].par.length) ? "Node ExpandClosed" : "Node ExpandLeaf";
+			cl=(ar[i].par.length) ? "Node ExpandOpen" : "Node ExpandLeaf";
+		}
+		li=uw_add_menu_item((i==len-1),ar[i], cl);
+		if (ar[i].par.length){
+			uw_add_menu(li,ar[i].par);
+		}
+                ul.appendChild(li);
+	}
+       	el.appendChild(ul);
+        return true;
+}
+
+function init_menu(ar) {
+	var m = document.getElementById("menu");
+	if (ar.length){
+		var eul=uw_add_menu(m,ar,"isRoot");
+	}
+        return true;
+}
+
+function register_plugin(name) {
+// add new menu item into App section
+// !!!! пока получается только по id раздела "grpApp"
+
+	var appId = "app" + appCnt++;
+	var sec = document.getElementById("grpApp");
+	var ul = getElementsByClassName("Container", "UL", sec)[0];
+
+	var mn = new menu_comand(appId, name);
+	var li = uw_add_menu_item(true, mn, "Node ExpandLeaf");
+	ul.appendChild(li);
+	
+// убрать isLast для всех предыдущих пунктов
+	var uli = li.previousSibling;
+	while(uli) {
+	    uli.className = "Node ExpandLeaf";
+	    uli = uli.previousSibling;
+	}
+
+// add div for plugin (div id = plugin id + "_in" )
+	var e = document.getElementById("result");
+	newDiv = document.createElement("div");
+	newDiv.className = "in";
+	newDiv.id = appId + "_in";
+	newDiv.style.display = "none";
+	e.appendChild(newDiv);
+	return newDiv;
+}
+
+function init_plugins() {
+	var sec = document.getElementById("grpApp");
+	var ul = document.createElement("ul");
+	ul.className = "Container";
+	sec.appendChild(ul);
+	sec.className = sec.className.replace("Leaf", "Open");
+
+	for(var i in plugins) {
+		var s = document.createElement("script");
+		s.type = "text/javascript";
+		s.src = "plugins/plugin_" + plugins[i] + ".js";
+		document.getElementsByTagName("head")[0].appendChild(s);
+	}
+	return true;
+}
+
+function init(start, ar) {
+	var tout = 10;
+	var res = ui_req_s("", "", null);
+	if(typeof res == "number") {
+		document.getElementById('result').innerHTML="<center><h2>Ошибка соединения:<br>" + res + " - " + err_gia[res] + "</h2><br><p>Через " + tout + " секунд Вы будете перенаправлены на начальную страницу.</p><br></center>";
+		setTimeout(function() {document.location.href = "http://" + document.location.host} , tout * 1000);
+	} else {
+		var ok = 0;
+		for(var i = 0; i < res["giacnt"]; i++) {
+		    if(res["gia" + i] == ada) ok = 1;
+		}
+		if(! ok) {
+		    document.getElementById('result').innerHTML="<center><h2>Неверная настройка ПАИГ " + ada + ". Обратитесь к администратору ВИГ.</h2><br><p>Через " + tout + " секунд Вы будете перенаправлены на начальную страницу.</p><br></center>";
+		    setTimeout(function() {document.location.href = "http://" + document.location.host} , tout * 1000);
+		    return true;
+		}
+		add_divs();
+		init_divs();
+		init_menu(ar);
+		init_plugins();
+		open_div(start);
+		var x = document.getElementById('tlog').tBodies[0].rows;
+		var y = x[0].cells;
+		y[0].innerHTML=res['cn'];
+		y[1].innerHTML=res['user'];
+
+		start_busy("credInfo");
+		res = ui_req_s(ada, "credInfo", null);
+		end_busy(res["cmd"]);
+
+		if (res["gridftp"]) y[2].innerHTML = res["gridftp"];
+		if (res["voName"]){ 
+			y[3].innerHTML = res["voName"];
+			run_ui_role_comand("credListRoles");
+		}
+		if (parseInt(res["timeLeft"])) {
+			clear_renew_timeout(timeout_id);
+			timeout_id = set_renew_timeout(res["timeLeft"]);
+		}
+		set_vo_name("vo_list",res["voName"]);
+		get_site_list();
+	}
+	return true;
+}
+
+function open_div(d) {
+	var divCol = getElementsByClassName("Content", "DIV", document.getElementById("menu"));
+	for (var i = 0, j = divCol.length; i < j; i++) {
+		divCol[i].className = "Content";
+		var l = divCol[i].childNodes.length;
+		for (var k = 0; k < l; k++) {
+			var dv = divCol[i].childNodes[k];
+			if (dv.name == d){
+				divCol[i].className += " Current";
+				break;
+			}
+		}
+	}
+	
+	if (d == "jobList" && jtable.jobs.length == 0){
+		var res = ui_req_s(ada, d, null);
+		 jtable.fill(res);
+		 jtable.drawTable();
+	}
+	show_d(ui_div(d));
+	return true;
+}
+
+function run_ui_proxy_comand(cmd){
+	var req = new Array();
+	if (cmd == "credInit"){
+		req["lifeTime"] = document.getElementById("valid").value;
+		req["pwd"] = document.getElementById("cert_pwd").value;
+		var vo = document.getElementById("vo_list");
+		req["voName"] = vo.options[vo.selectedIndex].value;
+		if (!req["voName"]){
+			alert ("Не выбрана виртуальная организация");
+			return true;
+		}
+	} else if (cmd == "credMyProxy"){
+		req["pwd"] = document.getElementById("my_cert_pwd").value;
+	} else if (cmd == "credRenew"){
+		var tm = get_cookie("proxy-time");
+		if (tm)	req["lifeTime"] = Math.floor(tm/3600) + ":" + Math.floor((tm % 3600)/60);
+	}	 	 
+	start_busy(cmd);
+	return ui_req_a(req_cb_proxy_comand, ada, cmd, req);  //return unique ID of the command
+}
+
+function clear_renew_timeout (id){
+	if (id) clearTimeout(id);
+	return true;
+}
+
+function set_renew_timeout(timeleft){
+	var new_time = timeleft - 1800 + Math.floor(Math.random() * 600);	// за полчаса до срока + случайное число от 0 до 10 минут
+	if (new_time < 60) new_time = timeleft - 60;				// если короткий прокси, то за минуту до конца
+	var id = setTimeout(function() {run_ui_proxy_comand("credRenew")}, new_time * 1000);
+	return id;
+}
+
+function req_cb_proxy_comand(res, uid){
+	var k;
+	var cur = document.getElementById("cur_role_list");
+	var list = document.getElementById("role_list");
+	var out = document.getElementById(ui_div(res["cmd"]) +"_out");
+        var x = document.getElementById('tlog').tBodies[0].rows;
+        var y = x[0].cells;
+
+	end_busy(res["cmd"]);
+	if (res["status"] != 0){
+		out.innerHTML = "Ошибка : " + res["retMsg"] + "\n";
+		if (res["retNative"]){
+			out.innerHTML += "Причина : " + htmlspecialchars(res["retNative"]);
+		}
+// заплатка из-за удаления предыдущего прокси
+// при неудачной попытке создать новый прокси
+		if (res["cmd"] == "credInit") {
+			y[3].innerHTML = "";
+			while ( k = list.childNodes[0]) k.parentNode.removeChild(k);
+			while ( k = cur.childNodes[0]) k.parentNode.removeChild(k);
+
+		}
+		return true;
+	}
+
+	switch (res["cmd"]){
+		case "credInit":
+			out.innerHTML = "Прокси-сертификат успешно создан\nОставшееся время действия " +  parse_sec(res["timeLeft"]);
+			y[3].innerHTML = (res["voName"]) ? res["voName"] : "";
+			set_cookie("proxy-time", res["timeLeft"]);
+			clear_renew_timeout(timeout_id);
+			timeout_id = set_renew_timeout(res["timeLeft"]);
+			run_ui_role_comand("credListRoles");
+		break;
+		case "credInfo":
+			if (res["gridftp"]) y[2].innerHTML = res["gridftp"];
+			y[3].innerHTML = (res["voName"]) ? res["voName"] : "";
+			set_vo_name("vo_list",res["voName"]);
+			out.innerHTML = "Оставшееся время действия " + parse_sec(res["timeLeft"]);
+
+			if (res["attrCnt"] != 0){
+				out.innerHTML += "<br />VOMS расширения (группы, роли):";
+		                for (var k=0; k<res["attrCnt"]; k++) {
+					out.innerHTML += "<br />" + res["attr" + eval(k+1)];
+				}
+			}
+			if (parseInt(res["timeLeft"])) {
+				clear_renew_timeout(timeout_id);
+				timeout_id = set_renew_timeout(res["timeLeft"]);
+			}
+
+		break;
+		case "credDestroy":
+			out.innerHTML = "Прокси-сертификат успешно удалён";
+                        y[3].innerHTML = "";
+			while ( k = list.childNodes[0]) k.parentNode.removeChild(k);
+			while ( k = cur.childNodes[0]) k.parentNode.removeChild(k);
+			clear_renew_timeout(timeout_id);
+
+    		break;
+		case "credMyProxy":
+			out.innerHTML = "Сертификат успешно передан на MyProxy сервер\nПервичный сертификат удалён с сервера ВИГ";
+		break;
+		case "credRenew":
+			clear_renew_timeout(timeout_id);
+			timeout_id = set_renew_timeout(res["timeLeft"]);
+			out.innerHTML = "Прокси-сертификат успешно обновлён\nОставшееся время действия " +  parse_sec(res["timeLeft"]);
+		break;
+	}
+		return true;
+}
+
+function run_ui_role_comand(cmd){
+	var req = new Array();
+	var list = document.getElementById("role_list");
+        var x = document.getElementById('tlog').tBodies[0].rows;
+        var y = x[0].cells;
+	req["voName"] = (y[3].innerHTML) ? y[3].innerHTML : "";
+
+	if (cmd == "credAddRoles"){
+		var cnt = 0;
+		for (var i = 0; i < list.options.length; i++) {
+			if (list.options[i].selected){
+				req["attrCnt"] = ++cnt;
+				req["attr" + eval(cnt)] = list.options[i].value;
+			}
+		}
+	}
+	start_busy(cmd);
+	return ui_req_a(req_cb_role_comand, ada, cmd, req);  //return unique ID of the command
+}
+
+function req_cb_role_comand(res, uid){
+	var ret = true;
+	var opt, k;
+	var out = document.getElementById(ui_div(res["cmd"]) +"_out");
+	var cur = document.getElementById("cur_role_list");
+	var list = document.getElementById("role_list");
+	out.innerHTML = "";
+	while ( k = list.childNodes[0]) k.parentNode.removeChild(k);
+	while ( k = cur.childNodes[0]) k.parentNode.removeChild(k);
+
+	if (res["status"] != 0){
+		out.innerHTML += "Ошибка : " + res["retMsg"] + "\n";
+		if (res["retNative"]){
+			out.innerHTML += "Причина : " + htmlspecialchars(res["retNative"]);
+			ret = false;
+		}
+		end_busy(ui_div(res["cmd"]));
+	} else {
+
+		switch (res["cmd"]){
+			case "credListRoles":
+				var res1 = ui_req_s(ada, "credInfo", null);
+				if (res1["status"] != 0){ 
+					out.innerHTML += "Ошибка : " + res1["retMsg"] + "\n";
+					if (res1["retNative"]){
+						out.innerHTML += "Причина : " + htmlspecialchars(res1["retNative"]) ;
+						ret = false;
+					}
+				} else {
+
+					if (res1["attrCnt"] != 0){
+		                		for ( k=0; k<res1["attrCnt"]; k++) {
+			        			opt = document.createElement("OPTION");
+							opt.text = res1["attr" + eval(k+1)];
+							opt.value = opt.text;
+							try {
+								cur.add(opt, null);
+							} catch(e) {
+								cur.add(opt);
+							}
+						}
+					}
+					if (res["attrCnt"] != 0){
+	        	        		for ( k=0; k<res["attrCnt"]; k++) {
+		        				opt = document.createElement("OPTION");
+							opt.text = res["attr" + eval(k+1)];
+							opt.value = opt.text;
+							try {
+								list.add(opt, null);
+							} catch(e) {
+								list.add(opt);
+							}
+							for (var n=0; n<res1["attrCnt"]; n++){
+								if (opt.value == res1["attr" + eval(n+1)]){
+									opt.disabled = "true";
+									break;
+								}
+							} 
+						}
+					}
+					if (!res["voName"]){
+						out.innerHTML += "\n" + res["retMsg"] + "\n";
+					}
+				}
+				end_busy(ui_div(res["cmd"]));
+			break;
+			case "credAddRoles":
+				end_busy(ui_div(res["cmd"]));
+				run_ui_role_comand("credListRoles");
+			break;
+		}
+	}
+	return ret;
+}
+
+function run_job(lid, dir){
+	var nm;
+	var fname=document.getElementById(lid);
+	var req = new Array();
+	if (fname.options){
+		var i = fname.selectedIndex;
+		nm = fname.options[i].value;
+	} else {
+		nm = fname.value;
+	}
+	if (!nm){
+		alert ("Не указан файл описания задания");
+		return true;
+	}
+	req["jdl"] = dir + "-" + ada +"/" + nm;
+	nm = prompt("Введите имя задания");
+	if (!nm || nm.length == 0){
+		alert ("Имя задания не может быть пустым");
+		return true;
+	}
+	req["jobName"] = nm;
+	document.getElementById("jobRun_out").innerHTML="";
+	start_busy("jobRun");
+	return ui_req_a(req_cb_list, ada, "jobRun", req);  //return unique ID of the command
+}
+
+function run_job_from_list(tid, lid, dir){
+	var e;
+	var req = new Array();
+	var fname=document.getElementById(lid);
+	var value = (fname.options) ? fname.options[fname.selectedIndex].value : fname.value;
+	if (!value){
+		alert ("Не указан файл описания задания");
+		return true;
+	}
+	req["jdl"]=dir + "-" + ada +"/" + value;
+	var oTBody = (typeof tid == "string") ? document.getElementById(tid).tBodies[0] : tid.body;
+	var st="";
+	if (oTBody){
+		for ( var i=0; i<oTBody.rows.length; i++){
+			e = oTBody.rows[i].cells[0].firstChild;
+			if (e && e.checked){
+				st = e.id;
+				break;
+			}
+		}
+	}
+	if (st == ""){
+		alert("Не выбран узел для запуска задания.\nПодходящий ресурс для задания будет выбран системой.");
+	} else {
+		req["siteName"] = st;
+	}
+	
+	var nm = prompt("Введите имя задания");
+	if (!nm || nm.length == 0){
+		alert ("Имя задания не может быть пустым");
+		return true;
+	}
+	req["jobName"] = nm;
+	start_busy("siteListMatch");
+	return ui_req_a(req_cb_run_from_list, ada, "jobRun", req);  //return unique ID of the command
+}
+
+function req_cb_run_from_list(res, uid){
+	var pg = "siteListMatch";
+	end_busy(pg);
+	var e = document.getElementById(pg +"_out");
+// clear table from '_out' div
+	var t_out = e.getElementsByTagName('TABLE')[0];
+	if (t_out){
+		t_out.parentNode.removeChild(t_out);
+	}
+
+	if (res["status"]==0){
+		e.innerHTML = "Задание " + htmlspecialchars(res["jobName"]) + " успешно запущено";
+		start_busy("jobList");
+		return ui_req_a(req_cb_list, ada, "jobList", null);
+	} else {
+		e.innerHTML = "Задание " + htmlspecialchars(res["jobName"]) + " не запущено\n";
+		e.innerHTML += "Ошибка : " + res["retMsg"] + "\n";
+		e.innerHTML += "Причина : " + htmlspecialchars(res["retNative"]);
+	}
+	return true;
+}
+
+function run_ui_list_comand(cmd){
+	var count = 0;
+	var e;
+	var req = new Array();
+	var oTBody = jtable.tbody;
+	for ( var i=0; i<oTBody.rows.length; i++){
+		e = oTBody.rows[i].cells[0].firstChild;
+		if (e.checked){
+			count++;
+			req["jobID"+eval(count)] = e.id;
+			req["jobName"+eval(count)] = oTBody.rows[i].cells[3].innerHTML;
+		}
+	}
+	if (count == 0 && cmd != "jobList"){
+		return true;
+	} else {
+		req["jobCnt"] = count.toString();
+		start_busy(cmd);
+		return ui_req_a(req_cb_list, ada, cmd, req);  //return unique ID of the command
+	}
+}
+
+function req_cb_list(res, uid){
+	var i,j,e,d;
+	var oTBody = jtable.tbody;
+	var oTFoot = jtable.tfoot;
+	var out = document.getElementById(ui_div(res["cmd"]) +"_out");
+	end_busy(res["cmd"]);
+
+	out.innerHTML = "";
+
+	if (res["status"] != 0){
+		out.innerHTML = "Ошибка : " + res["retMsg"] + "\n";
+		if (res["retNative"]) out.innerHTML += "Причина : " + htmlspecialchars(res["retNative"]);
+		if (res["status"] != 102) return false;
+	}
+	switch (res["cmd"]){
+		case "siteList":
+			reset_site_list(res,"list_site");
+		break;
+		case "siteInfo":
+			if (stable.addinfo(res)) stable.drawTable();
+		break;
+                case "siteListMatch":
+			stable.create(res);
+                break;
+		case "jobLog":
+			reset_log(res,"job");
+		break;
+		case "taskLog":
+			reset_log(res,"task");
+		break;
+		case "jobRun":
+			out.innerHTML = "Задание " + htmlspecialchars(res["jobName"]) + " успешно запущено";
+			start_busy("jobList");
+			return ui_req_a(req_cb_list, ada, "jobList", null);
+		break;
+		case "jobList":
+			jtable.fill(res);
+			jtable.redrawTable();
+		break;
+		case "jobStatus":
+			jtable.updstatusTable(res);
+		break;
+		case "jobDelete":
+			jtable.delrowTable(res);
+		break;
+		case "jobAbort":
+			jtable.cancelTable(res);
+		break;
+		case "jobOutput":
+			jtable.getoutputTable(res);
+		break;
+	}
+	return true;
+}
+
+</script>
+</head><body id="ui" onload="init('grpInit', menu_items)"><div id="all">
+<div id="headdiv">
+    <div id="hdrimg"><img src="img/headerL_cut.gif"></div>
+    <div id="hdrlogo"><a href="http://www.ngrid.ru" ><img src="img/logo_69.png" width="260" height="69" alt="ГридННС" title="ГридННС" /></a></div>
+    <div id="headtext"><img src="img/header-palatino.gif" width="450" height="40"></div>
+    <div id="headver">Версия 1.0R2</div>
+    <div id="toolbar">
+      <table id="tlog">
+	<thead><tr><th>Добро пожаловать</th><th>Ваше учетное имя</th><th>Базовый URL для GridFTP</th><th>Виртуальная организация</th></tr></thead>
+	<tbody><tr><td></td><td></td><td></td><td></td></tr></tbody>
+      </table>
+    </div>
+</div>
+
+<div id="wrap">
+    <div id="menu" onclick="tree_toggle(arguments[0])"></div>
+    <div id="main">
+        <div class="right" id="result"></div>
+    </div>
+</div>
+
+</div></body></html>

@@ -1,0 +1,21 @@
+globalid=gsiftp://arc.univ.kiev.ua:21/job/44301317392049336680053
+lrms=pbs
+queue=moldyngrid
+localid=397000.a4.cluster.univ.kiev.ua
+args=/bin/sleep 2850 
+subject=/DC=org/DC=ugrid/O=people/O=UGRID/CN=Vadim Khramov
+starttime=20110930141413Z
+lifetime=1210000
+rerun=0
+downloads=0
+uploads=0
+rtes=0
+jobname=Test job on CrimeaEco VO
+gmlog=gridlog
+cleanuptime=20111014205145Z
+delegexpiretime=20111001135954Z
+clientname=82.207.114.4:36161
+sessiondir=/home/grid/session/44301317392049336680053
+diskspace=209715200
+transfershare=_default
+priority=50

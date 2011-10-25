@@ -1,0 +1,270 @@
+* {
+        padding: 0;
+        margin: 0;
+}
+html, body {
+        height: 100%;
+}
+
+html {
+        overflow: auto;
+}                        
+
+body#ui {
+        margin:0;
+	padding:0;
+	background: #D5D0BF url("img/bgr.gif") repeat-x top left;
+}
+
+h1 {
+        font-family: Arial,Verdana,Helvetica, sans-serif;
+        font-size:1.5em;
+        font-weight: bold;
+        text-align:center;
+        padding-top:5px;
+        padding-bottom:5px;
+}
+
+img {
+	margin:0 0 0 0;
+	padding:0 0 0 0;
+}
+
+div.busy {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 5;
+        background-color: white;
+        opacity: 0.7;
+        filter: alpha(opacity=70);
+        text-align: center;
+}
+
+img.busy {
+	display: inline;
+	height: 100%;
+	width: auto;
+}
+
+a {cursor:pointer;
+   color: brown;
+} 
+a img {border:0}
+a:link{ text-decoration: none }
+a:visited{ text-decoration: none }
+select {border: 1px solid}
+/* input {border: 1px solid} */
+
+div#headdiv{
+	height:96px;
+	margin:0 0 0 0;
+	padding:0 0 0 0;
+	background :#C0C0C0  scroll;                   /*#14466C  scroll; 849CC6 */
+	overflow : hidden;
+        background-color: white;
+        background-image: url("img/bgr.gif");
+        background-position: top left;
+        background-repeat: repeat-x;
+	max-height : 96px;
+	position:relative;
+}
+
+div#hdrimg {
+        position: absolute;
+        margin: 0px;
+        padding: 0px;
+        left: 0px;
+}
+                            
+                                
+div#hdrlogo {
+        position: absolute;
+        margin:0px;
+        padding: 0px;
+        left: 20px;
+        top: 14px;
+}
+                                                                        
+div#headtext {
+        position: absolute;
+        margin: 0px;
+	padding: 0px;
+        left: 500px;
+        top: 10px;
+}
+                                                                                                                
+div#headver {
+        position: absolute;
+        right: 2px;
+        top: 2px;
+        font-size: 0.6em;
+        color: black;
+}
+                                                                                                                                                        
+div#toolbar{
+        position: absolute;
+        left: 240px;
+        top: 62px;
+        margin: 0px;
+        padding: 0px;
+}
+
+table#tlog {
+        margin: 0px;
+        padding: 0px;
+        border-width: 0px;
+        border-style: solid;
+        border-color: #000000;
+}
+
+
+table#tlog th {
+        margin: 0px;
+        padding: 0px 40px 0px 40px;
+        vertical-align: top;
+        line-height: 1;
+        white-space: nowrap;
+        letter-spacing: 0.5px;
+        font-family:Arial,Verdana, Helvetica, sans-serif;
+        font-size: 0.75em;
+        font-weight: bold;
+        color: brown;
+}
+
+table#tlog td {
+        margin: 0px;
+        padding: 0px;
+        vertical-align: top;
+        line-height: 1;
+        white-space: nowrap;
+        letter-spacing: 0.5px;
+        text-align: center;
+        font-family:Arial,Verdana, Helvetica, sans-serif;
+        font-size: 0.7em;
+        font-weight: bold;
+        color:  #005EB7;
+}
+
+
+div#menu{
+        width:208px;
+	float:left;
+/*	margin-left: -100%; */
+	padding-left: 8px;
+        padding-right: 8px;
+        font-family:Arial,Verdana, Helvetica, sans-serif;
+	font-size: 0.85em;  
+	font-weight: 600;  
+	z-index: 2; 
+	height:100%;
+	color: brown;
+}
+
+div#menu a{
+	color: brown;
+}
+
+div#all {
+	position: absolute;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100%;
+        background: #D5D0BF  url("img/bar1.png") repeat-y top left;
+                                                                	
+}
+
+div#wrap {
+        margin: 0 0 0 0;
+	padding: 0 0 0 0;
+        width: 100%;
+/*	float: left; */
+        min-height: 100%;
+}
+
+div#main{
+        min-width:150px; 
+        padding-left : 5px;
+        padding-right : 5px;
+/*        margin-left : 225px; */
+        margin-right : 0;
+        margin-top : 0;
+        padding-top : 10px; 
+        background-color:#FFFFFF;
+        border: 1px solid #000;
+	overflow: auto;          /*hidden; */
+}
+
+div.right{
+        display:block;
+        width:100%;
+        position:relative;
+        min-width:150px;
+        max-width:100%;  
+        margin: 0 0 0 0;
+        padding: 0 0 0 0;
+}
+
+div.in,div.out{
+       display:block;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+        font-size: 0.7em;
+        text-align:justify;
+       color:darkblue;
+       background-color:#FFFFFF;
+       margin-left:0;
+       margin-right:0;
+       clear:both;
+}
+
+div.out{
+        font-family:courier new, fixed;
+        text-align:left;
+}
+
+div.out{
+        white-space: pre-wrap; /* css-3 */
+        white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+div.in p{
+       padding-top:0.5em;
+}
+
+div.in ul{
+        list-style: square inside;
+}
+
+
+.file-input{
+	display:block;
+	width:80%;
+}
+.r_button{
+	float:right;
+	position:relative;
+}
+.cmd_but{
+	font:		Icon;
+	border:		1px Solid ThreeDShadow;
+	background:	ButtonFace;
+	color:		WindowText;
+	margin:                5px 2px 0px 0px;
+} 
+.role_select{
+	width:300px;
+}
+div.clear{
+	float:right;
+	text-align:right;
+	clear:none;
+	display:inline;
+}    

@@ -1,0 +1,21 @@
+a:15:{s:11:"tableStruct";a:6:{i:0;a:6:{s:5:"Field";s:2:"id";s:4:"Type";s:17:" int(10) UNSIGNED";s:4:"Null";s:2:"NO";s:3:"Key";s:3:"PRI";s:7:"Default";N;s:5:"Extra";s:14:"auto_increment";}i:1;a:6:{s:5:"Field";s:3:"uid";s:4:"Type";s:17:" INT(10) UNSIGNED";s:4:"Null";s:3:"YES";s:3:"Key";s:0:"";s:7:"Default";N;s:5:"Extra";s:0:"";}i:2;a:6:{s:5:"Field";s:4:"name";s:4:"Type";s:13:" VARCHAR(255)";s:4:"Null";s:3:"YES";s:3:"Key";s:0:"";s:7:"Default";N;s:5:"Extra";s:0:"";}i:3;a:6:{s:5:"Field";s:12:"xrsl_command";s:4:"Type";s:5:" TEXT";s:4:"Null";s:3:"YES";s:3:"Key";s:0:"";s:7:"Default";N;s:5:"Extra";s:0:"";}i:4;a:6:{s:5:"Field";s:5:"state";s:4:"Type";s:9:" SMALLINT";s:4:"Null";s:3:"YES";s:3:"Key";s:0:"";s:7:"Default";N;s:5:"Extra";s:0:"";}i:5;a:6:{s:5:"Field";s:4:"date";s:4:"Type";s:17:" INT(10) UNSIGNED";s:4:"Null";s:3:"YES";s:3:"Key";s:0:"";s:7:"Default";N;s:5:"Extra";s:0:"";}}s:18:"validatCommonRules";a:1:{s:7:"allowed";a:5:{i:0;s:3:"uid";i:1;s:4:"name";i:2;s:12:"xrsl_command";i:3;s:5:"state";i:4;s:4:"date";}}s:19:"validatIndividRules";a:5:{s:3:"uid";a:1:{s:7:"settype";s:3:"int";}s:4:"name";a:2:{s:4:"safe";b:1;s:6:"length";a:1:{s:3:"max";i:255;}}s:12:"xrsl_command";a:2:{s:4:"safe";b:1;s:6:"length";a:1:{s:3:"max";i:65535;}}s:5:"state";a:1:{s:7:"settype";s:3:"int";}s:4:"date";a:1:{s:7:"settype";s:3:"int";}}s:9:"tablename";s:5:"tasks";s:8:"template";s:11:"vik-off-cmf";s:10:"modelclass";s:4:"Task";s:12:"controlclass";s:14:"TaskController";s:21:"strValidatCommonRules";s:106:"array(
+                'allowed' => array('uid', 'name', 'xrsl_command', 'state', 'date'),
+            )";s:22:"strValidatIndividRules";s:363:"array(
+                'uid' => array('settype' => 'int'),
+                'name' => array('safe' => TRUE, 'length' => array('max' => '255')),
+                'xrsl_command' => array('safe' => TRUE, 'length' => array('max' => '65535')),
+                'state' => array('settype' => 'int'),
+                'date' => array('settype' => 'int'),
+            )";s:15:"strFieldsTitles";s:243:"array(
+                'id' => 'id',
+                'uid' => 'uid',
+                'name' => 'name',
+                'xrsl_command' => 'xrsl_command',
+                'state' => 'state',
+                'date' => 'date',
+            )";s:12:"fieldsTitles";a:6:{s:2:"id";s:2:"id";s:3:"uid";s:3:"uid";s:4:"name";s:4:"name";s:12:"xrsl_command";s:12:"xrsl_command";s:5:"state";s:5:"state";s:4:"date";s:4:"date";}s:17:"strSortableFields";s:40:"id
+uid
+name
+xrsl_command
+state
+date";s:14:"sortableFields";a:6:{i:0;s:2:"id";i:1;s:3:"uid";i:2;s:4:"name";i:3;s:12:"xrsl_command";i:4;s:5:"state";i:5;s:4:"date";}s:5:"files";a:7:{s:5:"model";s:1:"1";s:10:"controller";s:1:"1";s:14:"tpl-admin-list";s:5:"table";s:8:"tpl-list";s:5:"table";s:8:"tpl-view";s:3:"div";s:8:"tpl-edit";s:5:"table";s:10:"tpl-delete";s:3:"div";}s:16:"clear-output-dir";b:1;}

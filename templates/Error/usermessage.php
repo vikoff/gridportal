@@ -1,0 +1,1 @@
+<p><?=Lng::get('error.usermessage'); ?></p>

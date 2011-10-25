@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title></title>
+<link rel="stylesheet" href="style.css" type="text/css" media="all" />
+<link rel="stylesheet" href="wid.css" type="text/css" media="all" />
+<link rel="stylesheet" href="table.css" type="text/css" media="all" />
+<script type="text/javascript" src="ui_gia.js"></script>
+<script type="text/javascript" src="ui_wid.js"></script>
+
+<script type="text/javascript">
+
+var wndUpl = null;
+var ftool;
+
+
+function refresh() {
+	var tab = parent.main.document.getElementById("table");
+	for (var i=tab.tBodies[0].rows.length-1; i>=0; i--){
+		tab.tBodies[0].deleteRow(i);
+	}
+	parent.create_dir_table(parent.listPath);
+	return true;
+}
+
+function mkdir(){
+	var nm = prompt("Введите имя каталога");
+	if (!nm){
+		return false;
+	} else if (nm.length == 0){
+		alert ("Имя каталога не может быть пустым");
+		return false;
+	}
+	if(! /^[^./][^/]*$/.test(nm.value)) {
+		alert("Имя каталога не должно содержать прямые слэши или начинаться с точки.");
+		return false;
+	}
+	nm = parent.listPath + nm;
+	var ret = ui_dir_create_s(nm);
+	if (typeof ret != "boolean") {
+		alert("Каталог не создан.\nКод ошибки =" + ret);
+		return false;
+	}
+	refresh();
+	return true;
+}
+
+function delrows() {
+	var e,i;
+	var tab = parent.main.document.getElementById("table");
+	if (!confirm("Вы уверены, что хотите удалить выбранное?") ){
+		for (i=tab.tBodies[0].rows.length-1; i>=0; i--){
+			if (tab.tBodies[0].rows[i].cells[0].firstChild) tab.tBodies[0].rows[i].cells[0].firstChild.checked=false;
+		}
+		return false;	
+	}
+	for (i=tab.tBodies[0].rows.length-1; i>=0; i--){
+		e = tab.tBodies[0].rows[i].cells[0].firstChild;
+		if (e && e.checked){
+			var ret = ui_file_remove_s(e.value);
+			if (typeof ret != "boolean") {
+				var obj = (e.value.substring(e.value.length-1) == "/") ? "Каталог " : "Файл ";
+				alert(obj + e.value + " не удалён.\nКод ошибки =" + ret);
+				return false;
+			}
+		}
+	}
+	refresh();
+	return true;
+}
+
+function download() {
+// check for dir selection and browser
+	var e,i;
+	var dirl=0;
+	var filel=0;
+	var tab = parent.main.document.getElementById("table");
+	for (i=tab.tBodies[0].rows.length-1; i>=0; i--){
+		e = tab.tBodies[0].rows[i].cells[0].firstChild;
+		if (e && e.checked){
+			(tab.tBodies[0].rows[i].className == "task") ? dirl++ : filel++;
+		}
+	}
+	if (dirl) { 
+		alert("Загружать можно только отдельные файлы. Уберите выделение с директорий.");
+		return false;
+	}
+        var m = /Gecko\//.test(navigator.userAgent) ? 1 : 0;
+
+	if (filel) {
+		if (filel>1 && m==0) {
+			alert("К сожалению, Ваш браузер не поддерживает загрузку сразу нескольких файлов. Эта функция поддерживается только в браузере Firefox. Выберите только один файл.");
+			return false;
+		}
+	        parent.main.document.forms[0].submit();
+	}
+        return true;
+}
+
+function upload() {
+
+var str="";
+	if (wndUpl) wndUpl.close();
+	str = "upload_self.html?init_path=" + parent.listPath;
+	wndUpl = window.open(str, "_blank", "menubar=no,toolbar=no,location=no,directories=no,status=no,resizable=yes,width=340,height=400,left=100,top=100");
+	if (wndUpl){
+		return true;
+	} else {
+		alert ("Не удаётся открыть окно для выбора и передачи файлов.\nПроверьте настройки браузера.");
+		return false;
+	}
+}
+
+
+function initHeader(dv){
+        ftool = new uw_dagtoolbar(null, "filetoolbar");
+	document.getElementById(dv).appendChild(ftool.dom);
+	ftool.addtext("path");
+	ftool.addtool("Передать файлы","img/btn_upl2.png","upload()");
+	ftool.addtool("Загрузить выбранные файлы","img/btn_dwnl2.png","download()");
+	ftool.addtool("Создать директорию","img/btn-addfldr.png","mkdir()");
+	ftool.addtool("Обновить","img/btn-refresh.png","refresh()");
+	ftool.addtool("Удалить выбранное","img/btn-delete.png","delrows()");
+	
+	return true;
+}
+
+</script>
+<style>
+#path1 {
+        font:           Icon;
+        border:         1px Solid ThreeDShadow;
+        background:     Window;
+        color:          WindowText;
+}
+</style>
+
+
+</head>
+<body marginheight="0" topmargin="0" bgcolor="#FFFFFF" onload="initHeader('files_head')">
+  <div id="files_head" style="position:relative"></div>
+</body></html>

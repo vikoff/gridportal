@@ -1,0 +1,258 @@
+
+/* ФРЕЙМ */
+
+body{
+    background: url('../images/bg.png') 0 0;
+}
+* html #site-container {
+	height: 100%;
+}
+#site-container {
+	position: relative;
+	width: 1000px;
+	margin: 0px auto;
+	min-height: 100%;
+	border-left: solid 1px #af2821;
+	border-right: solid 1px #af2821;
+}
+#header{
+	padding-top: 20px;
+	margin-bottom: 20px;
+	overflow: hidden;
+}
+#logo{
+	color: #710000;
+	text-align: center;
+}
+#logo h1{
+	font-size: 36px;
+	margin: 20px 0 0;
+}
+#language-block{
+	float: right;
+	padding: 15px 0px;
+	margin-right: 20px;
+	overflow: hidden;
+}
+#language-block a{
+	display: block;
+	float: left;
+	padding: 2px 4px;
+	margin: 0px;
+	border: solid 1px transparent;
+}
+#language-block a.active{
+	background-color: #CCC;
+	border: solid 1px #AAA;
+	-moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px;
+}
+
+#logged-block{
+	float: right;
+	clear: right;
+	margin-right: 20px;
+}
+#top-menu{
+	text-align: center;
+	border-bottom: solid 2px #af2821;
+	margin-bottom: 30px;
+}
+#top-menu a{
+    display: inline-block;
+    background-color: #7A4635;
+    padding: 5px 20px;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    -moz-border-radius-topleft: 18px;
+    -moz-border-radius-topright: 18px;
+    -webkit-border-top-left-radius: 18px;
+    -webkit-border-top-right-radius: 18px;
+    text-decoration: none;
+    color: #FFF;
+    font-size: 16px;
+}
+#top-menu a.active{
+	background-color: #af2821;
+}
+#body{
+	text-align: center;
+}
+#footer-container {
+	height: 90px;
+}
+#footer {
+	margin: -90px auto 0;
+	position: relative;
+	width: 1000px;
+	height: 90px;
+	text-align: center;
+	font-size: 12px;
+	border-top: solid 1px #af2821;
+}
+
+#login-screen{
+	position: relative;
+	margin: auto;
+	margin-top: -80px;
+	top: 50%;
+	width: 300px;
+	border: solid 5px #AAA;
+	padding: 10px;
+	-moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px;
+}
+#login-screen .explain{
+	text-align: center;
+	font-style: italic;
+	margin-top: 5px;
+}
+
+
+/* ССЫЛКИ НОМЕРОВ СТРАНИЦ */
+
+.pagination{
+	margin: 1em 0em;
+	text-align: center;
+}
+.pagination a{
+	padding: 0px 3px 0px;
+}
+.pagination .prev{}
+.pagination .next{}
+.pagination .page{}
+.pagination .active{
+	font-size: 110%;
+	padding: 0px 3px 0px;
+	background-color: #EEEEEE;
+}
+
+/* СТИЛИЗОВАННЫЕ КНОПКИ */
+
+input.button, button.button, a.button{
+	cursor: pointer;
+	display: inline-block;
+	padding: 2px 6px;
+	border: solid 1px #999;
+	background-color: #E5E5E5;
+	-moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px;
+	text-decoration: none;
+	color: #000;
+}
+input.button:hover, button.button:hover, a.button:hover{
+	border-style: outset;
+	background-color: #DDD;
+}
+input.button:active, button.button:active, a.button:active{
+	border-style: inset;
+	background-color: #EEE;
+}
+input.button-small, button.button-small, a.button-small{
+	cursor: pointer;
+	display: inline-block;
+	padding: 0px 4px;
+	border: outset 1px #999;
+	background-color: #E5E5E5;
+	-moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px;
+	font-size: 11px;
+	text-decoration: none;
+	color: #000;
+}
+input.button-small:hover, button.button-small:hover, a.button-small:hover{
+	background-color: #DDD;
+}
+input.button-small:active, button.button-small:active, a.button-small:active{
+	border-style: inset;
+	background-color: #EEE;
+}
+
+
+/* КОНТЕНТ */
+
+table.std-form th{
+	border-bottom: solid 2px #EEE;
+	border-right: solid 3px #EEE;
+	background-color: transparent;
+}
+
+table.std-form td{
+	border-bottom: solid 1px #EEE;
+	text-align: left;
+}
+
+
+/* СТАНДАРТНАЯ СЕТКА */
+
+table.std-grid{
+	width: 98%;
+	margin: 5px auto;
+}
+table.std-grid th{
+	font-size: 12px;
+	background-color: #EEE;
+	border: solid 1px #DDD;
+}
+table.std-grid th a{
+	color: inherit;
+}
+table.std-grid tr{
+	border: solid 1px #EEE;
+}
+table.std-grid td{
+	font-size: 11px;
+	border: solid 1px #EEE;
+}
+table.std-grid td.left{
+	text-align: left;
+}
+table.std-grid td.center{
+	text-align: center;
+}
+table.std-grid td.right{
+	text-align: right;
+}
+table.std-grid td.option{
+	border-style: none;
+}
+
+table.std-grid.narrow{
+	width: auto;
+}
+
+
+.tr-hover{
+	background-color: #FFFFE2;
+}
+
+.task-uploaded-files{
+	width: 500px;
+	background-color: #EEE;
+	border: solid 1px #AAA;
+	margin: 20px auto;
+	padding: 5px 10px;
+}
+.task-uploaded-files-list{
+	margin: auto;
+	text-align: left;
+}
+.task-uploaded-files-list tr{
+	border-bottom: solid 1px #CCC;
+}
+
+.task-submit-log{
+	font-family: monospace;
+	white-space: pre;
+	padding: 5px;
+	background-color: #EAFFE8;
+	border: solid 1px #AAA;
+	text-align: left;
+	overflow: auto;
+	font-size: 12px;
+	color: black;
+}
+
+.task-file-manager {
+	width: 500px;
+	background-color: #EEE;
+	border: solid 1px #AAA;
+	margin: 20px auto;
+	padding: 5px 10px;
+}

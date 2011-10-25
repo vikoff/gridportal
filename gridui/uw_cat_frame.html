@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>Выбор файла</title>
+<script type="text/javascript" src="ui_gia.js"></script>
+<script type="text/javascript" src="ui_func.js"></script>
+
+<script type="text/javascript">
+var init_path="";
+var param={};
+
+function create_dir_table(path, tab_id) {
+var remDoc = self.main.document;
+var tab = remDoc.getElementById(tab_id);
+	var oLink, oImg, row, cell;
+	var ind = 0;
+	var dir = ui_dir_list_s(init_path + path);
+	if(! dir) return false;
+	dir.sort("tn");
+	var e;
+	while(tab.tBodies[0].rows.length > 0){
+	                tab.tBodies[0].deleteRow(0);
+	}
+	if (path){
+		row = tab.tBodies[0].insertRow(-1);
+		var i = path.lastIndexOf("/", path.length-2);
+		oLink = remDoc.createElement("A");
+		oLink.name = (i == -1) ? "" : path.substr(0,i+1);
+		oLink.onclick = function() {create_dir_table(this.name, tab_id)};
+		oImg = remDoc.createElement("IMG");
+		oImg.src = "img/closed_top.gif";
+		oImg.border=0;
+		oLink.appendChild(oImg);
+		cell = row.insertCell(-1);
+		cell.style.width = "23px";
+		cell.appendChild(oLink);
+
+		oLink = remDoc.createElement("A");
+		oLink.name = (i == -1) ? "" : path.substr(0,i+1);
+		oLink.onclick = function() {create_dir_table(this.name, tab_id)};
+		oLink.innerHTML = "..";
+		row.insertCell(-1).appendChild(oLink);
+		row.insertCell(-1);
+	}
+	while(e = dir.next()) {
+		if(!e) break;
+		if(e.type != "File"  && e.type != "Dir") continue;
+		row = tab.tBodies[0].insertRow(-1);
+		switch (e.type){
+			case "File":
+				cell = row.insertCell(-1);
+				cell.style.width = "23px";
+				oLink = remDoc.createElement("A");
+				oLink.name = e.name;
+				oLink.onclick = function() {updateFooter(this.name, path)};
+				oLink.ondblclick = function() {updateFooter(this.name,path);retPath()};
+				oLink.title = "Дата изменения: " + e.mtime.toLocaleString(); 
+				oImg = remDoc.createElement("IMG");
+				oImg.src = "img/document.gif";
+				oImg.border=0;
+				oLink.appendChild(oImg);
+				cell.appendChild(oLink);
+
+				oLink = remDoc.createElement("A");
+				oLink.name = e.name;
+				oLink.onclick = function() {updateFooter(this.name, path)};
+				oLink.ondblclick = function() {updateFooter(this.name,path);retPath()};
+				oLink.innerHTML = e.name;
+		 		oLink.title = "Дата изменения: " + e.mtime.toLocaleString(); 
+				row.insertCell(-1).appendChild(oLink);
+				cell = row.insertCell(-1);
+				cell.innerHTML = e.size;
+				cell.className = "size";
+
+			break;
+			case "Dir":
+				cell = row.insertCell(-1);
+				cell.style.width = "23px";
+				oLink = remDoc.createElement("A");
+				oLink.name = path + e.name + "/";
+
+				oLink.onclick = function() {create_dir_table(this.name, tab_id)};
+				oLink.title = "Дата изменения: " + e.mtime.toLocaleString(); 
+				oImg = remDoc.createElement("IMG");
+				oImg.src = "img/closed.gif";
+				oImg.border=0;
+				oLink.appendChild(oImg);
+				cell.appendChild(oLink);
+
+				oLink = remDoc.createElement("A");
+				oLink.name = path + e.name + "/";
+				oLink.onclick = function() {create_dir_table(this.name, tab_id)};
+				oLink.innerHTML = e.name;
+				oLink.title = "Дата изменения: " + e.mtime.toLocaleString(); 
+				row.insertCell(-1).appendChild(oLink);
+				row.insertCell(-1);
+
+			break;
+		}
+	}
+	if (!tab.tBodies[0].rows.length){
+		row = tab.tBodies[0].insertRow(-1);
+		row.insertCell(-1);
+		row.insertCell(-1).innerHTML = "Нет файлов и вложенных каталогов";
+	}
+	updateFooter("", path);
+       	return true;
+
+}
+
+function updateFooter(name, path) {
+	self.footer.document.forms[0].filename.value = name;
+	self.footer.document.forms[0].newpath.value = (path) ? path.substr(0,path.length-1) : "";
+	return true;
+}
+
+function retPath(){
+	var fnvalue = self.footer.document.forms[0].filename.value;
+	if(! fnvalue) return false;
+        if(! /^[^.\/][^\/]*$/.test(fnvalue)) {
+                alert("Имя файла не должно содержать прямые слэши или начинаться с точки.");
+                return false;
+    	}
+	var fn = (self.footer.document.forms[0].newpath.value) ? self.footer.document.forms[0].newpath.value + "/" : "";
+	fn += fnvalue;
+	fn = fn.replace(/"/g, "\\\"");
+    	if(window.opener.wndCB) {
+		window.opener.wndCB(fn);
+    	} else if(param["func"]) {
+		var str = "opener." + param["func"] + "({init_path:\"" + init_path + "\",path:\"" + fn + "\"";
+		if (param["fpath"]) str += ",fpath:\"" + param["fpath"] + "\"";
+		if (param["fcontent"]) str += ",fcontent:\"" + param["fcontent"] + "\"";
+	    	str += "})";
+	        eval(str);
+	}
+	closeWin();
+	return true;
+}
+
+function closeWin(){
+	window.opener.focus();
+	window.opener.wndCB = null;
+	window.opener.wndPop = null;
+	window.close();
+	return true;
+}
+
+function initFooter() {
+	var tmp1={};
+	var tmp2={};
+        var path = decodeURI(location.search.toString());
+        var i = path.indexOf("?");
+        if(i == -1) return false;
+
+	tmp1 = (path.substr(1)).split('&');
+	for(var i=0; i < tmp1.length; i++){
+		tmp2 = tmp1[i].split('=');
+		param[tmp2[0]] = tmp2[1];
+	}
+	if (param["btntext"]) {
+		self.footer.document.forms[0].btnSelect.alt = param["btntext"];
+		self.footer.document.forms[0].btnSelect.title = param["btntext"];
+     	}
+        init_path = param["init_path"];
+        path = param["path"] ? param["path"] : "";
+        create_dir_table(path, "dir_list");
+        return true;
+}
+
+
+</script>
+</head>
+<frameset rows="*,100" marginborder="0" FRAMEBORDER="0" FRAMESPACING="0" BORDER="0" onload="initFooter()">
+  <frame src="uw_cat_main.html" frameborder="1" name="main" MARGINHEIGHT="0" MARGINWIDTH="5" SCROLLING="auto">
+  <frame src="uw_cat_footer.html" frameborder="1" name="footer" MARGINHEIGHT="0" MARGINWIDTH="5" SCROLLING="no">
+</frameset>
+
+</html>
