@@ -16,6 +16,7 @@ class TaskSetController extends Controller{
 		'display_new'			=> PERMS_ADMIN,
 		'display_customize' 	=> PERMS_UNREG,
 		'display_submit'		=> PERMS_ADMIN,
+		'display_edit_file'		=> PERMS_REG,
 		
 		'admin_display_list'	=> PERMS_ADMIN,
 		'admin_display_edit'	=> PERMS_ADMIN,
@@ -26,6 +27,7 @@ class TaskSetController extends Controller{
 		'action_save' 			=> PERMS_ADMIN,
 		'action_delete' 		=> PERMS_ADMIN,
 		'action_upload_file'	=> PERMS_ADMIN,
+		'action_save_file'		=> PERMS_REG,
 		
 		'ajax_get_task_files'	=> PERMS_REG,
 		'ajax_delete_task_file'	=> PERMS_REG,
@@ -117,31 +119,61 @@ class TaskSetController extends Controller{
 	
 	public function display_submit($params = array()){
 		
-		echo 'не готово!'; die;
-		$instanceId = getVar($params[0], 0, 'int');
 		$user = CurUser::get();
 		
-		try{
-			$instance = Task::Load($instanceId);
-			
-			$hasGridjobFile = $instance->hasGridjobFile();
-			$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
-			
-			$variables = array_merge(Task::Load($instanceId)->GetAllFieldsPrepared(), array(
-				'gridjobfile' => $instance->parseGridJobFile(),
-				'showMyproxyLogin' => $manualMyproxyLogin,
-				'myproxyServersList' => $manualMyproxyLogin ? MyproxyServerCollection::load()->getAll() : array(),
-			));
-			
-			FrontendViewer::get()
-				->setTitle('Загрузка файлов')
-				->setTopMenuActiveItem('tasks')
-				->setContentSmarty(self::TPL_PATH.($hasGridjobFile ? 'xrsl_edit.tpl' : 'xrsl_empty.tpl'), $variables)
+		$instanceId = getVar($params[0], 0, 'int');
+		$instance = TaskSet::Load($instanceId);
+		
+		$viewer = FrontendViewer::get()
+			->setTitle('Запуск задачи')
+			->setTopMenuActiveItem('tasks');
+		
+		if (!$instance->hasGridjobFile()){
+			$viewer
+				->setContentPhpFile(self::TPL_PATH.'xrsl_empty.php', array('id' => $instanceId))
 				->render();
+			return;
+		}
+		
+		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
+		
+		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
+			'gridjobfile' => $instance->parseGridJobFile(),
+			'showMyproxyLogin' => $manualMyproxyLogin,
+			'myproxyServersList' => $manualMyproxyLogin ? MyproxyServerCollection::load()->getAll() : array(),
+		));
+		
+		$viewer
+			->setContentSmarty(self::TPL_PATH.'submit.php', $variables)
+			->render();
+	}
+	
+	public function display_edit_file($params = array()){
+		
+		$fname = getVar($_GET['file']);
+		if (empty($fname))
+			die ('Файл не найден #0');
+			
+		$id = getVar($params[0], 0, 'int');
+		try {
+			$instance = TaskSet::load($id);
+			
+			$fullname = $instance->getValidFileName($fname);
+			if (empty($fullname))
+				throw new Exception('Файл не найден #1');
+			
+			$vars = array(
+				'instanceId' => $id,
+				'fname' => $fname,
+				'content' => file_get_contents($fullname),
+			);
+			
+			include(FS_ROOT.'templates/'.self::TPL_PATH.'edit_file.php');
 		}
 		catch(Exception $e){
-			FrontendViewer::get()->error404('Запрашиваемая страница не найдена (#'.__LINE__.')');
+			echo 'Ошибка! '.$e->getMessage();
 		}
+		
 	}
 	
 	///////////////////////////
@@ -312,6 +344,26 @@ class TaskSetController extends Controller{
 		return TRUE;
 	}
 	
+	public function action_save_file($params = array()){
+		
+		$fname = getVar($_GET['file']);
+		if (empty($fname))
+			throw new Exception('Файл не найден #0');
+			
+		$instanceId = getVar($_POST['id'], 0, 'int');
+		$instance = TaskSet::load($instanceId);
+		
+		if($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception("Указанная задача не пренадлежит вам");
+		
+		$fullname = $instance->getValidFileName($fname);
+		if (empty($fullname))
+			throw new Exception('Файл не найден #1');
+		
+		$content = Tools::unescape($_POST['content']);
+		file_put_contents($fullname, $content);
+		return TRUE;
+	}
 
 	////////////////////
 	////// AJAX   //////

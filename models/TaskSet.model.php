@@ -4,7 +4,7 @@ class TaskSet extends GenericObject{
 	
 	const TABLE = 'task_sets';
 	
-	const NOT_FOUND_MESSAGE = 'Страница не найдена';
+	const NOT_FOUND_MESSAGE = 'Задача не найдена';
 
 	
 	/** ТОЧКА ВХОДА В КЛАСС (СОЗДАНИЕ НОВОГО ОБЪЕКТА) */
@@ -174,6 +174,54 @@ class TaskSet extends GenericObject{
 				$elms[] = $elm;
 		
 		return $elms;
+	}
+	
+	public function getValidFileName($fname){
+		
+		$dir = realpath($this->getFilesDir().'src/').DIRECTORY_SEPARATOR;
+		$fullname = realpath($dir.$fname);
+		
+		if (strpos($fullname, $dir) === FALSE)
+			return null;
+		
+		if (!file_exists($fullname))
+			return null;
+		
+		return $fullname;
+	}
+
+	public function hasGridjobFile(){
+		
+		return file_exists($this->getFilesDir().'src/nordujob');
+	}
+	
+	public function parseGridJobFile(){
+		
+		$file = $this->getFilesDir().'src/nordujob';
+		$data = array();
+		foreach(file($file) as $row){
+			$row = trim($row);
+			if($row == '&'){
+				$data[] = array('type' => '&', 'string' => $row);
+			}elseif(preg_match('/^\(\*(.*)\*\)$/', $row, $matches)){
+				$data[] = array('type' => 'comment', 'string' => $matches[1]);
+			}elseif(preg_match('/^\((([^=]+)=(.+))\)$/', $row, $matches)){
+				$name = $matches[2];
+				$data[] = array(
+					'type' => 'config',
+					'string' => $matches[1],
+					'name' => $name,
+					'title' => isset($this->_xrslParams[$name]) ? $this->_xrslParams[$name]['title'] : $name,
+					'comment' => isset($this->_xrslParams[$name]) ? $this->_xrslParams[$name]['comment'] : '',
+					'value' => $matches[3],
+					'value_escaped' => htmlentities($matches[3]),
+				);
+			}else{
+				$data[] = array('type' => 'other', 'string' => $row);
+			}
+		}
+		// echo '<pre>'; print_r($data); die;
+		return $data;
 	}
 	
 }

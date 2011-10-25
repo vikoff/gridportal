@@ -136,6 +136,7 @@ input.button, button.button, a.button{
 	-moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px;
 	text-decoration: none;
 	color: #000;
+	font-size: 13px;
 }
 input.button:hover, button.button:hover, a.button:hover{
 	border-style: outset;

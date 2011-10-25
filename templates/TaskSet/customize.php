@@ -28,6 +28,7 @@ $(function() {
 	
 	var FileManager = {
 		
+		editUrl: 'task-set/edit-file/<?= $this->instanceId; ?>',
 		getUrl: href('task-set/get-task-files/<?= $this->instanceId; ?>'),
 		delUrl: href('task-set/delete-task-file/<?= $this->instanceId; ?>'),
 		htmlContainer: $('#task-uploaded-files-container'),
@@ -47,7 +48,7 @@ $(function() {
 				}
 				
 				var tbl = $('<table class="task-uploaded-files-list" />');
-				var delLink = null;
+				var delLink, editLink;
 				for(var i in response.data){
 				
 					type = '';
@@ -57,6 +58,12 @@ $(function() {
 					}
 					else if(/\.fds$/.test(response.data[i]))
 						type = 'файл модели';
+					
+					editLink = (function(file){
+						var url = href(self.editUrl + '?file=' + encodeURIComponent(file));
+						return $('<a href="' + url + '" class="small" target="_blank">редактировать</a>')
+							.click(function(){ self.editFile(url); return false; });
+					})(response.data[i]);
 						
 					delLink = (function(file){
 						return $('<a href="#" class="small">удалить</a>')
@@ -67,6 +74,7 @@ $(function() {
 						$('<tr />')
 							.append('<td>' + (type ? '<span class="small" style="color: #888;">' + type + '</span>' : '') + '</td>')
 							.append('<td>' + response.data[i] + '</td>')
+							.append($('<td></td>').append(editLink))
 							.append($('<td></td>').append(delLink)));
 				}
 				
@@ -79,6 +87,12 @@ $(function() {
 				}
 					
 			}, 'json');
+		},
+		
+		editFile: function(url){
+			
+			var iframe = $('<iframe src="' + url + '" style="width: 800px; height: 500px;" />');
+			$.modal($('<div />').append(iframe));
 		},
 		
 		removeFile: function(name){

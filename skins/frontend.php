@@ -15,6 +15,7 @@
 
 	<link rel="stylesheet" href="css/common.css" type="text/css" />
 	<link rel="stylesheet" href="css/frontend.css" type="text/css" />
+	<link rel="stylesheet" href="css/simplemodal.css" type="text/css" />
 	<link rel="stylesheet" href="css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" />
 	<!-- <link rel="icon" type="image/png" href="favicon.ico" /> -->
 	
@@ -31,6 +32,7 @@
 	<script type="text/javascript" src="js/common.js"></script>
 	<script type="text/javascript" src="js/frontend.js"></script>
 	<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
+	<script type="text/javascript" src="js/jquery.simplemodal.js"></script>
 	
 </head>
 <body>

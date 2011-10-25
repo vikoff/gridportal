@@ -56,7 +56,7 @@ FileManager.prototype = {
 			}
 			
 			var tbl = $('<table class="task-uploaded-files-list" />');
-			var delLink = null;
+			var delLink;
 			for(var i in response.data){
 			
 				type = '';

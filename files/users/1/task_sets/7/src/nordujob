@@ -20,4 +20,3 @@
 ( count=2 )
 (* chose only those clusters which have a proper ARC installation *)
 (* middleware>="nordugrid-arc-0.8.0" *)
-

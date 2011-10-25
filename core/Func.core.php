@@ -28,6 +28,7 @@ function __autoload($className){
 		'Exception403'		=> 'core/Exception.core.php',
 		'Exception404'		=> 'core/Exception.core.php',
 		'FormBuilder'		=> 'core/FormBuilder.core.php',
+		'Tools'				=> 'core/Tools.core.php',
 		
 		'BackendViewer'		=> 'components/BackendViewer.component.php',
 		'Def'				=> 'components/Def.component.php',
