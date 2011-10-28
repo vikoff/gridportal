@@ -291,11 +291,11 @@ class TaskController extends Controller{
 			->setContentSmarty(self::TPL_PATH.'admin_list.tpl', $variables);
 	}
 	
-	////////////////////////
-	////// SYS DISPLAY//////
-	////////////////////////
+	//////////////////////
+	////// SNIPPETS //////
+	//////////////////////
 	
-	public function sysdisplay_task_submit_complete(Task $taskModel){
+	public function snippet_submit_complete(Task $taskModel){
 		
 		$variables = array(
 			'id' => $taskModel->id,
@@ -434,7 +434,7 @@ class TaskController extends Controller{
 			if($instance->hasError())
 				Messenger::get()->addError(Lng::get('task.warnings'), $instance->getError());
 				
-			$this->sysdisplay_task_submit_complete($instance);
+			$this->snippet_submit_complete($instance);
 			return TRUE;
 		}
 		else{

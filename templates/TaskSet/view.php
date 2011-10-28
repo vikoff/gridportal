@@ -1,39 +1,57 @@
 
 <div><a href="<?= href('task-set/list'); ?> ">Вернуться к списку</a></div>
 
-<h2>Запись #<?= $this->instanceId; ?></h2>
+<h2>Статистика задачи <?= $this->name; ?></h2>
 
-<table>
-<tr>
-	<td class="title">id</td>
-	<td class="data"><?= $this->id; ?></td>
-</tr>
-<tr>
-	<td class="title">uid</td>
-	<td class="data"><?= $this->uid; ?></td>
-</tr>
+
+<table class="std-grid narrow">
 <tr>
 	<td class="title">Проект</td>
 	<td class="data"><?= $this->project_id; ?></td>
+</tr>
+<tr>
+	<td class="title">Имя задачи</td>
+	<td class="data"><?= $this->name; ?></td>
+</tr>
+<tr>
+	<td class="title">Пользователь</td>
+	<td class="data"><?= $this->uid; ?></td>
 </tr>
 <tr>
 	<td class="title">Профиль</td>
 	<td class="data"><?= $this->profile_id; ?></td>
 </tr>
 <tr>
-	<td class="title">Имя набора</td>
-	<td class="data"><?= $this->name; ?></td>
-</tr>
-<tr>
-	<td class="title">ready_to_start</td>
-	<td class="data"><?= $this->ready_to_start; ?></td>
-</tr>
-<tr>
-	<td class="title">num_submits</td>
+	<td class="title">Количество запусков</td>
 	<td class="data"><?= $this->num_submits; ?></td>
 </tr>
 <tr>
-	<td class="title">create_date</td>
+	<td class="title">Дата создания</td>
 	<td class="data"><?= $this->create_date; ?></td>
 </tr>
 </table>
+
+<table style="margin: 1em auto;" class="std-grid">
+<tr>
+	<th>Порядковый номер</th>
+	<th>JobID</th>
+	<th>Сатус</th>
+	<th>Дата запуска</th>
+	<th>Дата завершения</th>
+</tr>
+<? foreach($this->submits as $s): ?>
+	<tr>
+		<td><?= $s['index']; ?></td>
+		<td><?= $s['jobid']; ?></td>
+		<td><?= $s['status']; ?></td>
+		<td><?= $s['start_date']; ?></td>
+		<td><?= $s['finish_date']; ?></td>
+	</tr>
+<? endforeach; ?>
+</table>
+
+<div style="margin: 1em 0; text-align: center;">
+	<a href="<?= href('task-set/customize/'.$this->instanceId); ?>" class="button">Запустить</a>
+	<a href="<?= href('task-set/delete/'.$this->instanceId); ?>" class="button">Удалить</a>
+	<a href="<?= href('task-set/list'); ?>" class="button">Вернуться к списку</a>
+</div>

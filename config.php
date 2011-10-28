@@ -43,8 +43,8 @@ Error::config(array(
 db::create(array(
 	'adapter' => 'mysql',
 	'host' => 'localhost',
-	'user' => 'root',
-	'pass' => '',
+	'user' => 'gridjobs1',
+	'pass' => 'freedom',
 	'database' => 'gridjobs1',
 	'encoding' => 'utf8',
 	'fileLog' => FALSE,

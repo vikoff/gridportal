@@ -1,7 +1,7 @@
-<?php /* Smarty version 2.6.26, created on 2011-10-25 22:30:34
+<?php /* Smarty version 2.6.26, created on 2011-10-28 19:22:52
          compiled from TaskSet/submit.php */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'TaskSet/submit.php', 28, false),array('function', 'a', 'TaskSet/submit.php', 76, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'TaskSet/submit.php', 28, false),array('function', 'a', 'TaskSet/submit.php', 81, false),)), $this); ?>
 <script type="text/javascript" language="javascript"><?php echo '
 
 $(document).ready(function() {
@@ -39,7 +39,7 @@ $(document).ready(function() {
 	<input type="hidden" name="id" value="<?php echo (isset($this->_tpl_vars['id']) ? $this->_tpl_vars['id'] : ''); ?>
 " />
 	
-	<table style="text-align: left; margin: auto;">
+	<table style="text-align: left; margin: 1em auto;">
 	<?php if ((isset($this->_tpl_vars['showMyproxyLogin']) ? $this->_tpl_vars['showMyproxyLogin'] : '')): ?>
 		<tr>
 			<td><?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.server'), $this);?>
@@ -74,11 +74,16 @@ $(document).ready(function() {
 	<?php else: ?>
 		<tr style="display: none;"><td><input type="hidden" name="myproxy-autologin" value="1" /></td></tr>
 	<?php endif; ?>
-	
 	</table>
 	
-	<br /><br /><br />
-	<table style="text-align: left; margin: auto;">
+	<table style="margin: 1em auto;">
+	<tr>
+		<td>Предпочитаемый сервер<br />(оставить пустым, если не надо)</td>
+		<td><input type="text" name="prefer-server" value="" /></td>
+	</tr>
+	</table>
+	
+	<table style="text-align: left; margin: 1em auto;">
 	<?php $_from = (isset($this->_tpl_vars['gridjobfile']) ? $this->_tpl_vars['gridjobfile'] : ''); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }if (count($_from)):
     foreach ($_from as $this->_tpl_vars['row']):
 ?>
@@ -92,10 +97,13 @@ $(document).ready(function() {
 	</table>
 	
 	<div class="paragraph">
-		<input class="button" type="submit" name="action[task/run]" value="<?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.start-task'), $this);?>
+		<input class="button" type="submit" name="action[task-set/submit]" value="<?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.start-task'), $this);?>
 " />
 		
-		<a class="button" href="<?php echo SmartyPlugins::function_a(array('href' => "task/list"), $this);?>
+		<a class="button" href="<?php echo SmartyPlugins::function_a(array('href' => "task-set/customize/".((isset($this->_tpl_vars['id']) ? $this->_tpl_vars['id'] : ''))), $this);?>
+"><?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.go-to-task-customize'), $this);?>
+</a>
+		<a class="button" href="<?php echo SmartyPlugins::function_a(array('href' => "task-set/list"), $this);?>
 "><?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.go-to-task-list'), $this);?>
 </a>
 	</div>

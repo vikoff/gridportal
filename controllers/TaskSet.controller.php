@@ -21,13 +21,14 @@ class TaskSetController extends Controller{
 		'admin_display_list'	=> PERMS_ADMIN,
 		'admin_display_edit'	=> PERMS_ADMIN,
 		'admin_display_copy'	=> PERMS_ADMIN,
-		'admin_display_delete'	=> PERMS_ADMIN,
+		'display_delete'		=> PERMS_ADMIN,
 
 		'action_create' 		=> PERMS_REG,
 		'action_save' 			=> PERMS_ADMIN,
 		'action_delete' 		=> PERMS_ADMIN,
 		'action_upload_file'	=> PERMS_ADMIN,
 		'action_save_file'		=> PERMS_REG,
+		'action_submit'			=> PERMS_REG,
 		
 		'ajax_get_task_files'	=> PERMS_REG,
 		'ajax_delete_task_file'	=> PERMS_REG,
@@ -62,7 +63,12 @@ class TaskSetController extends Controller{
 		
 		$instanceId = getVar($params[0], 0, 'int');
 		
-		$variables = TaskSet::Load($instanceId)->GetAllFieldsPrepared();
+		$variables = array_merge(TaskSet::Load($instanceId)->GetAllFieldsPrepared(), array(
+			'instanceId' => $instanceId,
+			'submits' => TaskSubmitCollection::load()->getTasksBySet($instanceId),
+		));
+		
+		// echo '<pre>'; print_r(TaskSubmitCollection::load()->getTasksBySet($instanceId)); die;
 		FrontendViewer::get()
 			->setTitle('Детально')
 			->setTopMenuActiveItem('tasks')
@@ -176,6 +182,22 @@ class TaskSetController extends Controller{
 		
 	}
 	
+	/** DISPLAY DELETE (ADMIN) */
+	public function display_delete($params = array()){
+		
+		$instanceId = getVar($params[0], 0 ,'int');
+		$instance = TaskSet::Load($instanceId);
+
+		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
+			'instanceId' => $instanceId,
+		));
+		
+		FrontendViewer::get()
+			->prependTitle('Удаление задачи')
+			->setContentPhpFile(self::TPL_PATH.'delete.php', $variables)
+			->render();
+	}
+	
 	///////////////////////////
 	////// DISPLAY ADMIN //////
 	///////////////////////////
@@ -238,23 +260,6 @@ class TaskSetController extends Controller{
 		
 	}
 	
-	/** DISPLAY DELETE (ADMIN) */
-	public function admin_display_delete($params = array()){
-		
-		$instanceId = getVar($params[0], 0 ,'int');
-		$instance = TaskSet::Load($instanceId);
-
-		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
-			'instanceId' => $instanceId,
-		));
-		
-		BackendViewer::get()
-			->prependTitle('Удаление записи')
-			->setBreadcrumbs('add', array(null, 'Удаление записи'))
-			->setContentPhpFile(self::TPL_PATH.'delete.php', $variables);
-		
-	}
-	
 
 	////////////////////
 	////// ACTION //////
@@ -299,13 +304,13 @@ class TaskSetController extends Controller{
 		$instance = TaskSet::Load($instanceId);
 		
 		// установить редирект на admin-list
-		$this->setRedirectUrl('admin/content/task-set/list');
+		$this->setRedirectUrl('task-set/list');
 	
-		if($instance->Destroy()){
-			Messenger::get()->addSuccess('Запись удалена');
+		if($instance->destroy()){
+			Messenger::get()->addSuccess('Задача удалена');
 			return TRUE;
 		}else{
-			Messenger::get()->addError('Не удалось удалить запись:', $instance->getError());
+			Messenger::get()->addError('Не удалось удалить задачу:', $instance->getError());
 			// выполнить редирект принудительно
 			$this->forceRedirect();
 			return FALSE;
@@ -365,9 +370,74 @@ class TaskSetController extends Controller{
 		return TRUE;
 	}
 
-	////////////////////
-	////// AJAX   //////
-	////////////////////
+	public function action_submit($params = array()){
+		
+		// echo '<pre>'; print_r($_POST); die;
+		
+		$instanceId = getVar($_POST['id'], 0, 'int');
+		$instance = TaskSet::load($instanceId);
+		
+		
+        // сохранение xrsl
+        // if(!$instance->xrsl_save($_POST['xrsl'])){
+			// Messenger::get()->addError('Параметры заданы неверно:', $instance->getError());
+			// return FALSE;
+		// }
+		
+		// получение авторизационных данных myproxy
+		try {
+			$myProxyAuthData = !empty($_POST['myproxy-autologin'])
+				? CurUser::get()->getMyproxyLoginData()
+				: array(
+					'serverId' => (int)getVar($_POST['server']),
+					'login' => getVar($_POST['user']['name']),
+					'password' => getVar($_POST['user']['pass']),
+					'lifetime' => (int)getVar($_POST['lifetime']),
+				);
+		} catch (Exception $e) {
+			Messenger::get()->addError(Lng::get('task.warnings'), $e->getMessage());
+			return FALSE;
+		}
+			
+		if($instance->submit($myProxyAuthData, getVar($_POST['prefer-server']))){
+		
+			App::stopDisplay();
+			
+			Messenger::get()->addSuccess(Lng::get('Task.controller.task-run-success'));
+			if($instance->hasError())
+				Messenger::get()->addError(Lng::get('task.warnings'), $instance->getError());
+				
+			$this->snippet_submit_complete($instance);
+			return TRUE;
+		}
+		else{
+			Messenger::get()->addError(Lng::get('Task.controller.task-run-fail'), $instance->lastSubmit->getError());
+			return FALSE;
+		}
+	}
+	
+	//////////////////////
+	////// SNIPPETS //////
+	//////////////////////
+	
+	public function snippet_submit_complete(TaskSet $taskModel){
+		
+		$variables = array(
+			'id' => $taskModel->id,
+			'numSubmits' => count($taskModel->submits),
+			'log' => $taskModel->lastSubmit->getLog(),
+		);
+		
+		FrontendViewer::get()
+			->setTitle(Lng::get('Task.controller.task-run-success'))
+			->setTopMenuActiveItem('tasks')
+			->setContentPhpFile(self::TPL_PATH.'submit_complete.php', $variables)
+			->render();
+	}
+	
+	//////////////////
+	////// AJAX //////
+	//////////////////
 	
 	/** AJAX GET-TASK-FILES */
 	public function ajax_get_task_files($params = array()){

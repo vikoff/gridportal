@@ -31,7 +31,7 @@ $(document).ready(function() {
 	{$formcode}
 	<input type="hidden" name="id" value="{$id}" />
 	
-	<table style="text-align: left; margin: auto;">
+	<table style="text-align: left; margin: 1em auto;">
 	{if $showMyproxyLogin}
 		<tr>
 			<td>{lng snippet='xrls_edit.server'}</td>
@@ -58,11 +58,16 @@ $(document).ready(function() {
 	{else}
 		<tr style="display: none;"><td><input type="hidden" name="myproxy-autologin" value="1" /></td></tr>
 	{/if}
-	
 	</table>
 	
-	<br /><br /><br />
-	<table style="text-align: left; margin: auto;">
+	<table style="margin: 1em auto;">
+	<tr>
+		<td>Предпочитаемый сервер<br />(оставить пустым, если не надо)</td>
+		<td><input type="text" name="prefer-server" value="" /></td>
+	</tr>
+	</table>
+	
+	<table style="text-align: left; margin: 1em auto;">
 	{foreach from=$gridjobfile item=row}
 		{if $row.type == 'config'}
 			<tr><td>{$row.title}</td><td><input type="text" name="xrsl[{$row.name}]" value="{$row.value_escaped}" style="width: 400px;" /></td></tr>
@@ -71,9 +76,10 @@ $(document).ready(function() {
 	</table>
 	
 	<div class="paragraph">
-		<input class="button" type="submit" name="action[task/run]" value="{lng snippet='xrls_edit.start-task'}" />
+		<input class="button" type="submit" name="action[task-set/submit]" value="{lng snippet='xrls_edit.start-task'}" />
 		
-		<a class="button" href="{a href=task/list}">{lng snippet='xrls_edit.go-to-task-list'}</a>
+		<a class="button" href="{a href=task-set/customize/$id}">{lng snippet='xrls_edit.go-to-task-customize'}</a>
+		<a class="button" href="{a href=task-set/list}">{lng snippet='xrls_edit.go-to-task-list'}</a>
 	</div>
     
     <div id="wait-popup" class="popup-container" style="display:none">

@@ -5,6 +5,10 @@ class TaskSet extends GenericObject{
 	const TABLE = 'task_sets';
 	
 	const NOT_FOUND_MESSAGE = 'Задача не найдена';
+	
+	public $submits = array();
+	
+	public $lastSubmit = null;
 
 	
 	/** ТОЧКА ВХОДА В КЛАСС (СОЗДАНИЕ НОВОГО ОБЪЕКТА) */
@@ -152,7 +156,13 @@ class TaskSet extends GenericObject{
 	
 	/** ПОДГОТОВКА К УДАЛЕНИЮ ОБЪЕКТА */
 	public function beforeDestroy(){
-	
+		
+		// удаление сабмитов
+		db::get()->delete(TaskSubmit::TABLE, 'set_id='.$this->id);
+		
+		// удаление файлов
+		$filesDir = $this->getFilesDir();
+		`rm -rf $filesDir`;
 	}
 	
 	public function getFilesDir(){
@@ -222,6 +232,51 @@ class TaskSet extends GenericObject{
 		}
 		// echo '<pre>'; print_r($data); die;
 		return $data;
+	}
+	
+	public function submit($myproxyAuth, $preferServer = ''){
+		
+		// получение данных сервера myproxy
+		try {
+			$myproxyServer = MyproxyServer::load($myproxyAuth['serverId'])->getAllFields();
+		} catch (Exception $e) {
+			$this->setError(Lng::get('Task.model.myproxy-server-not-faund'));
+			return FALSE;
+		}
+		
+		// создание экземпляров субмитов
+		$this->submits = array();
+		foreach( array(1) as $s){
+			
+			$taskSubmit = TaskSubmit::create();
+			$taskSubmit->setSetInstance($this);
+			$taskSubmit->save(array(
+				'set_id' => $this->id,
+				'index' => 1,
+				'status' => NULL,
+				'is_submitted' => 'UNKNOWN',
+				'is_completed' => FALSE,
+				'is_fetched' => FALSE,
+			));
+			
+			// копирование файлов
+			$src = $this->getFilesDir().'src/*';
+			$dst = $taskSubmit->getFilesDir();
+			`cp $src $dst`;
+			
+			$this->submits[] = $taskSubmit;
+		}
+		
+		if (empty($this->submits)){
+			$this->setError('Ни одного субмита не было создано');
+			return FALSE;
+		}
+		
+		$this->setField('num_submits', count($this->submits));
+		$this->_save();
+		
+		$this->lastSubmit = $this->submits[0];
+		return $this->lastSubmit->submit($myproxyServer, $myproxyAuth, $preferServer);
 	}
 	
 }

@@ -20,7 +20,7 @@
 <div class="paragraph">
 
 	<a href="<?= href('task-set/submit/'.$this->instanceId); ?>" class="button">Перейти к запуску</a>
-	<a href="<?= href('task/list') ?>" class="button">Вернуться к списку</a>
+	<a href="<?= href('task-set/list') ?>" class="button">Вернуться к списку</a>
 </div>
 
 <script type="text/javascript">

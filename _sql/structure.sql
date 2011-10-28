@@ -261,6 +261,7 @@ CREATE TABLE `task_submits` (
   `id`				BIGINT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `set_id`			INT(10) UNSIGNED,
   `index`			INT UNSIGNED,
+  `jobid`			VARCHAR(255),
   `status`			SMALLINT,
   `is_submitted`	BOOLEAN,  /* отправлена ли задача на выполнение */
   `is_completed`	SMALLINT, /* 0 - в процессе; 1 - успешно завершена; 2 - завершена с ошибкой */

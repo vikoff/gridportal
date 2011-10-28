@@ -483,11 +483,27 @@ class User extends GenericObject{
 		$this->_save();
 	}
 	
-	public function getTasksDir(){
+	public function getDir(){
 		
-		return FS_ROOT.'files/user_tasks/'.$this->id.'/';
+		return FS_ROOT.'files/user/'.$this->id.'/';
 	}
 	
+	/* ПОЛУЧИТЬ АВТОРИЗАЦИОННЫЕ ДАННЫЕ ДЛЯ MYPROXY */
+	public function getMyproxyLoginData(){
+		
+			if($this->getField('myproxy_manual_login') || $this->getField('myproxy_expire_date') < time()){
+				$this->resetMyproxyExpireDate();
+				throw new Exception('Требуется логин и пароль myproxy');
+				return FALSE;
+			}
+			
+			return array(
+				'serverId' => $this->getField('myproxy_server_id'),
+				'login'    => $this->getField('myproxy_login'),
+				'password' => $this->getFieldPrepared('myproxy_password'),
+				'plifetm'  => $this->getField('myproxy_expire_date') - time(),
+			);
+	}
 }
 
 

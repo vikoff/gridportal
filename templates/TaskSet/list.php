@@ -27,6 +27,7 @@
 		<td><?= $item['create_date']; ?></td>
 		
 		<td style="font-size: 11px;">
+			<a href="<?= href('task-set/view/'.$item['id']); ?>">просмотр</a>
 			<a href="<?= href('task-set/customize/'.$item['id']); ?>">запуск</a>
 		</td>
 	</tr>
