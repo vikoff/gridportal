@@ -501,7 +501,7 @@ class User extends GenericObject{
 				'serverId' => $this->getField('myproxy_server_id'),
 				'login'    => $this->getField('myproxy_login'),
 				'password' => $this->getFieldPrepared('myproxy_password'),
-				'plifetm'  => $this->getField('myproxy_expire_date') - time(),
+				'lifetime'  => $this->getField('myproxy_expire_date') - time(),
 			);
 	}
 }

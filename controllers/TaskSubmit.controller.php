@@ -13,6 +13,10 @@ class TaskSubmitController extends Controller{
 	public $permissions = array(
 		'display_list' 			=> PERMS_UNREG,
 		'display_view' 			=> PERMS_UNREG,
+		'display_get_results'	=> PERMS_REG,
+		'display_stop'			=> PERMS_REG,
+		'display_delete'		=> PERMS_REG,
+		'display_analyze'		=> PERMS_REG,
 		
 		'admin_display_list'	=> PERMS_ADMIN,
 		'admin_display_new'		=> PERMS_ADMIN,
@@ -21,7 +25,9 @@ class TaskSubmitController extends Controller{
 		'admin_display_delete'	=> PERMS_ADMIN,
 
 		'action_save' 			=> PERMS_ADMIN,
-		'action_delete' 		=> PERMS_ADMIN,
+		'action_stop' 			=> PERMS_REG,
+		'action_delete' 		=> PERMS_REG,
+		'action_get_results'	=> PERMS_REG,
 	);
 	
 	protected $_title = null;
@@ -57,6 +63,65 @@ class TaskSubmitController extends Controller{
 				->setTitle('Детально')
 				->setContentPhpFile(self::TPL_PATH.'view.php', $variables)
 				->render();
+	}
+	
+	/** DISPLAY GET-RESULTS */
+	public function display_get_results($params = array()){
+	
+		$instanceId = getVar($params[0], 0 ,'int');
+		$instance = Task::Load($instanceId);
+		$user = CurUser::get();
+		
+		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
+
+		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
+			'instanceId' => $instanceId,
+			'showMyproxyLogin' => $manualMyproxyLogin,
+			'myproxyServersList' => $manualMyproxyLogin ? MyproxyServerCollection::load()->getAll() : array(),
+		));
+		
+		FrontendViewer::get()
+			->prependTitle('Сохранение результата задачи')
+			->setContentPhpFile(self::TPL_PATH.'get_result.php', $variables)
+			->render();
+	}
+	
+	/** DISPLAY STOP */
+	public function display_stop($params = array()){
+	
+		$instanceId = getVar($params[0], 0 ,'int');
+		$instance = TaskSubmit::Load($instanceId);
+		$user = CurUser::get();
+		
+		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
+
+		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
+			'instanceId' => $instanceId,
+			'showMyproxyLogin' => $manualMyproxyLogin,
+			'myproxyServersList' => $manualMyproxyLogin ? MyproxyServerCollection::load()->getAll() : array(),
+		));
+		
+		FrontendViewer::get()
+			->prependTitle('Остановка задачи')
+			->setContentPhpFile(self::TPL_PATH.'stop.php', $variables)
+			->render();
+	}
+	
+	/** DISPLAY DELETE */
+	public function display_delete($params = array()){
+		
+		$instanceId = getVar($params[0], 0 ,'int');
+		$instance = TaskSubmit::Load($instanceId);
+
+		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
+			'instanceId' => $instanceId,
+		));
+		
+		FrontendViewer::get()
+			->prependTitle('Удаление задачи')
+			->setContentPhpFile(self::TPL_PATH.'delete.php', $variables)
+			->render();
+		
 	}
 	
 	
@@ -177,22 +242,68 @@ class TaskSubmitController extends Controller{
 		}
 	}
 	
-	/** ACTION DELETE (ADMIN) */
+	/** ACTION STOP */
+	public function action_get_results($params = array()){
+		
+		$instanceId = getVar($_POST['id'], 0, 'int');
+		$instance = TaskSubmit::load($instanceId);
+		$instance->setSetInstance( TaskSet::load($instance->getField('set_id')) );
+		
+		$myProxyAuthData = !empty($_POST['myproxy-autologin'])
+			? CurUser::get()->getMyproxyLoginData()
+			: array(
+				'serverId' => getVar($_POST['server']),
+				'login' => getVar($_POST['user']['name']),
+				'password' => getVar($_POST['user']['pass']),
+				'lifetime' => getVar($_POST['lifetime']),
+			);
+	
+		if($instance->getResults($myProxyAuthData)){
+			Messenger::get()->addSuccess(Lng::get('xrls_edit.success'));
+			return TRUE;
+		}else{
+			Messenger::get()->addError('Не удалось получить задачу:', $instance->getError());
+			return FALSE;
+		}
+	}
+	
+	/** ACTION STOP */
+	public function action_stop($params = array()){
+		
+		$instanceId = getVar($_POST['id'], 0, 'int');
+		$instance = TaskSubmit::load($instanceId);
+		$instance->setSetInstance( TaskSet::load($instance->getField('set_id')) );
+		
+		$myProxyAuthData = !empty($_POST['myproxy-autologin'])
+			? CurUser::get()->getMyproxyLoginData()
+			: array(
+				'serverId' => getVar($_POST['server']),
+				'login' => getVar($_POST['user']['name']),
+				'password' => getVar($_POST['user']['pass']),
+				'lifetime' => getVar($_POST['lifetime']),
+			);
+	
+		if($instance->stop($myProxyAuthData)){
+			Messenger::get()->addSuccess('Задача остановлена и удалена.');
+			return TRUE;
+		}else{
+			Messenger::get()->addError('Не удалось остановить задачу:', $instance->getError());
+			return FALSE;
+		}
+	}
+	
+	/** ACTION DELETE */
 	public function action_delete($params = array()){
 		
 		$instanceId = getVar($_POST['id'], 0, 'int');
-		$instance = TaskSubmit::Load($instanceId);
-		
-		// установить редирект на admin-list
-		$this->setRedirectUrl('admin/content/task-submit/list');
+		$instance = TaskSubmit::load($instanceId);
+		$instance->setSetInstance( TaskSet::load($instance->getField('set_id')) );
 	
-		if($instance->Destroy()){
-			Messenger::get()->addSuccess('Запись удалена');
+		if($instance->destroy()){
+			Messenger::get()->addSuccess(Lng::get('task.controller.RecordRemoveSucsess'));
 			return TRUE;
 		}else{
 			Messenger::get()->addError('Не удалось удалить запись:', $instance->getError());
-			// выполнить редирект принудительно
-			$this->forceRedirect();
 			return FALSE;
 		}
 

@@ -100,38 +100,6 @@ CREATE TABLE `user_statistics` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-/* ЗАДАЧИ */
-DROP TABLE IF EXISTS `tasks`;
-CREATE TABLE `tasks` (
-  `id`				int(10) UNSIGNED AUTO_INCREMENT,
-  `uid`				INT(10) UNSIGNED,
-  `name`			VARCHAR(255),
-  `project_id`		INT(10) UNSIGNED,
-  `is_test`			CHAR(1),
-  `create_date`		INT(10) UNSIGNED,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
-/* ЗАПУСКИ ЗАДАЧ */
-DROP TABLE IF EXISTS `task_submits`;
-CREATE TABLE `task_submits` (
-  `id`				BIGINT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `task_id`			INT(10) UNSIGNED,
-  `index`			INT UNSIGNED,
-  `jobid`			VARCHAR(255),
-  `xrsl_command`	TEXT,
-  `status`			SMALLINT,
-  `date` 			INT(10) UNSIGNED,
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
-/* СТАТУСЫ ЗАДАЧ */
-DROP TABLE IF EXISTS `task_states`;
-CREATE TABLE `task_states` (
-  `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  `name`			VARCHAR(255)
-  `title`			VARCHAR(255)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
 /* ЯЗЫКОВЫЕ ФРАГМЕНТЫ */
 DROP TABLE IF EXISTS `lng_snippets`;
 CREATE TABLE `lng_snippets` (
@@ -264,10 +232,18 @@ CREATE TABLE `task_submits` (
   `jobid`			VARCHAR(255),
   `status`			SMALLINT,
   `is_submitted`	BOOLEAN,  /* отправлена ли задача на выполнение */
-  `is_completed`	SMALLINT, /* 0 - в процессе; 1 - успешно завершена; 2 - завершена с ошибкой */
+  `is_completed`	SMALLINT, /* 0 - в процессе; 1 - успешно завершена; 2 - завершена с ошибкой; 3 - удалена */
   `is_fetched`		BOOLEAN,  /* получена ли задача из grid */
   `start_date`		INT(10) UNSIGNED,
   `finish_date`		INT(10) UNSIGNED
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+/* СТАТУСЫ ЗАДАЧ */
+DROP TABLE IF EXISTS `task_states`;
+CREATE TABLE `task_states` (
+  `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `name`			VARCHAR(255)
+  `title`			VARCHAR(255)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 

@@ -236,49 +236,68 @@ class TaskSet extends GenericObject{
 	
 	public function submit($myproxyAuth, $preferServer = ''){
 		
-		// получение данных сервера myproxy
-		try {
-			$myproxyServer = MyproxyServer::load($myproxyAuth['serverId'])->getAllFields();
-		} catch (Exception $e) {
-			$this->setError(Lng::get('Task.model.myproxy-server-not-faund'));
-			return FALSE;
-		}
-		
-		// создание экземпляров субмитов
-		$this->submits = array();
-		foreach( array(1) as $s){
-			
-			$taskSubmit = TaskSubmit::create();
-			$taskSubmit->setSetInstance($this);
-			$taskSubmit->save(array(
-				'set_id' => $this->id,
-				'index' => 1,
-				'status' => NULL,
-				'is_submitted' => 'UNKNOWN',
-				'is_completed' => FALSE,
-				'is_fetched' => FALSE,
-			));
-			
-			// копирование файлов
-			$src = $this->getFilesDir().'src/*';
-			$dst = $taskSubmit->getFilesDir();
-			`cp $src $dst`;
-			
-			$this->submits[] = $taskSubmit;
-		}
+		// создание первого экземпляра субмита
+		$this->lastSubmit = $this->_createSubmitInstance();
+		$this->submits[] = $this->lastSubmit;
 		
 		if (empty($this->submits)){
 			$this->setError('Ни одного субмита не было создано');
 			return FALSE;
 		}
 		
-		$this->setField('num_submits', count($this->submits));
-		$this->_save();
+		// запуск первого субмита
+		$success = $this->lastSubmit->submit($myproxyAuth, $preferServer);
 		
-		$this->lastSubmit = $this->submits[0];
-		return $this->lastSubmit->submit($myproxyServer, $myproxyAuth, $preferServer);
+		if ($success) {
+			
+			// создание всех субмитов
+			// foreach(... as $s)
+				// $this->_createSubmitInstance();
+				
+			$this->setField('num_submits', $this->getField('num_submits') + count($this->submits));
+			$this->_save();
+			
+			return TRUE;
+			
+		} else {
+			
+			$this->setField('num_submits', count($this->submits));
+			$this->_save();
+			
+			return FALSE;
+		}
 	}
 	
+	private function _createSubmitInstance(){
+		
+		$taskSubmit = TaskSubmit::create();
+		$taskSubmit->setSetInstance($this);
+		$taskSubmit->save(array(
+			'set_id' => $this->id,
+			'index' => 1,
+			'status' => NULL,
+			'is_submitted' => FALSE,
+			'is_completed' => FALSE,
+			'is_fetched' => FALSE,
+		));
+		
+		// копирование файлов
+		$src = $this->getFilesDir().'src/*';
+		$dst = $taskSubmit->getFilesDir();
+		`cp $src $dst`;
+		
+		return $taskSubmit;
+	}
+	
+	public function numSubmitsDecrement(){
+		
+		$num = $this->getField('num_submits') - 1;
+		if ($num < 0)
+			$num = 0;
+			
+		$this->setField('num_submits', $num);
+		$this->_save();
+	}
 }
 
 class TaskSetCollection extends GenericObjectCollection{

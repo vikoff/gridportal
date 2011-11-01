@@ -43,9 +43,9 @@ Error::config(array(
 db::create(array(
 	'adapter' => 'mysql',
 	'host' => 'localhost',
-	'user' => 'gridjobs1',
-	'pass' => 'freedom',
-	'database' => 'gridjobs1',
+	'user' => 'gridjobs',
+	'pass' => 'freedom2011gridjobs',
+	'database' => 'gridjobs',
 	'encoding' => 'utf8',
 	'fileLog' => FALSE,
 ));

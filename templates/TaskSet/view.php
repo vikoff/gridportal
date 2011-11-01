@@ -38,14 +38,21 @@
 	<th>Сатус</th>
 	<th>Дата запуска</th>
 	<th>Дата завершения</th>
+	<th>Управление</th>
+	
 </tr>
 <? foreach($this->submits as $s): ?>
 	<tr>
 		<td><?= $s['index']; ?></td>
 		<td><?= $s['jobid']; ?></td>
-		<td><?= $s['status']; ?></td>
-		<td><?= $s['start_date']; ?></td>
-		<td><?= $s['finish_date']; ?></td>
+		<td><?= Lng::get($s['status_str']); ?></td>
+		<td><?= $s['start_date_str']; ?></td>
+		<td><?= $s['finish_date_str']; ?></td>
+		<td>
+			<? if($s['actions']['get_results']): ?> <a href="<?= href('task-submit/get-results/'.$s['id']); ?>" class="button-small"><?= Lng::get('task.get-result'); ?></a> <? endif; ?>
+			<? if($s['actions']['stop']): ?>        <a href="<?= href('task-submit/stop/'.$s['id']); ?>" class="button-small"><?= Lng::get('task.stop'); ?></a>              <? endif; ?>
+			<? if($s['actions']['delete']): ?>      <a href="<?= href('task-submit/delete/'.$s['id']); ?>" class="button-small"><?= Lng::get('task.delete'); ?></a>          <? endif; ?>
+		</td>
 	</tr>
 <? endforeach; ?>
 </table>

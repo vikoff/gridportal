@@ -33,6 +33,7 @@ class TaskSubmit extends GenericObject{
 		return constant(__CLASS__.'::'.$name);
 	}
 	
+	/** ЗАГРУЗИТЬ ЭКЗЕМПЛЯР СЕТА, К КОТОРОМУ ПРИНАДЛЕЖИТ ЗАДАЧА */
 	public function setSetInstance(TaskSet $set){
 		$this->_setInstance = $set;
 	}
@@ -56,8 +57,19 @@ class TaskSubmit extends GenericObject{
 	/** ПОДГОТОВКА ДАННЫХ К ОТОБРАЖЕНИЮ */
 	public function beforeDisplay($data){
 	
-		// $data['modif_date'] = YDate::loadTimestamp($data['modif_date'])->getStrDateShortTime();
-		// $data['create_date'] = YDate::loadTimestamp($data['create_date'])->getStrDateShortTime();
+		$data['status_str'] = $data['status'] ? TaskStatus::get()->statuses[$data['status']]['title'] : 'task.state.undefined';
+		$data['start_date_str'] = YDate::loadTimestamp($data['start_date'])->getStrDateShortTime();
+		$data['finish_date_str'] = YDate::loadTimestamp($data['finish_date'])->getStrDateShortTime();
+		
+		$data['actions'] = array(
+			// остановка задачи доступна для выполняющихся в данный момент
+			'stop' => !empty($data['jobid']) && $data['is_completed'] == 0,
+			// получение результатов доступно только для выполненных задач
+			'get_results' => $data['is_completed'] == 1,
+			// удаление доступно для всех задач
+			'delete' => empty($data['jobid']) || in_array($data['is_completed'], array(1, 2)),
+		);
+		
 		return $data;
 	}
 	
@@ -131,11 +143,23 @@ class TaskSubmit extends GenericObject{
 	/** ПОДГОТОВКА К УДАЛЕНИЮ ОБЪЕКТА */
 	public function beforeDestroy(){
 	
+		// удаление файлов задачи
 		$filesDir = $this->getFilesDir();
 		`rm -rf $filesDir`;
+		
+		// декремент количества сабмитов у сета
+		$this->_setInstance->numSubmitsDecrement();
 	}
 	
-	public function submit($myproxyServer, $myProxyAuth, $preferedServer){
+	public function submit($myproxyAuth, $preferedServer){
+		
+		// получение данных сервера myproxy
+		try {
+			$myproxyServer = MyproxyServer::load($myproxyAuth['serverId'])->getAllFields();
+		} catch (Exception $e) {
+			$this->setError(Lng::get('Task.model.myproxy-server-not-faund'));
+			return FALSE;
+		}
 		
 		$debug = 0;
 		
@@ -149,9 +173,9 @@ class TaskSubmit extends GenericObject{
 		$myProxyIsLogged = myproxy_logon(
 			$myproxyServer['url'],
 			$myproxyServer['port'],
-			$myProxyAuth['login'],
-			$myProxyAuth['password'],
-			$myProxyAuth['lifetime'],
+			$myproxyAuth['login'],
+			$myproxyAuth['password'],
+			$myproxyAuth['lifetime'],
 			$tmpfile,
 			$debug
 		);
@@ -191,7 +215,6 @@ class TaskSubmit extends GenericObject{
 			
 			$jobid = preg_match('/(gsiftp:\/\/\S+\d+)/', $response, $matches) ? $matches[1] : null;
 			if(!empty($jobid)){
-				$this->setField('is_submitted', TRUE);
 				$this->setField('start_date', time());
 				$this->setField('jobid', $jobid);
 				$this->_save();
@@ -206,6 +229,130 @@ class TaskSubmit extends GenericObject{
 			return FALSE;
 		}
 		
+	}
+	
+	public function stop($myproxyAuth){
+		
+		$debug = 0;
+		$tmpfile = tempnam("/tmp", "x509_mp_");
+		
+		require_once(FS_ROOT.'includes/myproxy/myproxyClient.php');
+		$myProxyIsLogged = myproxy_logon(
+			$myproxyServer['url'],
+			$myproxyServer['port'],
+			$myproxyAuth['login'],
+			$myproxyAuth['password'],
+			$myproxyAuth['lifetime'],
+			$tmpfile,
+			$debug
+		);
+		
+		if(!$myProxyIsLogged){
+			
+			$user = CurUser::get();
+			if(!$user->getField('myproxy_manual_login'))
+				$user->resetMyproxyExpireDate();
+			
+			$this->setError('Авторизация не пройдена. Уточните параметры в <a href="'.href('profile/edit#/temporary-cert').'">профиле</a>, или введите заново параметры вручную.');
+			return FALSE;
+		}
+			
+		$this->log(Lng::get('Task.model.myproxy-success-proceed'));
+		
+		$env = "/bin/env";
+		$ngkill = "/opt/nordugrid-8.1/bin/ngkill";
+		
+		$command  = ''
+			.$env . " X509_USER_PROXY=".$tmpfile." "
+			.$ngkill . " -d2 ".escapeshellarg($this->getField('jobid'))." 2>&1";
+		
+		$this->log("Запуск ngkill: $command ...");
+		
+		// выполнение команды ngsub
+		exec($command, $outputArr, $retval);
+		
+		$response = implode("\n", $outputArr);
+		$this->log($response);
+		
+		if($retval == 0){
+			
+			$this->destroy();
+			$this->log("Задача успешно остановлена!");
+				
+			return TRUE;
+			
+		}else{
+			$this->setError('Скрипт вернул код ошибки: '.$retval);
+			return FALSE;
+		}
+	}
+	
+	public function getResults($myproxyAuth){
+		
+		// получение данных сервера myproxy
+		try {
+			$myproxyServer = MyproxyServer::load($myproxyAuth['serverId'])->getAllFields();
+		} catch (Exception $e) {
+			$this->setError(Lng::get('Task.model.myproxy-server-not-faund'));
+			return FALSE;
+		}
+		
+		$debug = 0;
+		$tmpfile = tempnam("/tmp", "x509_mp_");
+
+		require_once(FS_ROOT.'includes/myproxy/myproxyClient.php');
+		$myProxyIsLogged = myproxy_logon(
+			$myproxyServer['url'],
+			$myproxyServer['port'],
+			$myProxyAuth['login'],
+			$myProxyAuth['password'],
+			$myProxyAuth['lifetime'],
+			$tmpfile,
+			$debug
+		);
+		
+		if(!$myProxyIsLogged){
+			
+			$user = CurUser::get();
+			if(!$user->getField('myproxy_manual_login'))
+				$user->resetMyproxyExpireDate();
+			
+			$this->setError('Авторизация не пройдена. Уточните параметры в <a href="'.href('profile/edit#/temporary-cert').'">профиле</a>, или введите заново параметры вручную.');
+			return FALSE;
+		}
+			
+		$this->log('Запрос Майпрокси удачно! Продолжаем:');
+		
+		$taskdir = $this->getFilesDir().'results/';
+		$env = "/bin/env";
+		$ngget = "/opt/nordugrid-8.1/bin/ngget";
+		
+		if (!is_dir($taskdir))
+			mkdir($taskdir, 0777, TRUE);
+			
+		$command  = ''
+			." cd ".$taskdir. " && "
+			.$env . " X509_USER_PROXY=".$tmpfile." "
+			.$ngget . " -d2 ".escapeshellarg($this->getField('jobid'))." 2>&1";
+
+		$this->log("Запуск ngget: $command ...");
+		
+		// выполнение команды ngsub
+		exec($command, $outputArr, $retval);
+		
+		$response = implode("\n", $outputArr);
+		$this->log($response);
+		
+		if($retval == 0){
+		
+			$this->log("Задача получена!");
+			return TRUE;
+			
+		}else{
+			$this->setError('Скрипт вернул код ошибки: '.$retval);
+			return FALSE;
+		}
+			
 	}
 	
 	public function log($msg){
