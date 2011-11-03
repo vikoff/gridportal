@@ -13,26 +13,30 @@
 
 <?=$this->_getHtmlLinkTags();?>
 
-	<link rel="stylesheet" href="css/common.css" type="text/css" />
+	<link rel="stylesheet" href="css/common.css,frontend.css,simplemodal.css" type="text/css" />
+	
+	<link rel="stylesheet" href="css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" />
+	<!--link rel="stylesheet" href="css/common.css" type="text/css" />
 	<link rel="stylesheet" href="css/frontend.css" type="text/css" />
 	<link rel="stylesheet" href="css/simplemodal.css" type="text/css" />
-	<link rel="stylesheet" href="css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" />
 	<!-- <link rel="icon" type="image/png" href="favicon.ico" /> -->
 	
 	<script type="text/javascript">
 		var WWW_ROOT = '<?= WWW_ROOT; ?>';
 		var CUR_LNG = '<?= Lng::get()->getCurLng(); ?>';
 	</script>
-	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery-1.6.2.min.js,jquery-ui-1.8.16.custom.min.js,jquery.validate.pack.js,jquery.ctrlentersend.min.js,jquery.browser.min.js,jquery.address-1.4.min.js,common.js,frontend.js,jquery.simplemodal.js"></script>
+	
+	<!--script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
 	<script type="text/javascript" src="js/jquery.validate.pack.js"></script>
 	<script type="text/javascript" src="js/jquery.ctrlentersend.min.js"></script>
 	<script type="text/javascript" src="js/jquery.browser.min.js"></script>
 	<script type="text/javascript" src="js/jquery.address-1.4.min.js"></script>
+	<script type="text/javascript" src="js/jquery.simplemodal.js"></script>
 	<script type="text/javascript" src="js/common.js"></script>
 	<script type="text/javascript" src="js/frontend.js"></script>
-	<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
-	<script type="text/javascript" src="js/jquery.simplemodal.js"></script>
+	<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script-->
 	
 </head>
 <body>
@@ -46,7 +50,10 @@
 		<div id="logo"><h1><?=Lng::get('top.title');?> <span style="font-size: 11px;"><?=Lng::get('top.version');?> 0.1</span></h1></div>
 	</div>
 	
-	<?=$this->getTopMenu(); ?>
+	<?/*=$this->getTopMenu(); */?>
+	<div id="top-menu">
+		<?=$this->_getTopMenuHTML(); ?>
+	</div>
 	
 	<?=$this->_getUserMessages();?>
 	

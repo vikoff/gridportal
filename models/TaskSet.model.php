@@ -274,7 +274,7 @@ class TaskSet extends GenericObject{
 		$taskSubmit->setSetInstance($this);
 		$taskSubmit->save(array(
 			'set_id' => $this->id,
-			'index' => 1,
+			'index' => $this->getLastSubmitIndex() + 1,
 			'status' => NULL,
 			'is_submitted' => FALSE,
 			'is_completed' => FALSE,
@@ -287,6 +287,11 @@ class TaskSet extends GenericObject{
 		`cp $src $dst`;
 		
 		return $taskSubmit;
+	}
+	
+	private function getLastSubmitIndex(){
+		
+		return (int)db::get()->getOne('SELECT MAX(index) FROM '.TaskSubmit::TABLE.' WHERE set_id='.$this->id);
 	}
 	
 	public function numSubmitsDecrement(){

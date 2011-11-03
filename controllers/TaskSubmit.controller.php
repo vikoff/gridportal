@@ -17,6 +17,8 @@ class TaskSubmitController extends Controller{
 		'display_stop'			=> PERMS_REG,
 		'display_delete'		=> PERMS_REG,
 		'display_analyze'		=> PERMS_REG,
+		'display_download_dir'	=> PERMS_REG,
+		'display_download_file'	=> PERMS_REG,
 		
 		'admin_display_list'	=> PERMS_ADMIN,
 		'admin_display_new'		=> PERMS_ADMIN,
@@ -69,7 +71,7 @@ class TaskSubmitController extends Controller{
 	public function display_get_results($params = array()){
 	
 		$instanceId = getVar($params[0], 0 ,'int');
-		$instance = Task::Load($instanceId);
+		$instance = TaskSubmit::load($instanceId);
 		$user = CurUser::get();
 		
 		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
@@ -90,7 +92,7 @@ class TaskSubmitController extends Controller{
 	public function display_stop($params = array()){
 	
 		$instanceId = getVar($params[0], 0 ,'int');
-		$instance = TaskSubmit::Load($instanceId);
+		$instance = TaskSubmit::load($instanceId);
 		$user = CurUser::get();
 		
 		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
@@ -111,7 +113,7 @@ class TaskSubmitController extends Controller{
 	public function display_delete($params = array()){
 		
 		$instanceId = getVar($params[0], 0 ,'int');
-		$instance = TaskSubmit::Load($instanceId);
+		$instance = TaskSubmit::load($instanceId);
 
 		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
 			'instanceId' => $instanceId,
@@ -122,6 +124,58 @@ class TaskSubmitController extends Controller{
 			->setContentPhpFile(self::TPL_PATH.'delete.php', $variables)
 			->render();
 		
+	}
+	
+	/** DISPLAY ANALYZE */
+	public function display_analyze($params = array()){
+		
+		$path = getVar($_GET['path']);
+		$curSubmitId = getVar($_GET['submit'], 0, 'int');
+		$collection = TaskSubmitCollection::load(array('uid' => USER_AUTH_ID));
+		
+		$variables = array(
+			'fetchedTasks' => $collection->getFetchedSubmits(),
+			'curSubmitId' => $curSubmitId,
+		);
+		
+		if ($curSubmitId) {
+			$submitInstnce = TaskSubmit::load($curSubmitId);
+			if ($submitInstnce->getField('is_fetched'))
+				$variables['fileTree'] = $submitInstnce->getResultFiles($path);
+			else 
+				Messenger::get()->addError('Файлы задачи еще не получены');
+		}
+		
+		FrontendViewer::get()
+			->setTitle(Lng::get('task.analyze'))
+			->setTopMenuActiveItem('analyze')
+	        ->setContentPhpFile(self::TPL_PATH.'analyze.php', $variables)
+			->render();
+		
+		exit;
+		
+		if(isset($_GET['act'])){
+			switch($_GET['act']){
+				case 'download-dir':
+					$collection->downloadDir($path);
+					exit;
+			}
+		}
+		
+		$fileTree = $collection->getFileTree($path);
+		
+	}
+	
+	public function display_download_dir($params = array()){
+		
+		$instanceId = getVar($params[0], 0 ,'int');
+		$instance = TaskSubmit::load($instanceId)->downloadDir(getVar($_GET['path']));
+	}
+	
+	public function display_download_file($params = array()){
+		
+		$instanceId = getVar($params[0], 0 ,'int');
+		$instance = TaskSubmit::load($instanceId)->downloadFile(getVar($_GET['path']));
 	}
 	
 	
@@ -247,7 +301,6 @@ class TaskSubmitController extends Controller{
 		
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSubmit::load($instanceId);
-		$instance->setSetInstance( TaskSet::load($instance->getField('set_id')) );
 		
 		$myProxyAuthData = !empty($_POST['myproxy-autologin'])
 			? CurUser::get()->getMyproxyLoginData()
@@ -272,7 +325,6 @@ class TaskSubmitController extends Controller{
 		
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSubmit::load($instanceId);
-		$instance->setSetInstance( TaskSet::load($instance->getField('set_id')) );
 		
 		$myProxyAuthData = !empty($_POST['myproxy-autologin'])
 			? CurUser::get()->getMyproxyLoginData()
@@ -297,7 +349,6 @@ class TaskSubmitController extends Controller{
 		
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSubmit::load($instanceId);
-		$instance->setSetInstance( TaskSet::load($instance->getField('set_id')) );
 	
 		if($instance->destroy()){
 			Messenger::get()->addSuccess(Lng::get('task.controller.RecordRemoveSucsess'));

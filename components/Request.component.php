@@ -97,6 +97,15 @@ class Request{
 			: implode('/', $output);
 	}
 	
+	public function getParts($indexes){
+
+		$parts = array();
+		foreach((array)$indexes as $i)
+			if(isset($this->_requestArr[$i]))
+				$parts[] = $this->_requestArr[$i];
+
+		return implode('/', $parts);
+	}
 }
 
 ?>

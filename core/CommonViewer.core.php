@@ -33,7 +33,10 @@ class CommonViewer{
 	protected function __construct(){
 		
 		$this->_tplPath = FS_ROOT.$this->_tplPath.'/';
+		$this->init();
 	}
+	
+	protected function init(){}
 	
 	public function setTitle($title){
 		

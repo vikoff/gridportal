@@ -36,6 +36,6 @@
 		<input type="hidden" name="myproxy-autologin" value="1" />
 	<? endif; ?>
 	
-	<input class="button" type="submit" name="action[task/get-results][task/analyze]" value="<?= Lng::get('xrls_edit.get'); ?>" />
-	<a class="button" href="<?= href('task/list'); ?>"><?= Lng::get('xrls_edit.cancel'); ?></a>
+	<input class="button" type="submit" name="action[task-submit/get-results][task-submit/analyze?submit=<?= $this->id; ?>]" value="<?= Lng::get('xrls_edit.get'); ?>" />
+	<a class="button" href="<?= href('task-set/view/'.$this->set_id); ?>"><?= Lng::get('xrls_edit.cancel'); ?></a>
 </form>

@@ -8,8 +8,6 @@ class TaskSubmit extends GenericObject{
 
 	private $_log = array();
 	
-	private $_setInstance = null;
-	
 	/** ТОЧКА ВХОДА В КЛАСС (СОЗДАНИЕ НОВОГО ОБЪЕКТА) */
 	public static function create(){
 			
@@ -31,11 +29,6 @@ class TaskSubmit extends GenericObject{
 	/** СЛУЖЕБНЫЙ МЕТОД (получение констант из родителя) */
 	public function getConst($name){
 		return constant(__CLASS__.'::'.$name);
-	}
-	
-	/** ЗАГРУЗИТЬ ЭКЗЕМПЛЯР СЕТА, К КОТОРОМУ ПРИНАДЛЕЖИТ ЗАДАЧА */
-	public function setSetInstance(TaskSet $set){
-		$this->_setInstance = $set;
 	}
 	
 	/**
@@ -65,7 +58,9 @@ class TaskSubmit extends GenericObject{
 			// остановка задачи доступна для выполняющихся в данный момент
 			'stop' => !empty($data['jobid']) && $data['is_completed'] == 0,
 			// получение результатов доступно только для выполненных задач
-			'get_results' => $data['is_completed'] == 1,
+			'get_results' => $data['is_completed'] == 1 && !$data['is_fetched'],
+			// перейти к анализу
+			'to_analyze' => $data['is_completed'] == 1 && $data['is_fetched'],
 			// удаление доступно для всех задач
 			'delete' => empty($data['jobid']) || in_array($data['is_completed'], array(1, 2)),
 		);
@@ -148,7 +143,7 @@ class TaskSubmit extends GenericObject{
 		`rm -rf $filesDir`;
 		
 		// декремент количества сабмитов у сета
-		$this->_setInstance->numSubmitsDecrement();
+		TaskSet::load($this->getField('set_id'))->numSubmitsDecrement();
 	}
 	
 	public function submit($myproxyAuth, $preferedServer){
@@ -304,9 +299,9 @@ class TaskSubmit extends GenericObject{
 		$myProxyIsLogged = myproxy_logon(
 			$myproxyServer['url'],
 			$myproxyServer['port'],
-			$myProxyAuth['login'],
-			$myProxyAuth['password'],
-			$myProxyAuth['lifetime'],
+			$myproxyAuth['login'],
+			$myproxyAuth['password'],
+			$myproxyAuth['lifetime'],
 			$tmpfile,
 			$debug
 		);
@@ -345,7 +340,10 @@ class TaskSubmit extends GenericObject{
 		
 		if($retval == 0){
 		
-			$this->log("Задача получена!");
+			$this->setField('is_fetched', TRUE);
+			$this->_save();
+			
+			$this->log("Файлы задачи получены!");
 			return TRUE;
 			
 		}else{
@@ -380,12 +378,125 @@ class TaskSubmit extends GenericObject{
 
 	public function getFilesDir(){
 		
-		return FS_ROOT.'files/users/'.$this->_setInstance->getField('uid').'/task_sets/'.$this->getField('set_id').'/submits/'.$this->id.'/';
+		return FS_ROOT.'files/users/'.$this->getField('uid').'/task_sets/'.$this->getField('set_id').'/submits/'.$this->id.'/';
 	}
 
+	/** ПОЛУЧИТЬ ФАЙЛЫ РЕЗУЛЬТАТОВ */
+	public function getResultFiles($_path){
+		
+		$path = $rootDir = $this->getFilesDir().'results/';
+		$isRootDir = TRUE;
+		
+		if(!empty($_path)){
+			$realpath = realpath($path.$_path);
+			if(substr($realpath, -1) != '/')
+				$realpath .= '/';
+			if(strpos($realpath, $path) === 0){
+				$isRootDir = $realpath == $path;
+				$path = $realpath;
+			} else {
+				Messenger::get()->addError(Lng::get('access denided'));
+			}
+		}
+		
+		$relpath = str_replace($rootDir, '', $path);
+		
+		$files = array(
+			'curpath' => $path,
+			'relpath' => $relpath,
+			'isRootDir' => $isRootDir,
+			'dirs'  => array(),
+			'files' => array(),
+		);
+		
+		if(!is_dir($path))
+			return $files;
+
+		foreach(scandir($path) as $elm){
+			
+			if($elm == '.' || $elm == '..')
+				continue;
+			
+			$isDir = is_dir($path.$elm);
+			$files[$isDir ? 'dirs' : 'files'][] = $elm;
+		}
+		
+		// echo '<pre>'; print_r($files); die;
+		return $files;
+	}
+	
+	/** СКАЧАТЬ ПАПКУ */
+	public function downloadDir($_path){
+		
+		$path = $rootDir = $this->getFilesDir().'results/';
+		$realpath = realpath($path.$_path);
+		if(substr($realpath, -1) != '/')
+			$realpath .= '/';
+		
+		if(strpos($realpath, $rootDir) !== 0){
+			echo $path.'<br />';
+			echo $realpath ; die;
+			FrontendViewer::get()->error404();
+		}
+		
+		$archive = substr($realpath, 0, -1).'.zip';
+		
+		// echo ('/usr/bin/zip -r -9 '.escapeshellarg(basename($archive)).' '.escapeshellarg($realpath)); die;
+		exec('/usr/bin/zip -r -9 '.escapeshellarg($archive).' '.escapeshellarg($realpath));
+		
+		if (!file_exists($archive))
+			die('archive file not found');
+			
+		header('Expires: 0');
+		header('Cache-Control: private');
+		header('Pragma: cache');
+		header('Content-type: application/download');
+		header('Content-Disposition: attachment; filename='.basename($archive));
+		
+		readfile($archive);
+		unlink($archive);
+		exit;
+	}
+	
+	/** СКАЧАТЬ ФАЙЛ */
+	public function downloadFile($relname){
+		
+		$rootDir = $this->getFilesDir().'results/';
+		$fullname = realpath($rootDir.$relname);
+		
+		if(strpos($fullname, $rootDir) !== 0){
+			echo $path.'<br />';
+			echo $fullname ; die;
+			FrontendViewer::get()->error404();
+		}
+		
+		if (!file_exists($fullname))
+			die('file not found');
+		
+		header('Content-type: text/plain; charset=utf-8');
+		
+		// header('Expires: 0');
+		// header('Cache-Control: private');
+		// header('Pragma: cache');
+		// header('Content-type: application/download');
+		// header('Content-Disposition: attachment; filename='.basename($fullname));
+		
+		readfile($fullname);
+		exit;
+	}
+	
+	public function dbGetRow(){
+		
+		return db::get()->getRow(
+			"SELECT sub.*, s.uid, s.name FROM ".self::TABLE." sub
+			JOIN ".TaskSet::TABLE." s ON s.id=sub.set_id
+			WHERE sub.id='".$this->id."'");
+	}
 }
 
 class TaskSubmitCollection extends GenericObjectCollection{
+	
+	protected $_filters = array();
 	
 	/**
 	 * поля, по которым возможна сортировка коллекции
@@ -406,26 +517,55 @@ class TaskSubmitCollection extends GenericObjectCollection{
 	
 	
 	/** ТОЧКА ВХОДА В КЛАСС */
-	public static function Load(){
+	public static function load($filters = array()){
 			
-		$instance = new TaskSubmitCollection();
+		$instance = new TaskSubmitCollection($filters);
 		return $instance;
 	}
 
-	/** ПОЛУЧИТЬ СПИСОК С ПОСТРАНИЧНОЙ РАЗБИВКОЙ */
-	public function getPaginated(){
+	/**
+	 * КОНСТРУКТОР
+	 * @param array $filters - список фильтров
+	 */
+	public function __construct($filters = array()){
 		
-		$sorter = new Sorter('id', 'DESC', $this->_sortableFieldsTitles);
-		$paginator = new Paginator('sql', array('*', 'FROM '.TaskSubmit::TABLE.' ORDER BY '.$sorter->getOrderBy()), 50);
+		$this->filters = $filters;
+	}
+	
+	/** ПОЛУЧИТЬ СПИСОК С ПОСТРАНИЧНОЙ РАЗБИВКОЙ */
+	public function getPaginated( $filters = array() ){
+		
+		$whereArr = array();
+		if(!empty($filters['uid']))
+			$whereArr[] = 'uid='.$filters['uid'];
+		
+		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
+		
+		$sorter = new Sorter('s.id', 'DESC', $this->_getSortableFieldsTitles());
+		$paginator = new Paginator('sql', array('t.*, s.title AS state_title',
+			'FROM '.TaskSubmit::TABLE.' t LEFT JOIN task_states s ON t.state=s.id '.$whereStr.' ORDER BY '.$sorter->getOrderBy()), 50);
 		
 		$data = db::get()->getAll($paginator->getSql(), array());
 		
+		// echo '<pre>'; print_r($data);
 		foreach($data as &$row)
-			$row = TaskSubmit::forceLoad($row['id'], $row)->getAllFieldsPrepared();
+			$row = Task::forceLoad($row['id'], $row)->getAllFieldsPrepared();
 		
 		$this->_sortableLinks = $sorter->getSortableLinks();
 		$this->_pagination = $paginator->getButtons();
 		$this->_linkTags = $paginator->getLinkTags();
+		
+		return $data;
+	}
+	
+	public function getFetchedSubmits(){
+		
+		$db = db::get();
+		$data = $db->getAll('
+			SELECT sub.*, s.uid, s.name FROM '.TaskSubmit::TABLE.' sub
+			JOIN '.TaskSet::TABLE.' s ON s.id=sub.set_id
+			WHERE sub.is_fetched=true
+			ORDER BY `index`');
 		
 		return $data;
 	}
@@ -438,6 +578,85 @@ class TaskSubmitCollection extends GenericObjectCollection{
 			$row = TaskSubmit::forceLoad($row['id'], $row)->getAllFieldsPrepared();
 			
 		return $data;
+	}
+	
+	public function getFileTree($_path){
+		
+		$path = $rootDir = CurUser::get()->getTasksDir();
+		$isRootDir = TRUE;
+		
+		if(!empty($_path)){
+			$realpath = realpath($path.$_path);
+			if(substr($realpath, -1) != '/')
+				$realpath .= '/';
+			if(strpos($realpath, $path) === 0){
+				$path = $realpath;
+				$isRootDir = FALSE;
+			} else {
+				Messenger::get()->addError(Lng::get('access denided'));
+			}
+		}
+		
+		$relpath = str_replace($rootDir, '', $path);
+		$allTasks = $this->getAll();
+		
+		$files = array(
+			'curpath' => $path,
+			'relpath' => $relpath,
+			'isRootDir' => $isRootDir,
+			'dirs'  => array(),
+			'files' => array(),
+		);
+		
+		if(!is_dir($path))
+			return $files;
+
+		foreach(scandir($path) as $elm){
+			
+			if($elm == '.' || $elm == '..')
+				continue;
+			
+			$isDir = is_dir($path.$elm);
+			$title = $isDir && isset($allTasks[$elm]) ? '<span title="'.$allTasks[$elm]['jobid'].'">'.$allTasks[$elm]['name'].'</span>' : $elm;
+			$files[$isDir ? 'dirs' : 'files'][] = array(
+				'name' => $elm,
+				'title' => $title,
+			);
+		}
+		
+		
+		// echo '<pre>'; print_r($files); die;
+		return $files;
+	}
+	
+	public function downloadDir($_path){
+		
+		$path = $rootDir = CurUser::get()->getTasksDir();
+		$realpath = realpath($path.$_path);
+		if(substr($realpath, -1) != '/')
+			$realpath .= '/';
+		
+		if(strpos($realpath, $path) !== 0){
+			echo $path.'<br />';
+			echo $realpath ; die;
+			FrontendViewer::get()->error404();
+		}
+		
+		$archive = substr($realpath, 0, -1).'.zip';
+		exec('/usr/bin/zip -r -9 '.escapeshellarg($archive).' '.escapeshellarg($realpath));
+		
+		if (!file_exists($archive))
+			die('archive file not found');
+			
+		 header('Expires: 0');
+		 header('Cache-Control: private');
+		 header('Pragma: cache');
+		 header('Content-type: application/download');
+	     header('Content-Disposition: attachment; filename='.basename($archive));
+		
+		readfile($archive);
+		unlink($archive);
+		exit;
 	}
 
 }

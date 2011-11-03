@@ -49,6 +49,7 @@
 		<td><?= $s['start_date_str']; ?></td>
 		<td><?= $s['finish_date_str']; ?></td>
 		<td>
+			<? if($s['actions']['to_analyze']): ?>  <a href="<?= href('task-submit/analyze?submit='.$s['id']); ?>" class="button-small"><?= Lng::get('task.to-analyze'); ?></a> <? endif; ?>
 			<? if($s['actions']['get_results']): ?> <a href="<?= href('task-submit/get-results/'.$s['id']); ?>" class="button-small"><?= Lng::get('task.get-result'); ?></a> <? endif; ?>
 			<? if($s['actions']['stop']): ?>        <a href="<?= href('task-submit/stop/'.$s['id']); ?>" class="button-small"><?= Lng::get('task.stop'); ?></a>              <? endif; ?>
 			<? if($s['actions']['delete']): ?>      <a href="<?= href('task-submit/delete/'.$s['id']); ?>" class="button-small"><?= Lng::get('task.delete'); ?></a>          <? endif; ?>

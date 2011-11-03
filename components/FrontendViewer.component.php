@@ -28,6 +28,12 @@ class FrontendViewer extends CommonViewer{
 		return self::$_instance;
 	}
 	
+	/** ИНИЦИАЛИЗАЦИЯ */
+	protected function init(){
+
+		$this->_topMenu = new Menu('frontend-top');
+	}
+	
 	public function getLoginBlock(){
 		
 		if(CurUser::get()->isLogged()){
@@ -51,9 +57,13 @@ class FrontendViewer extends CommonViewer{
 		return $this;
 	}
 	
-	public function getTopMenu(){
-		
-		include($this->_tplPath.'top_menu.php');
+	protected function _getTopMenuHTML(){
+
+		$html = '';
+		foreach($this->_topMenu->getItems() as $item)
+			$html .= '<a href="'.$item['href'].'" '.(!empty($item['attrs']) ? $item['attrs'] : '').' '.($item['active'] ? 'class="active"' : '').'>'.Lng::get($item['title']).'</a> ';
+
+		return $html;
 	}
 
 	public function error403($message = ''){

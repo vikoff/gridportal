@@ -701,6 +701,7 @@ class TaskCollection extends GenericObjectCollection{
 		unlink($archive);
 		exit;
 	}
+	
 }
 
 ?>
