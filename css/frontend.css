@@ -2,7 +2,7 @@
 /* ФРЕЙМ */
 
 body{
-    background: url('../images/bg.png') 0 0;
+    background: url('/../images/bg.png') 0 0;
 }
 * html #site-container {
 	height: 100%;

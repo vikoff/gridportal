@@ -27,7 +27,7 @@
 </tr>
 <tr>
 	<td class="title">Дата создания</td>
-	<td class="data"><?= $this->create_date; ?></td>
+	<td class="data"><?= $this->create_date_str; ?></td>
 </tr>
 </table>
 

@@ -319,6 +319,9 @@ class GenericObject{
 	/** ПОДГОТОВКА К УДАЛЕНИЮ ОБЪЕКТА */
 	public function beforeDestroy(){}
 	
+	/** ДЕЙСТВИЕ ПОСЛЕ УДАЛЕНИЯ ОБЪЕКТА */
+	public function afterDestroy(){}
+	
 	/** УДАЛЕНИЕ ОБЪЕКТА */
 	public function destroy(){
 
@@ -327,6 +330,7 @@ class GenericObject{
 			
 		$this->beforeDestroy();
 		$this->dbDelete();
+		$this->afterDestroy();
 		return TRUE;
 	}
 	

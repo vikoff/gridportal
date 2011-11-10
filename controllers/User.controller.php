@@ -46,7 +46,7 @@ class UserController extends Controller{
 		
 		try{
 			$instanceId = getVar($params[0], 0 ,'int');
-			$instance = User::Load($instanceId);
+			$instance = User::load($instanceId);
 			
 			$userPerms = $instance->getField('level');
 			$perms = array('allowEdit' => FALSE, 'list' => '', 'curTitle' => User::getPermName($userPerms));
@@ -123,23 +123,14 @@ class UserController extends Controller{
 	public function action_delete($params = array()){
 		
 		$instanceId = isset($_POST['id']) ? (int)$_POST['id'] : 0;
-		
-		try{
-			$instance = User::Load($instanceId);
-		
-			$this->setRedirectUrl(App::href('admin/users/list'));
-		
-			if($instance->Destroy()){
-				Messenger::get()->addSuccess('Пользователь удален');
-				return TRUE;
-			}else{
-				Messenger::get()->addError('Не удалось удалить пользователя.');
-				$this->forceRedirect();
-				return FALSE;
-			}
-		}
-		catch(Exception $e){
-			BackendViewer::get()->error404();
+		$instance = User::Load($instanceId);
+	
+		if($instance->Destroy()){
+			Messenger::get()->addSuccess('Пользователь удален');
+			return TRUE;
+		}else{
+			Messenger::get()->addError('Не удалось удалить пользователя.');
+			return FALSE;
 		}
 
 	}

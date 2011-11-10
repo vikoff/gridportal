@@ -2,7 +2,7 @@
 	
 class CurUser extends User{
 	
-	private $_authPrefix = 'grid_';
+	private static $_authPrefix = 'grid_';
 	
 	/** Поле в таблице пользователей, служащее логином (идентификатором) пользователя */
 	const LOGIN_FIELD = 'login';
@@ -32,7 +32,7 @@ class CurUser extends User{
 	public function __construct(){
 		
 		if(isset($_GET['force-clear-session'])){
-			unset($_SESSION[$this->_authPrefix.'userAuthData']);
+			unset($_SESSION[self::$_authPrefix.'userAuthData']);
 			echo 'Пользовательская сессия очищена <a href="'.App::href('').'">на сайт</a>';
 			exit;
 		}
@@ -50,13 +50,13 @@ class CurUser extends User{
 	// ИНИЦИАЛИЗИРОВАНА ЛИ СЕССИЯ
 	public function isSessionInited(){
 	
-		return isset($_SESSION[$this->_authPrefix.'userAuthData']);
+		return isset($_SESSION[self::$_authPrefix.'userAuthData']);
 	}
 	
 	// ИНИЦИАЛИЗАЦИЯ СЕССИИ
 	public function initSession(){
 	
-		$this->setEmptyAuthData();
+		self::setEmptyAuthData();
 	}
 	
 	public function autoLogin(){
@@ -161,32 +161,32 @@ class CurUser extends User{
 		
 	}
 	// ВЫХОД ИЗ АККАУНТА
-	public function logout(){
+	public static function logout(){
 		
 		UserStatistics::get()->reset();
-		$this->setEmptyAuthData();
-		$this->_setEmptyCookie();
+		self::setEmptyAuthData();
+		self::_setEmptyCookie();
 	}
 	
 	// УСТАНОВИТЬ КУКИ ДЛЯ ПОСЛЕДУЮЩЕЙ АВТОРИЗАЦИИ
 	private function _setLoginCookie($id, $login, $password){
 	
 		$expire = time() + 60 * 60 * 24 * 365;
-		setcookie($this->_authPrefix."uid", $id, $expire);
-		setcookie($this->_authPrefix."access", md5('yurijnovikovproject'.$id."_".$login."_".$password), $expire);
+		setcookie(self::$_authPrefix."uid", $id, $expire);
+		setcookie(self::$_authPrefix."access", md5('yurijnovikovproject'.$id."_".$login."_".$password), $expire);
 	}
 	
 	// УСТАНОВИТЬ ПУСТЫЕ КУКИ
-	private function _setEmptyCookie(){
+	private static function _setEmptyCookie(){
 	
-		setcookie($this->_authPrefix."uid", "");
-		setcookie($this->_authPrefix."access", "");
+		setcookie(self::$_authPrefix."uid", "");
+		setcookie(self::$_authPrefix."access", "");
 	}
 	
 	// ПРОВЕРКА АВТОРИЗОВАН ЛИ ПОЛЬЗОВАТЕЛЬ
 	 public function isLogged(){
 		
-		return (is_numeric($_SESSION[$this->_authPrefix.'userAuthData']['id']) && $_SESSION[$this->_authPrefix.'userAuthData']['perms'] > PERMS_UNREG)
+		return (is_numeric($_SESSION[self::$_authPrefix.'userAuthData']['id']) && $_SESSION[self::$_authPrefix.'userAuthData']['perms'] > PERMS_UNREG)
 			? TRUE
 			: FALSE;
 	}
@@ -194,22 +194,22 @@ class CurUser extends User{
 	// УСТАНОВИТЬ ПОЛЗЬОВАТЕЛЬСКИЕ ДАННЫЕ
 	 private function setLoggedAuthData($id, $perms){
 		
-		$_SESSION[$this->_authPrefix.'userAuthData'] = array('id' => $id, 'perms' => $perms);
+		$_SESSION[self::$_authPrefix.'userAuthData'] = array('id' => $id, 'perms' => $perms);
 		
 		UserStatistics::get()->saveAuthStatistics($id);
 	}
 	
 	// УСТАНОВИТЬ ПУСТЫЕ ПОЛЬЗОВАТЕЛЬСКИЕ ДАННЫЕ
-	 private function setEmptyAuthData(){
+	 private static function setEmptyAuthData(){
 	 
-		$_SESSION[$this->_authPrefix.'userAuthData'] = array('id' => 0, 'perms' => 0);
+		$_SESSION[self::$_authPrefix.'userAuthData'] = array('id' => 0, 'perms' => 0);
 	}
 	
 	public function getAuthData($key = null){
 		
 		return is_null($key)
-			? $_SESSION[$this->_authPrefix.'userAuthData']
-			: $_SESSION[$this->_authPrefix.'userAuthData'][$key];
+			? $_SESSION[self::$_authPrefix.'userAuthData']
+			: $_SESSION[self::$_authPrefix.'userAuthData'][$key];
 	}
 }
 

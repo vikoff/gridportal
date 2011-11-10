@@ -287,8 +287,8 @@ class TaskProfileController extends Controller{
 		unlink($fullName);
 		
 		// если был удален файл nordujob
-		if($fileName == 'nordujob' && $instance->getField('is_gridjob_loaded'))
-			$instance->hasGridjobFile(false);
+		// if($fileName == 'nordujob' && $instance->getField('is_gridjob_loaded'))
+			// $instance->hasGridjobFile(false);
 			
 		echo 'ok';
 		return TRUE;

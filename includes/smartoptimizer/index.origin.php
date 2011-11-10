@@ -113,8 +113,6 @@ function filesmtime() {
 
 list($query) = explode('?', urldecode($_SERVER['QUERY_STRING']));
 
-// ---------- ORIGIN WAY -------------------------------------------------------
-/*
 if (preg_match('/^\/?(.+\/)?(.+)$/', $query, $matchResult)) {
 	$fileNames = $matchResult[2];
 	$fileDir = $settings['baseDir'].$matchResult[1];
@@ -140,19 +138,6 @@ if ($settings['concatenate']) {
 }
 
 $fileType = $fileTypes[0];
-*/
-// ---------- MY WAY -----------------------------------------------------------
-
-/**
- * @assign $files, $fileType
- */
-$files = explode($settings['separator'], $query);
-$fileType = strtolower(substr(strrchr(trim($files[0]), '.'), 1));
-foreach ($files as &$f)
-	$f = $settings['baseDir'].trim($f);
-
-// echo '<pre>'; print_r($fileType); die;
-// -----------------------------------------------------------------------------
 
 if (!isset($mimeTypes[$fileType])) debugExit("Unsupported file type ($fileType)");
 header("Content-Type: {$mimeTypes[$fileType]}; charset=".$settings['charSet']);

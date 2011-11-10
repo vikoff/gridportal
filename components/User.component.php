@@ -128,21 +128,13 @@ class User extends GenericObject{
 	/** ПОДГОТОВКА ДАННЫХ К ОТОБРАЖЕНИЮ */
 	public function beforeDisplay($data){
 		
-		switch(getVar($data['sex'])){
-			case 'man': $data['sex'] = 'М'; break;
-			case 'woman': $data['sex'] = 'Ж'; break;
-			default: $data['sex'] = ' - ';
-		}
-		
 		$level = getVar($data['level']);
 		$data['level'] = in_array($level, self::getPermsList()) ? self::getPermName($level) : '<span class="red">Некорректное значение: "'.$level.'"</span>';
 		$data['fio'] = $this->getName();
-		$data['birthdate'] = YDate::loadDbDate(getVar($data['birthdate']))->getStrDate();
 		$data['regdate'] = YDate::loadTimestamp(getVar($data['regdate']))->getStrDateShortTime();
 		$data['profile'] = !empty($data['profile']) ? unserialize($data['profile']) : array();
 		$data['myproxy_password'] = !empty($data['myproxy_password']) ? base64_decode($data['myproxy_password']) : '';
 		
-		// echo '<pre>'; print_r($data) ;die;
 		return $data;
 	}
 	
@@ -513,8 +505,8 @@ class UserCollection extends GenericObjectCollection{
 		'id' => 'id',
 		'email' => 'email',
 		'surname' => array('surname _DIR_, name _DIR_, patronymic _DIR_', 'ФИО, пол'),
-		'birthdate' => 'Дата рождения',
-		'address' => array('country _DIR_, city _DIR_', 'Адрес'),
+		'dn' => 'dn',
+		'dn_cn' => 'dn_cn',
 		'level' => 'Права',
 		'regdate' => 'Дата регистрации',
 	);

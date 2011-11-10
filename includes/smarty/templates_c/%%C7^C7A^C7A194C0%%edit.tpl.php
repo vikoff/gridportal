@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2011-10-01 17:23:32
+<?php /* Smarty version 2.6.26, created on 2011-11-10 21:50:02
          compiled from Profile/edit.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Profile/edit.tpl', 10, false),)), $this); ?>
@@ -196,9 +196,11 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 								<?php $_from = (isset($this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms']) ? $this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms'] : ''); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }if (count($_from)):
     foreach ($_from as $this->_tpl_vars['vid'] => $this->_tpl_vars['vtitle']):
 ?>
+									<?php if ((isset($this->_tpl_vars['userVoms'][$this->_tpl_vars['vid']]) ? $this->_tpl_vars['userVoms'][$this->_tpl_vars['vid']] : '')): ?>
 									<option value="<?php echo (isset($this->_tpl_vars['vid']) ? $this->_tpl_vars['vid'] : ''); ?>
 " <?php if ((isset($this->_tpl_vars['defaultVoms'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]) ? $this->_tpl_vars['defaultVoms'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')] : '') == (isset($this->_tpl_vars['vid']) ? $this->_tpl_vars['vid'] : '')): ?>selected="selected"<?php endif; ?>><?php echo (isset($this->_tpl_vars['vtitle']) ? $this->_tpl_vars['vtitle'] : ''); ?>
 </option>
+									<?php endif; ?>
 								<?php endforeach; endif; unset($_from); ?>
 							</select>
 						<?php else: ?>
@@ -295,6 +297,11 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 </div>
 
 <script type="text/javascript"><?php echo '
+
+		$.address.externalChange(function(data){
+			alert(\'change\');
+//			$( "#profile-tabs" ).tabs(\'select\', data.value.substr(1));
+		});
 	
 	$(function(){
 		
@@ -306,10 +313,6 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 		// var_dump($.address.value(), \'E=function\');
 		// alert($("#profile-tabs ul:first a[href=\'#" + data.value.substr(1) + "\']").parent().index());
 		$("#profile-tabs ul:first a").address();
-
-		$.address.externalChange(function(data){
-			$( "#profile-tabs" ).tabs(\'select\', data.value.substr(1));
-		});
 		
 		function certManualLogonCheck(){
 			$(\'#cert-auto-login-box\')[$(\'#cert-manual-logon-inp\').attr(\'checked\') ? \'fadeOut\' : \'fadeIn\']();
@@ -320,4 +323,4 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 	});
 	
 '; ?>
-</script>
+</script>

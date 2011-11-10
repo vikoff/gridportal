@@ -1,2 +1,4 @@
 files/*
 includes/smartoptimizer/cache/*
+gridui
+includes/smarty/templates_c/*

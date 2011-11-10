@@ -54,7 +54,7 @@ class TaskSet extends GenericObject{
 	public function beforeDisplay($data){
 	
 		// $data['modif_date'] = YDate::loadTimestamp($data['modif_date'])->getStrDateShortTime();
-		// $data['create_date'] = YDate::loadTimestamp($data['create_date'])->getStrDateShortTime();
+		$data['create_date_str'] = YDate::loadTimestamp($data['create_date'])->getStrDateShortTime();
 		return $data;
 	}
 	
@@ -97,6 +97,12 @@ class TaskSet extends GenericObject{
 			// проверка проекта
 			$this->_checkProject($data['project_id']);
 			
+			// проверка уникальности имени для новых задач
+			if($this->isNewObj && !$this->isNameUnique($data['name'])){
+				$this->setError('задача с таким именем уже существует');
+				return FALSE;
+			}
+			
 			// проверка профиля (и сохранение его экземпляра для использования в afterSave)
 			if($this->isNewObj && $data['profile_id'])
 				$this->additData['profile_instance'] = $this->_checkProfile($data['profile_id'], $data['project_id']);
@@ -129,6 +135,12 @@ class TaskSet extends GenericObject{
 			throw new Exception('Неверный профиль задачи');
 		
 		return $instance;
+	}
+	
+	public function isNameUnique($name){
+		
+		$db = db::get();
+		return !$db->getOne('SELECT COUNT(1) FROM '.self::TABLE.' WHERE uid='.USER_AUTH_ID.' AND name='.$db->qe($name));
 	}
 	
 	/** ДЕЙСТВИЕ ПОСЛЕ СОХРАНЕНИЯ */
@@ -199,10 +211,29 @@ class TaskSet extends GenericObject{
 		
 		return $fullname;
 	}
-
-	public function hasGridjobFile(){
+	
+	/**
+	 * ПОЛУЧЕНИЕ/СОХРАНЕНИЕ ФАКТА НАЛИЧИЯ GRIDJOB ФАЙЛА
+	 * @param null|bool $save
+	 *		если null - функция возвращает факт наличия gridjob файла
+	 *		если bool - функция сохраняет факт наличия gridjob файла
+	 * @return bool факт наличия gridjob файла
+	 */
+	public function hasGridjobFile($save = null){
 		
-		return file_exists($this->getFilesDir().'src/nordujob');
+		// сохранение (если надо)
+		if(!is_null($save)){
+			if($save){
+				$this->setField('is_gridjob_loaded', TRUE);
+				$this->setField('gridjob_name', $this->getGridjobTaskname());
+			} else {
+				$this->setField('is_gridjob_loaded', FALSE);
+				$this->setField('gridjob_name', null);
+			}
+			$this->_save();
+		}
+		
+		return $this->getField('is_gridjob_loaded');
 	}
 	
 	public function parseGridJobFile(){
@@ -233,6 +264,16 @@ class TaskSet extends GenericObject{
 		// echo '<pre>'; print_r($data); die;
 		return $data;
 	}
+
+	public function getGridjobTaskname(){
+		
+		$xrsl = file_get_contents($this->getFilesDir().'src/nordujob');
+		if(preg_match('/\(\s*jobname\s*=\s*"(.+)"\s*\)/', $xrsl, $matches)){
+			return $matches[1];
+		} else {
+			return null;
+		}
+	}
 	
 	public function submit($myproxyAuth, $preferServer = ''){
 		
@@ -254,16 +295,12 @@ class TaskSet extends GenericObject{
 			// foreach(... as $s)
 				// $this->_createSubmitInstance();
 				
-			$this->setField('num_submits', $this->getField('num_submits') + count($this->submits));
-			$this->_save();
-			
+			$this->updateNumSubmits();
 			return TRUE;
 			
 		} else {
 			
-			$this->setField('num_submits', count($this->submits));
-			$this->_save();
-			
+			$this->updateNumSubmits();
 			return FALSE;
 		}
 	}
@@ -271,7 +308,7 @@ class TaskSet extends GenericObject{
 	private function _createSubmitInstance(){
 		
 		$taskSubmit = TaskSubmit::create();
-		$taskSubmit->setSetInstance($this);
+		$taskSubmit->setUid($this->getField('uid'));
 		$taskSubmit->save(array(
 			'set_id' => $this->id,
 			'index' => $this->getLastSubmitIndex() + 1,
@@ -291,21 +328,22 @@ class TaskSet extends GenericObject{
 	
 	private function getLastSubmitIndex(){
 		
-		return (int)db::get()->getOne('SELECT MAX(index) FROM '.TaskSubmit::TABLE.' WHERE set_id='.$this->id);
+		$db = db::get();
+		return (int)$db->getOne('SELECT MAX('.$db->quoteFieldName('index').') FROM '.TaskSubmit::TABLE.' WHERE set_id='.$this->id);
 	}
 	
-	public function numSubmitsDecrement(){
+	public function updateNumSubmits(){
 		
-		$num = $this->getField('num_submits') - 1;
-		if ($num < 0)
-			$num = 0;
-			
+		$db = db::get();
+		$num = $db->getOne('SELECT COUNT(1) FROM '.TaskSubmit::TABLE.' WHERE set_id='.$this->id);
 		$this->setField('num_submits', $num);
 		$this->_save();
 	}
 }
 
 class TaskSetCollection extends GenericObjectCollection{
+	
+	protected $_filters = array();
 	
 	/**
 	 * поля, по которым возможна сортировка коллекции
@@ -325,17 +363,32 @@ class TaskSetCollection extends GenericObjectCollection{
 	
 	
 	/** ТОЧКА ВХОДА В КЛАСС */
-	public static function Load(){
+	public static function load($filters = array()){
 			
-		$instance = new TaskSetCollection();
+		$instance = new TaskSetCollection($filters);
 		return $instance;
+	}
+
+	/**
+	 * КОНСТРУКТОР
+	 * @param array $filters - список фильтров
+	 */
+	public function __construct($filters = array()){
+		
+		$this->filters = $filters;
 	}
 
 	/** ПОЛУЧИТЬ СПИСОК С ПОСТРАНИЧНОЙ РАЗБИВКОЙ */
 	public function getPaginated(){
 		
+		$whereArr = array();
+		if(!empty($this->filters['uid']))
+			$whereArr[] = 'uid='.$this->filters['uid'];
+			
+		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
+		
 		$sorter = new Sorter('id', 'DESC', $this->_sortableFieldsTitles);
-		$paginator = new Paginator('sql', array('*', 'FROM '.TaskSet::TABLE.' ORDER BY '.$sorter->getOrderBy()), 50);
+		$paginator = new Paginator('sql', array('*', 'FROM '.TaskSet::TABLE.' '.$whereStr.' ORDER BY '.$sorter->getOrderBy()), 50);
 		
 		$data = db::get()->getAll($paginator->getSql(), array());
 		

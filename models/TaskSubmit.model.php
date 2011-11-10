@@ -6,6 +6,8 @@ class TaskSubmit extends GenericObject{
 	
 	const NOT_FOUND_MESSAGE = 'Страница не найдена';
 
+	private $_uid = 0;
+	
 	private $_log = array();
 	
 	/** ТОЧКА ВХОДА В КЛАСС (СОЗДАНИЕ НОВОГО ОБЪЕКТА) */
@@ -24,6 +26,11 @@ class TaskSubmit extends GenericObject{
 	public static function forceLoad($id, $fieldvalues){
 		
 		return new TaskSubmit($id, self::INIT_EXISTS_FORCE, $fieldvalues);
+	}
+	
+	public function setUid($uid){
+		
+		$this->_uid = $uid;
 	}
 	
 	/** СЛУЖЕБНЫЙ МЕТОД (получение констант из родителя) */
@@ -141,9 +148,13 @@ class TaskSubmit extends GenericObject{
 		// удаление файлов задачи
 		$filesDir = $this->getFilesDir();
 		`rm -rf $filesDir`;
+	}
+	
+	/** ДЕЙСТВИЕ ПОСЛЕ УДАЛЕНИЯ ОБЪЕКТА */
+	public function afterDestroy(){
 		
-		// декремент количества сабмитов у сета
-		TaskSet::load($this->getField('set_id'))->numSubmitsDecrement();
+		// обновление количества сабмитов у сета
+		TaskSet::load($this->getField('set_id'))->updateNumSubmits();
 	}
 	
 	public function submit($myproxyAuth, $preferedServer){
@@ -157,13 +168,8 @@ class TaskSubmit extends GenericObject{
 		}
 		
 		$debug = 0;
-		
 		$tmpfile = tempnam("/tmp", "x509_mp_");
-		$env = "/bin/env";
-		$ngsub = "/opt/nordugrid-8.1/bin/ngsub";
 		
-		$ngjob = $this->getNgjobStr();
-
 		require_once(FS_ROOT.'includes/myproxy/myproxyClient.php');
 		$myProxyIsLogged = myproxy_logon(
 			$myproxyServer['url'],
@@ -187,7 +193,10 @@ class TaskSubmit extends GenericObject{
 			
 		$this->log(Lng::get('Task.model.myproxy-success-proceed'));
 		
+		$env = "/bin/env";
+		$ngsub = "/opt/nordugrid-8.1/bin/ngsub";
 		$taskdir = $this->getFilesDir();
+		$ngjob = $this->getNgjobStr();
 		
 		$command  = ''
 			." cd ".$taskdir. " && "
@@ -227,6 +236,14 @@ class TaskSubmit extends GenericObject{
 	}
 	
 	public function stop($myproxyAuth){
+		
+		// получение данных сервера myproxy
+		try {
+			$myproxyServer = MyproxyServer::load($myproxyAuth['serverId'])->getAllFields();
+		} catch (Exception $e) {
+			$this->setError(Lng::get('Task.model.myproxy-server-not-faund'));
+			return FALSE;
+		}
 		
 		$debug = 0;
 		$tmpfile = tempnam("/tmp", "x509_mp_");
@@ -378,7 +395,7 @@ class TaskSubmit extends GenericObject{
 
 	public function getFilesDir(){
 		
-		return FS_ROOT.'files/users/'.$this->getField('uid').'/task_sets/'.$this->getField('set_id').'/submits/'.$this->id.'/';
+		return FS_ROOT.'files/users/'.$this->getUid().'/task_sets/'.$this->getField('set_id').'/submits/'.$this->id.'/';
 	}
 
 	/** ПОЛУЧИТЬ ФАЙЛЫ РЕЗУЛЬТАТОВ */
@@ -485,13 +502,29 @@ class TaskSubmit extends GenericObject{
 		exit;
 	}
 	
+	public function getUid(){
+		
+		if (empty($this->_uid))
+			throw new Exception('uid not specified');
+			
+		return $this->_uid;
+	}
+	
 	public function dbGetRow(){
 		
-		return db::get()->getRow(
+		$data = db::get()->getRow(
 			"SELECT sub.*, s.uid, s.name FROM ".self::TABLE." sub
 			JOIN ".TaskSet::TABLE." s ON s.id=sub.set_id
 			WHERE sub.id='".$this->id."'");
+		
+		if (!empty($data)) {
+			$this->_uid = $data['uid'];
+			unset($data['uid']);
+		}
+		
+		return $data;
 	}
+	
 }
 
 class TaskSubmitCollection extends GenericObjectCollection{
@@ -564,7 +597,7 @@ class TaskSubmitCollection extends GenericObjectCollection{
 		$data = $db->getAll('
 			SELECT sub.*, s.uid, s.name FROM '.TaskSubmit::TABLE.' sub
 			JOIN '.TaskSet::TABLE.' s ON s.id=sub.set_id
-			WHERE sub.is_fetched=true
+			WHERE sub.is_fetched=true '.(!empty($this->filters['uid']) ? ' AND s.uid='.$this->filters['uid'] : '').'
 			ORDER BY `index`');
 		
 		return $data;
@@ -572,7 +605,7 @@ class TaskSubmitCollection extends GenericObjectCollection{
 	
 	public function getTasksBySet($set_id){
 		
-		$data = db::get()->getAll('SELECT * FROM '.TaskSubmit::TABLE.' WHERE set_id='.$set_id);
+		$data = db::get()->getAll('SELECT * FROM '.TaskSubmit::TABLE.' WHERE set_id='.$set_id.' ORDER BY `index` DESC');
 		
 		foreach($data as &$row)
 			$row = TaskSubmit::forceLoad($row['id'], $row)->getAllFieldsPrepared();

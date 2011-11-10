@@ -248,7 +248,7 @@ class DbAdapter_mysql extends DbAdapter{
 	 * @param mixed $default_value - значение, возвращаемое если запрос ничего не вернул
 	 * @return array|$default_value
 	 */
-	public function getAllIndexed($query, $index, $default_value = 0){
+	public function getAllIndexed($query, $index, $default_value = array()){
 		
 		$rs = $this->query($query);
 		if(is_resource($rs) && mysql_num_rows($rs))

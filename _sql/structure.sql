@@ -213,14 +213,15 @@ CREATE TABLE `task_profiles` (
 /* НАБОРЫ ДЛЯ ЗАПУСКА ЗАДАЧ */
 DROP TABLE IF EXISTS `task_sets`;
 CREATE TABLE `task_sets` (
-  `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  `uid`				INT(10) UNSIGNED,
-  `project_id`		INT(10) UNSIGNED,
-  `profile_id`		INT(10) UNSIGNED,
-  `name`			VARCHAR(255),
-  `ready_to_start`	BOOLEAN,
-  `num_submits`		INT(10) UNSIGNED,
-  `create_date`		INT(10) UNSIGNED
+  `id` int(10) unsigned NOT NULL PRIMARY KEY auto_increment,
+  `uid` int(10) unsigned default NULL,
+  `project_id` int(10) unsigned default NULL,
+  `profile_id` int(10) unsigned default NULL,
+  `name` varchar(255) collate utf8_bin default NULL,
+  `gridjob_name` varchar(255) collate utf8_bin default NULL,
+  `is_gridjob_loaded` tinyint(1) default '0',
+  `num_submits` int(10) unsigned default NULL,
+  `create_date` int(10) unsigned default NULL
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* ЗАПУСКИ ЗАДАЧ */

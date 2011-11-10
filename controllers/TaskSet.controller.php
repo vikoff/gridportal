@@ -11,22 +11,22 @@ class TaskSetController extends Controller{
 	
 	// права на выполнение методов контроллера
 	public $permissions = array(
-		'display_list' 			=> PERMS_UNREG,
-		'display_view' 			=> PERMS_UNREG,
-		'display_new'			=> PERMS_ADMIN,
-		'display_customize' 	=> PERMS_UNREG,
-		'display_submit'		=> PERMS_ADMIN,
+		'display_list' 			=> PERMS_REG,
+		'display_view' 			=> PERMS_REG,
+		'display_new'			=> PERMS_REG,
+		'display_customize' 	=> PERMS_REG,
+		'display_submit'		=> PERMS_REG,
 		'display_edit_file'		=> PERMS_REG,
+		'display_delete'		=> PERMS_REG,
 		
 		'admin_display_list'	=> PERMS_ADMIN,
 		'admin_display_edit'	=> PERMS_ADMIN,
 		'admin_display_copy'	=> PERMS_ADMIN,
-		'display_delete'		=> PERMS_ADMIN,
 
 		'action_create' 		=> PERMS_REG,
-		'action_save' 			=> PERMS_ADMIN,
-		'action_delete' 		=> PERMS_ADMIN,
-		'action_upload_file'	=> PERMS_ADMIN,
+		'action_save' 			=> PERMS_REG,
+		'action_delete' 		=> PERMS_REG,
+		'action_upload_file'	=> PERMS_REG,
 		'action_save_file'		=> PERMS_REG,
 		'action_submit'			=> PERMS_REG,
 		
@@ -43,7 +43,7 @@ class TaskSetController extends Controller{
 	/** DISPLAY LIST */
 	public function display_list($params = array()){
 		
-		$collection = new TaskSetCollection();
+		$collection = new TaskSetCollection(array('uid' => USER_AUTH_ID));
 		$variables = array(
 			'collection' => $collection->getPaginated(),
 			'pagination' => $collection->getPagination(),
@@ -321,8 +321,6 @@ class TaskSetController extends Controller{
 	/** ACTION UPLOAD-FILE */
 	public function action_upload_file($params = array()){
 		
-		// App::stopDisplay();
-		
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSet::Load($instanceId);
 		
@@ -345,6 +343,10 @@ class TaskSetController extends Controller{
 		$targetName = $_FILES['Filedata']['name'];
 		$targetFullName =  $targetPath.$targetName;
 		move_uploaded_file($tempFile, $targetFullName);
+		
+		// если был загружен файл nordujob
+		if(!$instance->hasGridjobFile() && $targetName == 'nordujob')
+			$instance->hasGridjobFile(true);
 			
 		return TRUE;
 	}
@@ -487,8 +489,8 @@ class TaskSetController extends Controller{
 		unlink($fullName);
 		
 		// если был удален файл nordujob
-		// if($fileName == 'nordujob' && $instance->getField('is_gridjob_loaded'))
-			// $instance->hasGridjobFile(false);
+		if($fileName == 'nordujob' && $instance->hasGridjobFile())
+			$instance->hasGridjobFile(false);
 			
 		echo 'ok';
 		return TRUE;

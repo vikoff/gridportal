@@ -35,7 +35,12 @@ require_once('config.php');
 
 ########## ИНИЦИАЛИЗАЦИЯ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ ##########
 
-CurUser::init();
+try {
+	CurUser::init();
+} catch (Exception $e) {
+	CurUser::logout();
+	App::reload();
+}
 
 define('USER_AUTH_ID', CurUser::get()->getAuthData('id'));
 define('USER_AUTH_PERMS', CurUser::get()->getAuthData('perms'));

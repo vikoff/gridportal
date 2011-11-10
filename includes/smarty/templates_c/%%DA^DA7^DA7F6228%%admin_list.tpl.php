@@ -1,7 +1,7 @@
-<?php /* Smarty version 2.6.26, created on 2011-09-21 04:38:04
+<?php /* Smarty version 2.6.26, created on 2011-11-10 20:50:34
          compiled from User/admin_list.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/admin_list.tpl', 28, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/admin_list.tpl', 26, false),)), $this); ?>
 
 <?php echo (isset($this->_tpl_vars['pagination']) ? $this->_tpl_vars['pagination'] : ''); ?>
 
@@ -15,13 +15,12 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/a
 </th>
 		<th><?php echo (isset($this->_tpl_vars['sorters']['surname']) ? $this->_tpl_vars['sorters']['surname'] : ''); ?>
 </th>
-		<th><?php echo (isset($this->_tpl_vars['sorters']['birthdate']) ? $this->_tpl_vars['sorters']['birthdate'] : ''); ?>
+		<th><?php echo (isset($this->_tpl_vars['sorters']['dn']) ? $this->_tpl_vars['sorters']['dn'] : ''); ?>
 </th>
-		<th><?php echo (isset($this->_tpl_vars['sorters']['address']) ? $this->_tpl_vars['sorters']['address'] : ''); ?>
+		<th><?php echo (isset($this->_tpl_vars['sorters']['dn_cn']) ? $this->_tpl_vars['sorters']['dn_cn'] : ''); ?>
 </th>
 		<th><?php echo (isset($this->_tpl_vars['sorters']['level']) ? $this->_tpl_vars['sorters']['level'] : ''); ?>
 </th>
-		<th>Активация</th>
 		<th><?php echo (isset($this->_tpl_vars['sorters']['regdate']) ? $this->_tpl_vars['sorters']['regdate'] : ''); ?>
 </th>
 		<th>Опции</th>
@@ -35,16 +34,12 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/a
 		<td><?php echo (isset($this->_tpl_vars['item']['email']) ? $this->_tpl_vars['item']['email'] : ''); ?>
 </td>
 		<td><?php echo (isset($this->_tpl_vars['item']['fio']) ? $this->_tpl_vars['item']['fio'] : ''); ?>
- (<?php echo (isset($this->_tpl_vars['item']['sex']) ? $this->_tpl_vars['item']['sex'] : ''); ?>
-)</td>
-		<td><?php echo (isset($this->_tpl_vars['item']['birthdate']) ? $this->_tpl_vars['item']['birthdate'] : ''); ?>
 </td>
-		<td><?php echo (isset($this->_tpl_vars['item']['country']) ? $this->_tpl_vars['item']['country'] : ''); ?>
-, <?php echo (isset($this->_tpl_vars['item']['city']) ? $this->_tpl_vars['item']['city'] : ''); ?>
+		<td><?php echo (isset($this->_tpl_vars['item']['dn']) ? $this->_tpl_vars['item']['dn'] : ''); ?>
+</td>
+		<td><?php echo (isset($this->_tpl_vars['item']['dn_cn']) ? $this->_tpl_vars['item']['dn_cn'] : ''); ?>
 </td>
 		<td><?php echo (isset($this->_tpl_vars['item']['level']) ? $this->_tpl_vars['item']['level'] : ''); ?>
-</td>
-		<td><?php echo (isset($this->_tpl_vars['item']['active']) ? $this->_tpl_vars['item']['active'] : ''); ?>
 </td>
 		<td><?php echo (isset($this->_tpl_vars['item']['regdate']) ? $this->_tpl_vars['item']['regdate'] : ''); ?>
 </td>
@@ -61,4 +56,3 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/a
 
 <?php echo (isset($this->_tpl_vars['pagination']) ? $this->_tpl_vars['pagination'] : ''); ?>
 
-

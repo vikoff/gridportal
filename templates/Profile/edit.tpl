@@ -136,7 +136,9 @@
 							<select name="projects[{$proj.id}]">
 								<option value="">{lng snippet='enter-vo'}</option>
 								{foreach from=$projectList[$proj.id].voms item='vtitle' key='vid'}
+									{if $userVoms[$vid]}
 									<option value="{$vid}" {if $defaultVoms[$proj.id] == $vid}selected="selected"{/if}>{$vtitle}</option>
+									{/if}
 								{/foreach}
 							</select>
 						{else}

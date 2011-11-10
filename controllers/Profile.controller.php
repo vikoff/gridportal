@@ -82,7 +82,6 @@ class ProfileController extends Controller{
 			$firstVisitText = $text['body'];
 		}
 		
-		
 		$vomsList = VomsCollection::load()->getAll();
 		$projectList = ProjectCollection::load()->getAll();
 		$projectVoms = ProjectCollection::load()->getProjectsVoms();
@@ -182,7 +181,7 @@ class ProfileController extends Controller{
 	// ACTION LOGOUT
 	public function action_logout($params = array()){
 		
-		CurUser::get()->logout();
+		CurUser::logout();
 		App::reload();
 	}
 	

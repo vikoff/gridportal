@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2011-09-24 20:19:38
+<?php /* Smarty version 2.6.26, created on 2011-11-10 20:59:26
          compiled from User/view.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/view.tpl', 2, false),)), $this); ?>
@@ -7,14 +7,15 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/v
 </div>
 
 <h2>
-	Пользователь #<?php echo (isset($this->_tpl_vars['instanceId']) ? $this->_tpl_vars['instanceId'] : ''); ?>
+	Пользователь <?php echo (isset($this->_tpl_vars['name']) ? $this->_tpl_vars['name'] : ''); ?>
+ <?php echo (isset($this->_tpl_vars['surname']) ? $this->_tpl_vars['surname'] : ''); ?>
 
 </h2>
 
 <table class="std-grid">
 <tr>
 	<td class="title">email</td>
-	<td class="data"><?php echo (isset($this->_tpl_vars['email']) ? $this->_tpl_vars['email'] : ''); ?>
+	<td class="data"><?php echo (isset($this->_tpl_vars['profile']['email']) ? $this->_tpl_vars['profile']['email'] : ''); ?>
 </td>
 </tr>
 <tr>
@@ -28,28 +29,13 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/v
 </td>
 </tr>
 <tr>
-	<td class="title">Отчество</td>
-	<td class="data"><?php echo (isset($this->_tpl_vars['patronymic']) ? $this->_tpl_vars['patronymic'] : ''); ?>
+	<td class="title">dn</td>
+	<td class="data"><?php echo (isset($this->_tpl_vars['dn']) ? $this->_tpl_vars['dn'] : ''); ?>
 </td>
 </tr>
 <tr>
-	<td class="title">Пол</td>
-	<td class="data"><?php echo (isset($this->_tpl_vars['sex']) ? $this->_tpl_vars['sex'] : ''); ?>
-</td>
-</tr>
-<tr>
-	<td class="title">Дата рождения</td>
-	<td class="data"><?php echo (isset($this->_tpl_vars['birthdate']) ? $this->_tpl_vars['birthdate'] : ''); ?>
-</td>
-</tr>
-<tr>
-	<td class="title">Страна</td>
-	<td class="data"><?php echo (isset($this->_tpl_vars['country']) ? $this->_tpl_vars['country'] : ''); ?>
-</td>
-</tr>
-<tr>
-	<td class="title">Город</td>
-	<td class="data"><?php echo (isset($this->_tpl_vars['city']) ? $this->_tpl_vars['city'] : ''); ?>
+	<td class="title">dn_cn</td>
+	<td class="data"><?php echo (isset($this->_tpl_vars['dn_cn']) ? $this->_tpl_vars['dn_cn'] : ''); ?>
 </td>
 </tr>
 <tr>
@@ -72,11 +58,6 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/v
 	</td>
 </tr>
 <tr>
-	<td class="title">Активация</td>
-	<td class="data"><?php echo (isset($this->_tpl_vars['active']) ? $this->_tpl_vars['active'] : ''); ?>
-</td>
-</tr>
-<tr>
 	<td class="title">Дата регистрации</td>
 	<td class="data"><?php echo (isset($this->_tpl_vars['regdate']) ? $this->_tpl_vars['regdate'] : ''); ?>
 </td>
@@ -90,4 +71,4 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/v
 ">Удалить пользователя</a>
 	</td>
 </tr>
-</table>
+</table>
