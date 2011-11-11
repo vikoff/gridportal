@@ -6,6 +6,9 @@ class TaskSet extends GenericObject{
 	
 	const NOT_FOUND_MESSAGE = 'Задача не найдена';
 	
+	const FILETYPE_NORDUJOB = 'nordujob';
+	const FILETYPE_FDS = 'fds';
+	
 	public $submits = array();
 	
 	public $lastSubmit = null;
@@ -27,6 +30,36 @@ class TaskSet extends GenericObject{
 	public static function forceLoad($id, $fieldvalues){
 		
 		return new TaskSet($id, self::INIT_EXISTS_FORCE, $fieldvalues);
+	}
+	
+	public static function getFileType($fullname){
+		
+		$basename = basename($fullname);
+		
+		if($basename == 'nordujob')
+			return self::FILETYPE_NORDUJOB;
+		
+		$ext = Tools::getExt($basename);
+		switch ($ext) {
+			case 'fds': return self::FILETYPE_FDS;
+			default: null;
+		}
+	}
+	
+	public static function getFileConstructor($type, $fullname){
+		
+		switch($type){
+			
+			case self::FILETYPE_NORDUJOB:
+				require_once(FS_ROOT.'models/fileConstructors/NordujobFileConstructor.php');
+				return new NordujobFileConstructor($fullname);
+				
+			case self::FILETYPE_FDS:
+				require_once(FS_ROOT.'models/fileConstructors/FdsFileConstructor.php');
+				return new FdsFileConstructor($fullname);
+			
+			default: trigger_error('Неизвестный тип файла "'.$type.'"', E_USER_ERROR);
+		}
 	}
 	
 	/** СЛУЖЕБНЫЙ МЕТОД (получение констант из родителя) */
@@ -216,7 +249,8 @@ class TaskSet extends GenericObject{
 	 * ПОЛУЧЕНИЕ/СОХРАНЕНИЕ ФАКТА НАЛИЧИЯ GRIDJOB ФАЙЛА
 	 * @param null|bool $save
 	 *		если null - функция возвращает факт наличия gridjob файла
-	 *		если bool - функция сохраняет факт наличия gridjob файла
+	 *		если bool - функция сохраняет факт наличия gridjob файла,
+	 *                  а так же парсит и сохраняет имя задачи (или удаляет)
 	 * @return bool факт наличия gridjob файла
 	 */
 	public function hasGridjobFile($save = null){

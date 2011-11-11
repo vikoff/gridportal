@@ -17,6 +17,7 @@ class TaskSetController extends Controller{
 		'display_customize' 	=> PERMS_REG,
 		'display_submit'		=> PERMS_REG,
 		'display_edit_file'		=> PERMS_REG,
+		'display_file_constructor' => PERMS_REG,
 		'display_delete'		=> PERMS_REG,
 		
 		'admin_display_list'	=> PERMS_ADMIN,
@@ -28,6 +29,7 @@ class TaskSetController extends Controller{
 		'action_delete' 		=> PERMS_REG,
 		'action_upload_file'	=> PERMS_REG,
 		'action_save_file'		=> PERMS_REG,
+		'action_save_constructor' => PERMS_REG,
 		'action_submit'			=> PERMS_REG,
 		
 		'ajax_get_task_files'	=> PERMS_REG,
@@ -175,6 +177,39 @@ class TaskSetController extends Controller{
 			);
 			
 			include(FS_ROOT.'templates/'.self::TPL_PATH.'edit_file.php');
+		}
+		catch(Exception $e){
+			echo 'Ошибка! '.$e->getMessage();
+		}
+		
+	}
+	
+	public function display_file_constructor($params = array()){
+		
+		$fname = getVar($_GET['file']);
+		if (empty($fname))
+			die ('Файл не найден #0');
+			
+		$id = getVar($params[0], 0, 'int');
+		try {
+			$instance = TaskSet::load($id);
+			
+			$fullname = $instance->getValidFileName($fname);
+			if (empty($fullname))
+				throw new Exception('Файл не найден #1');
+			
+			$fileType = $instance->getFileType($fullname);
+			if (empty($fileType))
+				throw new Exception('Неизвестный тип файла');
+			
+			$vars = array(
+				'instanceId' => $id,
+				'fname' => $fname,
+				'formData' => TaskSet::getFileConstructor($fileType, $fullname)->getConstructorFormData()
+			);
+			
+			// echo '<pre>'; print_r($vars); die;
+			include(FS_ROOT.'templates/'.self::TPL_PATH.'file_constructor.php');
 		}
 		catch(Exception $e){
 			echo 'Ошибка! '.$e->getMessage();
@@ -372,6 +407,11 @@ class TaskSetController extends Controller{
 		return TRUE;
 	}
 
+	public function action_save_constructor($params = array()){
+		
+		echo '<pre>'; print_r($_POST); die;
+	}
+	
 	public function action_submit($params = array()){
 		
 		// echo '<pre>'; print_r($_POST); die;
@@ -455,7 +495,7 @@ class TaskSetController extends Controller{
 			
 			$elms = $instance->getAllFilesList();
 			foreach($elms as &$elm)
-				$elm = '"'.$elm.'"';
+				$elm = '{"name": "'.$elm.'", "type":"'.(string)TaskSet::getFileType($elm).'"}';
 			
 			echo '{"error": "", "data": ['.implode(',', $elms).']}';
 			return TRUE;

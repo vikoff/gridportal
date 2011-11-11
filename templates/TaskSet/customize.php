@@ -29,6 +29,7 @@ $(function() {
 	var FileManager = {
 		
 		editUrl: 'task-set/edit-file/<?= $this->instanceId; ?>',
+		constructUrl: 'task-set/file-constructor/<?= $this->instanceId; ?>',
 		getUrl: href('task-set/get-task-files/<?= $this->instanceId; ?>'),
 		delUrl: href('task-set/delete-task-file/<?= $this->instanceId; ?>'),
 		htmlContainer: $('#task-uploaded-files-container'),
@@ -48,34 +49,43 @@ $(function() {
 				}
 				
 				var tbl = $('<table class="task-uploaded-files-list" />');
-				var delLink, editLink;
+				var delLink, editLink, constructorLink;
 				for(var i in response.data){
 				
 					type = '';
-					if(response.data[i] == 'nordujob'){
+					if(response.data[i].name == 'nordujob'){
 						type = 'nordujob файл';
 						self.hasNordujob = true;
 					}
-					else if(/\.fds$/.test(response.data[i]))
+					else if(/\.fds$/.test(response.data[i].name))
 						type = 'файл модели';
 					
 					editLink = (function(file){
 						var url = href(self.editUrl + '?file=' + encodeURIComponent(file));
 						return $('<a href="' + url + '" class="small" target="_blank">редактировать</a>')
 							.click(function(){ self.editFile(url); return false; });
-					})(response.data[i]);
+					})(response.data[i].name);
 						
 					delLink = (function(file){
 						return $('<a href="#" class="small">удалить</a>')
 							.click(function(){ self.removeFile(file); return false; });
-					})(response.data[i]);
+					})(response.data[i].name);
 					
+					constructorLink = response.data[i].type
+						? (function(file){
+								var url = href(self.constructUrl + '?file=' + encodeURIComponent(file));
+								return $('<a href="' + url + '" class="small" target="_blank">редактировать в мастере</a>')
+									.click(function(){ self.constructFile(file); return false; });
+							})(response.data[i].name)
+						: null;
 					tbl.append(
 						$('<tr />')
 							.append('<td>' + (type ? '<span class="small" style="color: #888;">' + type + '</span>' : '') + '</td>')
-							.append('<td>' + response.data[i] + '</td>')
+							.append('<td>' + response.data[i].name + '</td>')
 							.append($('<td></td>').append(editLink))
-							.append($('<td></td>').append(delLink)));
+							.append($('<td></td>').append(delLink))
+							.append( constructorLink ? $('<td></td>').append(constructorLink) : $('<td></td>') )
+					);
 				}
 				
 				self.htmlContainer.empty().append(tbl);
@@ -109,7 +119,13 @@ $(function() {
 					
 				self.getFiles();
 			});
-		}
+		},
+		
+		constructFile: function(url){
+			
+			var iframe = $('<iframe src="' + url + '" style="width: 800px; height: 500px;" />');
+			$.modal($('<div />').append(iframe));
+		},
 	};
 	
 	FileManager.getFiles();

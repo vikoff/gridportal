@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2011-11-10 21:50:02
+<?php /* Smarty version 2.6.26, created on 2011-11-10 22:48:55
          compiled from Profile/edit.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Profile/edit.tpl', 10, false),)), $this); ?>
@@ -297,11 +297,6 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 </div>
 
 <script type="text/javascript"><?php echo '
-
-		$.address.externalChange(function(data){
-			alert(\'change\');
-//			$( "#profile-tabs" ).tabs(\'select\', data.value.substr(1));
-		});
 	
 	$(function(){
 		
@@ -313,6 +308,10 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 		// var_dump($.address.value(), \'E=function\');
 		// alert($("#profile-tabs ul:first a[href=\'#" + data.value.substr(1) + "\']").parent().index());
 		$("#profile-tabs ul:first a").address();
+
+		$.address.externalChange(function(data){
+			$( "#profile-tabs" ).tabs(\'select\', data.value.substr(1));
+		});
 		
 		function certManualLogonCheck(){
 			$(\'#cert-auto-login-box\')[$(\'#cert-manual-logon-inp\').attr(\'checked\') ? \'fadeOut\' : \'fadeIn\']();

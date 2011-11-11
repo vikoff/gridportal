@@ -100,10 +100,16 @@ class Tools {
 	}
 	
 	static function get_ext($filename){
+		
 		return strtolower(substr(strrchr($filename, '.'), 1));
 	}
 	
-	static public function isWinServer(){
+	public static function getExt($filename){
+		
+		return strtolower(substr(strrchr($filename, '.'), 1));
+	}
+	
+	public static function isWinServer(){
 		return isset($_SERVER['WINDIR']) ? TRUE : FALSE;
 	}
 	

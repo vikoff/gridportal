@@ -5,26 +5,22 @@
 	<table class="std-grid">
 	<tr>
 		<th>id</th>
-		<th>uid</th>
 		<th>Проект</th>
 		<th>Профиль</th>
 		<th>Имя набора</th>
-		<th>ready_to_start</th>
-		<th>num_submits</th>
-		<th>create_date</th>
+		<th>Количество запусков</th>
+		<th>Дата создания</th>
 		
 		<th>опции</th>
 	</tr>
 	<? foreach($this->collection as $item): ?>	
 	<tr>
 		<td><?= $item['id']; ?></td>
-		<td><?= $item['uid']; ?></td>
 		<td><?= $item['project_id']; ?></td>
 		<td><?= $item['profile_id']; ?></td>
 		<td><?= $item['name']; ?></td>
-		<td><?= $item['ready_to_start']; ?></td>
 		<td><?= $item['num_submits']; ?></td>
-		<td><?= $item['create_date']; ?></td>
+		<td><?= $item['create_date_str']; ?></td>
 		
 		<td style="font-size: 11px;">
 			<a href="<?= href('task-set/view/'.$item['id']); ?>">просмотр</a>
