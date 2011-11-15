@@ -1,7 +1,7 @@
-<?php /* Smarty version 2.6.26, created on 2011-10-28 19:22:52
+<?php /* Smarty version 2.6.26, created on 2011-11-15 20:34:51
          compiled from TaskSet/submit.php */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'TaskSet/submit.php', 28, false),array('function', 'a', 'TaskSet/submit.php', 81, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'TaskSet/submit.php', 28, false),array('function', 'a', 'TaskSet/submit.php', 73, false),)), $this); ?>
 <script type="text/javascript" language="javascript"><?php echo '
 
 $(document).ready(function() {
@@ -83,25 +83,12 @@ $(document).ready(function() {
 	</tr>
 	</table>
 	
-	<table style="text-align: left; margin: 1em auto;">
-	<?php $_from = (isset($this->_tpl_vars['gridjobfile']) ? $this->_tpl_vars['gridjobfile'] : ''); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }if (count($_from)):
-    foreach ($_from as $this->_tpl_vars['row']):
-?>
-		<?php if ((isset($this->_tpl_vars['row']['type']) ? $this->_tpl_vars['row']['type'] : '') == 'config'): ?>
-			<tr><td><?php echo (isset($this->_tpl_vars['row']['title']) ? $this->_tpl_vars['row']['title'] : ''); ?>
-</td><td><input type="text" name="xrsl[<?php echo (isset($this->_tpl_vars['row']['name']) ? $this->_tpl_vars['row']['name'] : ''); ?>
-]" value="<?php echo (isset($this->_tpl_vars['row']['value_escaped']) ? $this->_tpl_vars['row']['value_escaped'] : ''); ?>
-" style="width: 400px;" /></td></tr>
-		<?php endif; ?>
-	<?php endforeach; endif; unset($_from); ?>
-	</table>
-	
 	<div class="paragraph">
 		<input class="button" type="submit" name="action[task-set/submit]" value="<?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.start-task'), $this);?>
 " />
 		
 		<a class="button" href="<?php echo SmartyPlugins::function_a(array('href' => "task-set/customize/".((isset($this->_tpl_vars['id']) ? $this->_tpl_vars['id'] : ''))), $this);?>
-"><?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.go-to-task-customize'), $this);?>
+"><?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.manage-files'), $this);?>
 </a>
 		<a class="button" href="<?php echo SmartyPlugins::function_a(array('href' => "task-set/list"), $this);?>
 "><?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.go-to-task-list'), $this);?>

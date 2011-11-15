@@ -75,7 +75,7 @@ $(function() {
 						? (function(file){
 								var url = href(self.constructUrl + '?file=' + encodeURIComponent(file));
 								return $('<a href="' + url + '" class="small" target="_blank">редактировать в мастере</a>')
-									.click(function(){ self.constructFile(file); return false; });
+									.click(function(){ self.constructFile(url); return false; });
 							})(response.data[i].name)
 						: null;
 					tbl.append(

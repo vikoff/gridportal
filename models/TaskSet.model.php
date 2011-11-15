@@ -137,8 +137,14 @@ class TaskSet extends GenericObject{
 			}
 			
 			// проверка профиля (и сохранение его экземпляра для использования в afterSave)
-			if($this->isNewObj && $data['profile_id'])
-				$this->additData['profile_instance'] = $this->_checkProfile($data['profile_id'], $data['project_id']);
+			if ($this->isNewObj && $data['profile_id']) {
+				$profileInstance = $this->_checkProfile($data['profile_id'], $data['project_id']);
+				if ($profileInstance->getField('is_gridjob_loaded')) {
+					$data['gridjob_name'] = $profileInstance->getGridjobTaskname();
+					$data['is_gridjob_loaded'] = 1;
+				}
+				$this->additData['profile_instance'] = $profileInstance;
+			}
 		}		
 		catch(Exception $e){
 			$this->setError($e->getMessage());
@@ -147,7 +153,6 @@ class TaskSet extends GenericObject{
 		
 		$data['uid'] = USER_AUTH_ID;
 		$data['num_submits'] = 0;
-		$data['ready_to_start'] = FALSE;
 		if($this->isNewObj)
 			$data['create_date'] = time();
 	}
@@ -311,6 +316,9 @@ class TaskSet extends GenericObject{
 	
 	public function submit($myproxyAuth, $preferServer = ''){
 		
+		$basedir = $this->getFilesDir().'src/';
+		$files = $this->getAllFilesList();
+		
 		// создание первого экземпляра субмита
 		$this->lastSubmit = $this->_createSubmitInstance();
 		$this->submits[] = $this->lastSubmit;
@@ -323,6 +331,12 @@ class TaskSet extends GenericObject{
 		// запуск первого субмита
 		$success = $this->lastSubmit->submit($myproxyAuth, $preferServer);
 		
+		/*
+		1. находим файлы с множителями
+		2. получить значения всех множителей всех файлов
+		3. создаем кобминации со всеми множителями
+		
+		*/
 		if ($success) {
 			
 			// создание всех субмитов

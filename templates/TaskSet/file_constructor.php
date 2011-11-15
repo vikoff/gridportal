@@ -22,8 +22,9 @@
 					<tr style="vertical-align: top;">
 						<td><?= $row['field']; ?></td>
 						<td>
-							<input type="hidden" name="origin_value[<?= $row['row']; ?>]" value="<?= $row['value']; ?>" />
-							<input type="text" name="value[<?= $row['row']; ?>]" value="<?= $row['value']; ?>" />
+							<input type="hidden" name="items[<?= $row['row']; ?>][pre_text]" value="<?= htmlspecialchars($row['pre_text']); ?>" />
+							<input type="hidden" name="items[<?= $row['row']; ?>][post_text]" value="<?= htmlspecialchars($row['post_text']); ?>" />
+							<input type="text" name="items[<?= $row['row']; ?>][value]" value="<?= htmlspecialchars($row['value']); ?>" />
 						</td>
 						<td>
 							<? if ($row['allow_multiple']): ?>

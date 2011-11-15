@@ -206,6 +206,7 @@ CREATE TABLE `task_profiles` (
   `is_user_defined`	BOOLEAN,
   `uid`				INT(10) UNSIGNED,
   `name`			VARCHAR(255),
+  `is_gridjob_loaded` tinyint(1) default '0',
   `project_id`		INT(10) UNSIGNED,
   `create_date`		INT(10) UNSIGNED
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

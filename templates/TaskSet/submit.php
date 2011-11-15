@@ -67,18 +67,10 @@ $(document).ready(function() {
 	</tr>
 	</table>
 	
-	<table style="text-align: left; margin: 1em auto;">
-	{foreach from=$gridjobfile item=row}
-		{if $row.type == 'config'}
-			<tr><td>{$row.title}</td><td><input type="text" name="xrsl[{$row.name}]" value="{$row.value_escaped}" style="width: 400px;" /></td></tr>
-		{/if}
-	{/foreach}
-	</table>
-	
 	<div class="paragraph">
 		<input class="button" type="submit" name="action[task-set/submit]" value="{lng snippet='xrls_edit.start-task'}" />
 		
-		<a class="button" href="{a href=task-set/customize/$id}">{lng snippet='xrls_edit.go-to-task-customize'}</a>
+		<a class="button" href="{a href=task-set/customize/$id}">{lng snippet='xrls_edit.manage-files'}</a>
 		<a class="button" href="{a href=task-set/list}">{lng snippet='xrls_edit.go-to-task-list'}</a>
 	</div>
     

@@ -122,6 +122,34 @@ class TaskProfile extends GenericObject{
 		
 		return FS_ROOT.'files/task_profiles/'.$this->id.'/';
 	}
+	
+	/**
+	 * ПОЛУЧЕНИЕ/СОХРАНЕНИЕ ФАКТА НАЛИЧИЯ GRIDJOB ФАЙЛА
+	 * @param null|bool $save
+	 *		если null - функция возвращает факт наличия gridjob файла
+	 *		если bool - функция сохраняет факт наличия gridjob файла
+	 * @return bool факт наличия gridjob файла
+	 */
+	public function hasGridjobFile($save = null){
+		
+		// сохранение (если надо)
+		if(!is_null($save)){
+			$this->setField('is_gridjob_loaded', $save ? '1' : '0');
+			$this->_save();
+		}
+		
+		return $this->getField('is_gridjob_loaded');
+	}
+
+	public function getGridjobTaskname(){
+		
+		$xrsl = file_get_contents($this->getFilesDir().'nordujob');
+		if(preg_match('/\(\s*jobname\s*=\s*"(.+)"\s*\)/', $xrsl, $matches)){
+			return $matches[1];
+		} else {
+			return null;
+		}
+	}
 
 }
 

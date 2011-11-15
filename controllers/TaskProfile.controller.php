@@ -230,6 +230,10 @@ class TaskProfileController extends Controller{
 		$targetName = $_FILES['Filedata']['name'];
 		$targetFullName =  $targetPath.$targetName;
 		move_uploaded_file($tempFile, $targetFullName);
+		
+		// если был загружен файл nordujob
+		if(!$instance->hasGridjobFile() && $targetName == 'nordujob')
+			$instance->hasGridjobFile(true);
 			
 		return TRUE;
 	}
@@ -287,8 +291,8 @@ class TaskProfileController extends Controller{
 		unlink($fullName);
 		
 		// если был удален файл nordujob
-		// if($fileName == 'nordujob' && $instance->getField('is_gridjob_loaded'))
-			// $instance->hasGridjobFile(false);
+		if($fileName == 'nordujob' && $instance->getField('is_gridjob_loaded'))
+			$instance->hasGridjobFile(false);
 			
 		echo 'ok';
 		return TRUE;

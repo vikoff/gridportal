@@ -127,6 +127,25 @@ class TaskSetController extends Controller{
 	
 	public function display_submit($params = array()){
 		
+		/*
+		$submitter = new BatchSubmitter();
+		$arr = array(
+			array('file_1', 1, array('1a', '2a', '3a')),
+			array('file_1', 2, array('1aa', '2aa')),
+			array('file_2', 1, array('1b', '2b', '3b', '4b')),
+			array('file_2', 2, array('1bb', '2bb')),
+		);
+		
+		foreach($arr as $item)
+			$submitter->addMultiplier($item[0], $item[1], $item[2]);
+		
+		while($combination = $submitter->getNextCombination()) {
+			print_r($combination);
+			echo '<hr>';
+		}
+		die;
+		*/
+		
 		$user = CurUser::get();
 		
 		$instanceId = getVar($params[0], 0, 'int');
@@ -144,9 +163,18 @@ class TaskSetController extends Controller{
 		}
 		
 		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
+			
+			$basedir = $instance->getFilesDir().'src/';
+			$files = $instance->getAllFilesList();
+			$submitsNum = 1;
+			// foreach($files as &$f){
+				// $type = TaskSet::getFileType($files);
+				// if($type)
+					// TaskSet::getFileConstructor($type, $basedir.$f)->getMultiplesNum();
+					
+			// }
 		
 		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
-			'gridjobfile' => $instance->parseGridJobFile(),
 			'showMyproxyLogin' => $manualMyproxyLogin,
 			'myproxyServersList' => $manualMyproxyLogin ? MyproxyServerCollection::load()->getAll() : array(),
 		));
@@ -409,7 +437,29 @@ class TaskSetController extends Controller{
 
 	public function action_save_constructor($params = array()){
 		
-		echo '<pre>'; print_r($_POST); die;
+		// echo '<pre>'; print_r($_POST); die;
+		
+		$fname = getVar($_GET['file']);
+		if (empty($fname))
+			throw new Exception('Файл не найден #0');
+			
+		$instanceId = getVar($_POST['id'], 0, 'int');
+		$instance = TaskSet::load($instanceId);
+		
+		if($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception("Указанная задача не пренадлежит вам");
+		
+		$fullname = $instance->getValidFileName($fname);
+		if (empty($fullname))
+			throw new Exception('Файл не найден #1');
+		
+		$modifiedRows = Tools::unescape($_POST['items']);
+		$contentArr = file($fullname);
+		foreach($modifiedRows as $index => $data)
+			$contentArr[$index] = $data['pre_text'].$data['value'].$data['post_text']."\n";
+		file_put_contents($fullname, implode('', $contentArr));
+		
+		return TRUE;
 	}
 	
 	public function action_submit($params = array()){
@@ -418,13 +468,6 @@ class TaskSetController extends Controller{
 		
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSet::load($instanceId);
-		
-		
-        // сохранение xrsl
-        // if(!$instance->xrsl_save($_POST['xrsl'])){
-			// Messenger::get()->addError('Параметры заданы неверно:', $instance->getError());
-			// return FALSE;
-		// }
 		
 		// получение авторизационных данных myproxy
 		try {
