@@ -112,6 +112,14 @@ class CommonViewer{
 		$this->_breadcrumbs = array();
 	}
 	
+	public function setVariables($variables){
+
+		foreach($variables as $k => $v)
+			$this->$k = $v;
+
+		return $this;
+	}	
+	
 	public function setContent($content){
 	
 		$this->_htmlContent = $content;

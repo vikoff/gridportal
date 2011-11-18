@@ -12,7 +12,7 @@ class BatchSubmitter {
 		
 	}
 	
-	public function addMultiplier($file, $row, $valuesArr){
+	public function addMultiplier($file, $row, $valuesArr, $valuesStr){
 		
 		$numValues = count($valuesArr);
 		if (!$numValues)
@@ -21,8 +21,10 @@ class BatchSubmitter {
 		if (!isset($this->multipliers[$file]))
 			$this->multipliers[$file] = array();
 			
-		$this->multipliers[$file][$row] = array(
+		$this->multipliers[$file][] = array(
+			'row'		=> $row,
 			'valuesArr' => $valuesArr,
+			'valuesStr' => $valuesStr,
 			'curIndex'  => 0,
 			'maxIndex'  => $numValues - 1,
 		);
@@ -39,12 +41,10 @@ class BatchSubmitter {
 		$values = array();
 		$increaseLevel = $this->curCombination > 0;
 		
-		echo $this->curCombination.') ';
-		
 		foreach($this->multipliers as $file => &$multiplier){
 			$values[$file] = array();
 			
-			foreach($multiplier as $row => &$data){
+			foreach($multiplier as &$data){
 				
 				if ($increaseLevel) { // увеличение текущего множителя
 					
@@ -57,7 +57,11 @@ class BatchSubmitter {
 					}
 				}
 				
-				$values[$file][$row] = $data['valuesArr'][$data['curIndex']];
+				$values[$file][] = array(
+					'row' => $data['row'],
+					'value' => $data['valuesArr'][ $data['curIndex'] ],
+					'valuesStr' => $data['valuesStr'],
+				);
 			}
 		}
 		

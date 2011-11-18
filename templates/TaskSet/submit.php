@@ -25,39 +25,39 @@ $(document).ready(function() {
 });
 </script>
 
-<h2>{lng snippet='xrls_edit.taskset'}</h2>
+<h2><?= Lng::get('xrls_edit.taskset'); ?></h2>
 
 <form action="" method="post">
-	{$formcode}
-	<input type="hidden" name="id" value="{$id}" />
+	<?= FORMCODE; ?>
+	<input type="hidden" name="id" value="<?= $this->id; ?>" />
 	
 	<table style="text-align: left; margin: 1em auto;">
-	{if $showMyproxyLogin}
+	<? if ($showMyproxyLogin): ?>
 		<tr>
-			<td>{lng snippet='xrls_edit.server'}</td>
+			<td><?= Lng::get('xrls_edit.server'); ?></td>
 			<td>
 				<select name="server">
-					{foreach from=$myproxyServersList item='item'}
-						<option value="{$item.id}">{$item.name}</option>
-					{/foreach}
+					<? foreach($this->myproxyServersList as $item): ?>
+						<option value="<?= $item['id']; ?>"><?= $item['name']; ?></option>
+					<? endforeach; ?>
 				</select>
 			</td>
 		</tr>
 		<tr>
-			<td>{lng snippet='xrls_edit.username'}</td>
+			<td><?= Lng::get('xrls_edit.username'); ?></td>
 			<td><input type="text" name="user[name]" value="" /></td>
 		</tr>
 		<tr>
-			<td>{lng snippet='xrls_edit.password'}</td>
+			<td><?= Lng::get('xrls_edit.password'); ?></td>
 			<td><input type="password" name="user[pass]" value="" /></td>
 		</tr>
 		<tr>
-			<td>{lng snippet='xrls_edit.max-time'}</td>
+			<td><?= Lng::get('xrls_edit.max-time'); ?></td>
 			<td><select name="lifetime"><option value="2850">2850</option><option value="1200">1200</option></select></td>
 		</tr>
-	{else}
+	<? else: ?>
 		<tr style="display: none;"><td><input type="hidden" name="myproxy-autologin" value="1" /></td></tr>
-	{/if}
+	<? endif; ?>
 	</table>
 	
 	<table style="margin: 1em auto;">
@@ -68,17 +68,23 @@ $(document).ready(function() {
 	</table>
 	
 	<div class="paragraph">
-		<input class="button" type="submit" name="action[task-set/submit]" value="{lng snippet='xrls_edit.start-task'}" />
-		
-		<a class="button" href="{a href=task-set/customize/$id}">{lng snippet='xrls_edit.manage-files'}</a>
-		<a class="button" href="{a href=task-set/list}">{lng snippet='xrls_edit.go-to-task-list'}</a>
+		<? if ($this->numSubmits > 1): ?>
+			Будет запущено <?= $this->numSubmits; ?> задач.
+		<? else: ?>
+			Будет запущена одна задача.
+		<? endif; ?>
+	</div>
+	<div class="paragraph">
+		<input class="button" type="submit" name="action[task-set/submit]" value="<?= Lng::get('xrls_edit.start-task'); ?>" />
+		<a class="button" href="<?= href('task-set/customize/'.$id); ?>"><?= Lng::get('xrls_edit.manage-files'); ?></a>
+		<a class="button" href="<?= href('task-set/list'); ?>"><?= Lng::get('xrls_edit.go-to-task-list'); ?></a>
 	</div>
     
     <div id="wait-popup" class="popup-container" style="display:none">
 	<div class="popup">
 		<div class="body-container">		
-			<img src="images/load.gif" alt="{lng snippet='xrls_edit.starting-task'}" />
-			<p>{lng snippet='xrls_edit.starting-task'}</p>
+			<img src="images/load.gif" alt="<?= Lng::get('xrls_edit.starting-task'); ?>" />
+			<p><?= Lng::get('xrls_edit.starting-task'); ?></p>
 		</div>
 	</div>
 </div>

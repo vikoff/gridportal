@@ -1,7 +1,7 @@
-<?php /* Smarty version 2.6.26, created on 2011-11-15 20:34:51
+<?php /* Smarty version 2.6.26, created on 2011-11-18 22:18:16
          compiled from TaskSet/submit.php */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'TaskSet/submit.php', 28, false),array('function', 'a', 'TaskSet/submit.php', 73, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'TaskSet/submit.php', 28, false),array('function', 'a', 'TaskSet/submit.php', 87, false),)), $this); ?>
 <script type="text/javascript" language="javascript"><?php echo '
 
 $(document).ready(function() {
@@ -84,9 +84,23 @@ $(document).ready(function() {
 	</table>
 	
 	<div class="paragraph">
+		<?php echo '<?'; ?>
+ if ($numSubmits > 1): <?php echo '?>'; ?>
+
+			Будет запущено <?php echo '<?='; ?>
+ $numSubmits; <?php echo '?>'; ?>
+ задач.
+		<?php echo '<?'; ?>
+ else: <?php echo '?>'; ?>
+
+			Будет запущена одна задача.
+		<?php echo '<?'; ?>
+ endif; <?php echo '?>'; ?>
+
+	</div>
+	<div class="paragraph">
 		<input class="button" type="submit" name="action[task-set/submit]" value="<?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.start-task'), $this);?>
 " />
-		
 		<a class="button" href="<?php echo SmartyPlugins::function_a(array('href' => "task-set/customize/".((isset($this->_tpl_vars['id']) ? $this->_tpl_vars['id'] : ''))), $this);?>
 "><?php echo SmartyPlugins::function_lng(array('snippet' => 'xrls_edit.manage-files'), $this);?>
 </a>

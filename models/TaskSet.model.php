@@ -236,6 +236,7 @@ class TaskSet extends GenericObject{
 		return $elms;
 	}
 	
+	/** ПОЛУЧИТЬ ПОЛНЫЙ ПУТЬ ФАЙЛА ПО ИМЕНИ */
 	public function getValidFileName($fname){
 		
 		$dir = realpath($this->getFilesDir().'src/').DIRECTORY_SEPARATOR;
@@ -315,6 +316,8 @@ class TaskSet extends GenericObject{
 	}
 	
 	public function submit($myproxyAuth, $preferServer = ''){
+		
+		// СМОТРИ https://thei.org.ua/ru/task-set/test/ !!!!!!!!!!!!!!!!!
 		
 		$basedir = $this->getFilesDir().'src/';
 		$files = $this->getAllFilesList();

@@ -204,7 +204,8 @@ class TaskSubmit extends GenericObject{
 			.$ngsub . " -d2 -o /home/apache/.ngjobs"
 			.(!empty($preferedServer) ? ' -c '.escapeshellarg($preferedServer) : '')
 			." -e ". escapeshellarg(stripslashes($ngjob))." 2>&1";
-
+		
+		// echo $command; die;
 		$this->log("run ngsub: $command ...");
 		
 		// выполнение команды ngsub
@@ -382,7 +383,8 @@ class TaskSubmit extends GenericObject{
 	
 	public function getNgjobStr(){
 		
-		return file_get_contents($this->getFilesDir().'nordujob');
+		// return file_get_contents($this->getFilesDir().'nordujob');
+		return str_replace("\r\n", "\n", file_get_contents($this->getFilesDir().'nordujob'));
 		
 	//	return "&(executable=/bin/sleep)(arguments=1000)(jobname='GJSWI sleep test')";
 		

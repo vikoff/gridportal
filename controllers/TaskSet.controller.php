@@ -19,6 +19,7 @@ class TaskSetController extends Controller{
 		'display_edit_file'		=> PERMS_REG,
 		'display_file_constructor' => PERMS_REG,
 		'display_delete'		=> PERMS_REG,
+		'display_test'			=> PERMS_REG,
 		
 		'admin_display_list'	=> PERMS_ADMIN,
 		'admin_display_edit'	=> PERMS_ADMIN,
@@ -125,26 +126,43 @@ class TaskSetController extends Controller{
 			->render();
 	}
 	
-	public function display_submit($params = array()){
+	public function display_test($params = array()){
 		
-		/*
-		$submitter = new BatchSubmitter();
-		$arr = array(
-			array('file_1', 1, array('1a', '2a', '3a')),
-			array('file_1', 2, array('1aa', '2aa')),
-			array('file_2', 1, array('1b', '2b', '3b', '4b')),
-			array('file_2', 2, array('1bb', '2bb')),
-		);
+		$set = TaskSet::load(21);
+		$multipliers = array();
 		
-		foreach($arr as $item)
-			$submitter->addMultiplier($item[0], $item[1], $item[2]);
-		
-		while($combination = $submitter->getNextCombination()) {
-			print_r($combination);
-			echo '<hr>';
+		// поиск всех множителей в файле
+		foreach($set->getAllFilesList() as $f) {
+			if ( $ftype = TaskSet::getFileType($f) ) {
+				$multipliers = array_merge(
+					$multipliers,
+					TaskSet::getFileConstructor($ftype, $set->getValidFileName($f))->getMultipliers()
+				);
+			}
 		}
-		die;
-		*/
+		
+		// создание обработчика множителей
+		$submitter = new BatchSubmitter();
+		foreach($multipliers as $mult)
+			$submitter->addMultiplier($mult['file'], $mult['row'], $mult['values'], $mult['valuesStr']);
+		
+		// создание комбинации
+		echo '<pre>';
+		while($combination = $submitter->getNextCombination()) {
+			// print_r($combination);
+			// continue;
+			foreach($set->getAllFilesList() as $f) {
+				if ( $ftype = TaskSet::getFileType($f) ) {
+					$fullname = $set->getValidFileName($f);
+					if (isset($combination[$fullname]))
+						echo 'file '.$fullname.' with combination: <br />'
+							.TaskSet::getFileConstructor($ftype, $fullname)->getCombination($combination[$fullname]);
+				}
+			}
+		}
+	}
+	
+	public function display_submit($params = array()){
 		
 		$user = CurUser::get();
 		
@@ -165,22 +183,21 @@ class TaskSetController extends Controller{
 		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
 			
 			$basedir = $instance->getFilesDir().'src/';
-			$files = $instance->getAllFilesList();
-			$submitsNum = 1;
-			// foreach($files as &$f){
-				// $type = TaskSet::getFileType($files);
-				// if($type)
-					// TaskSet::getFileConstructor($type, $basedir.$f)->getMultiplesNum();
-					
-			// }
+			$numSubmits = 1;
+			foreach($instance->getAllFilesList() as $f)
+				if ( $ftype = TaskSet::getFileType($f) )
+					if ($mults = TaskSet::getFileConstructor($ftype, $instance->getValidFileName($f))->getMultipliers())
+						foreach($mults as $mult)
+							$numSubmits *= count($mult['values']);
 		
 		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
 			'showMyproxyLogin' => $manualMyproxyLogin,
 			'myproxyServersList' => $manualMyproxyLogin ? MyproxyServerCollection::load()->getAll() : array(),
+			'numSubmits' => $numSubmits,
 		));
 		
 		$viewer
-			->setContentSmarty(self::TPL_PATH.'submit.php', $variables)
+			->setContentPhpFile(self::TPL_PATH.'submit.php', $variables)
 			->render();
 	}
 	
@@ -204,7 +221,10 @@ class TaskSetController extends Controller{
 				'content' => file_get_contents($fullname),
 			);
 			
-			include(FS_ROOT.'templates/'.self::TPL_PATH.'edit_file.php');
+			// if (!empty($_POST))
+				// {echo '<pre>'; print_r(FrontendViewer::get()); die;}
+			echo FrontendViewer::get()->getContentPhpFile(self::TPL_PATH.'edit_file.php', $vars);
+			// include(FS_ROOT.'templates/'.self::TPL_PATH.'edit_file.php');
 		}
 		catch(Exception $e){
 			echo 'Ошибка! '.$e->getMessage();
@@ -430,8 +450,9 @@ class TaskSetController extends Controller{
 		if (empty($fullname))
 			throw new Exception('Файл не найден #1');
 		
-		$content = Tools::unescape($_POST['content']);
+		$content = str_replace("\r\n", "\n", Tools::unescape($_POST['content']));
 		file_put_contents($fullname, $content);
+		FrontendViewer::get()->setVariables(array('saved_success' => true));
 		return TRUE;
 	}
 
@@ -496,7 +517,10 @@ class TaskSetController extends Controller{
 			return TRUE;
 		}
 		else{
-			Messenger::get()->addError(Lng::get('Task.controller.task-run-fail'), $instance->lastSubmit->getError());
+			Messenger::get()->addError(
+				Lng::get('Task.controller.task-run-fail'),
+				$instance->lastSubmit->getError().'<h3>Лог</h3>'.$instance->lastSubmit->getLog()
+			);
 			return FALSE;
 		}
 	}
