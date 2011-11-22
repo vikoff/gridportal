@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // обозначение корня ресурса
-define('FS_ROOT', realpath('..').DIRECTORY_SEPARATOR);
+define('FS_ROOT', dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR);
 
 define('TASK_TABLE', 'task_submits');
 define('TASK_QUEUE_TABLE', 'task_submit_queue');
