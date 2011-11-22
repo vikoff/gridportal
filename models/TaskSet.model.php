@@ -3,6 +3,7 @@
 class TaskSet extends GenericObject{
 	
 	const TABLE = 'task_sets';
+	const TABLE_QUEUE = 'task_submit_queue';
 	
 	const NOT_FOUND_MESSAGE = 'Задача не найдена';
 	
@@ -11,7 +12,7 @@ class TaskSet extends GenericObject{
 	
 	public $submits = array();
 	
-	public $lastSubmit = null;
+	public $firstSubmit = null;
 
 	
 	/** ТОЧКА ВХОДА В КЛАСС (СОЗДАНИЕ НОВОГО ОБЪЕКТА) */
@@ -41,7 +42,7 @@ class TaskSet extends GenericObject{
 		
 		$ext = Tools::getExt($basename);
 		switch ($ext) {
-			case 'fds': return self::FILETYPE_FDS;
+			// case 'fds': return self::FILETYPE_FDS;
 			default: null;
 		}
 	}
@@ -317,37 +318,50 @@ class TaskSet extends GenericObject{
 	
 	public function submit($myproxyAuth, $preferServer = ''){
 		
-		// СМОТРИ https://thei.org.ua/ru/task-set/test/ !!!!!!!!!!!!!!!!!
-		
 		$basedir = $this->getFilesDir().'src/';
-		$files = $this->getAllFilesList();
+		$multipliers = array();
 		
-		// создание первого экземпляра субмита
-		$this->lastSubmit = $this->_createSubmitInstance();
-		$this->submits[] = $this->lastSubmit;
-		
-		if (empty($this->submits)){
-			$this->setError('Ни одного субмита не было создано');
-			return FALSE;
+		// поиск всех множителей в файле
+		foreach($this->getAllFilesList() as $f) {
+			if ( $ftype = TaskSet::getFileType($f) ) {
+				$multipliers = array_merge(
+					$multipliers,
+					TaskSet::getFileConstructor($ftype, $this->getValidFileName($f))->getMultipliers()
+				);
+			}
 		}
 		
+		// создание субмиттера
+		$submitter = new BatchSubmitter();
+		foreach($multipliers as $mult)
+			$submitter->addMultiplier($mult['file'], $mult['row'], $mult['values'], $mult['valuesStr']);
+		
+		// создание первого экземпляра субмита
+		$this->firstSubmit = $this->_createSubmitInstance( $submitter->getNextCombination() );
+		$this->submits[] = $this->firstSubmit;
+		
 		// запуск первого субмита
-		$success = $this->lastSubmit->submit($myproxyAuth, $preferServer);
-		
-		/*
-		1. находим файлы с множителями
-		2. получить значения всех множителей всех файлов
-		3. создаем кобминации со всеми множителями
-		
-		*/
+		$success = $this->firstSubmit->submit($myproxyAuth, $preferServer);
+
 		if ($success) {
 			
-			// создание всех субмитов
-			// foreach(... as $s)
-				// $this->_createSubmitInstance();
-				
+			$db = db::get();
+			
+			// создание остальных субмитов
+			while ($combination = $submitter->getNextCombination()) {
+				$submit = $this->_createSubmitInstance($combination);
+				$db->insert(self::TABLE_QUEUE, array(
+					'trigger_task_id'   => $this->firstSubmit->id,
+					'dependent_task_id' => $submit->id,
+				));
+				$this->submits[] = $submit;
+			}
+			
 			$this->updateNumSubmits();
-			return TRUE;
+			return array(
+				'success' => TRUE,
+				'queue_length' => $submitter->numCombinations - 1,
+			);
 			
 		} else {
 			
@@ -356,7 +370,9 @@ class TaskSet extends GenericObject{
 		}
 	}
 	
-	private function _createSubmitInstance(){
+	private function _createSubmitInstance($combination){
+		
+		// echo '<pre>'; print_r($combination); die;
 		
 		$taskSubmit = TaskSubmit::create();
 		$taskSubmit->setUid($this->getField('uid'));
@@ -364,15 +380,28 @@ class TaskSet extends GenericObject{
 			'set_id' => $this->id,
 			'index' => $this->getLastSubmitIndex() + 1,
 			'status' => NULL,
-			'is_submitted' => FALSE,
+			'is_submitted' => 0,
 			'is_completed' => FALSE,
 			'is_fetched' => FALSE,
 		));
 		
 		// копирование файлов
 		$src = $this->getFilesDir().'src/*';
-		$dst = $taskSubmit->getFilesDir();
+		$dst = $taskSubmit->getFilesDir().'src/';
 		`cp $src $dst`;
+		
+		// заполнение множителей
+		foreach($taskSubmit->getSrcFiles() as $f) {
+			if ( $ftype = TaskSet::getFileType($f) ) {
+				$fullname = $taskSubmit->getValidFileName($f);
+				if ($fullname && isset($combination[$f])) {
+					file_put_contents(
+						$fullname,
+						TaskSet::getFileConstructor($ftype, $fullname)->getCombination($combination[$f])
+					);
+				}
+			}
+		}
 		
 		return $taskSubmit;
 	}

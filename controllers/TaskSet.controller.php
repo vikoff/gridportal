@@ -149,8 +149,8 @@ class TaskSetController extends Controller{
 		// создание комбинации
 		echo '<pre>';
 		while($combination = $submitter->getNextCombination()) {
-			// print_r($combination);
-			// continue;
+			print_r($combination);
+			continue;
 			foreach($set->getAllFilesList() as $f) {
 				if ( $ftype = TaskSet::getFileType($f) ) {
 					$fullname = $set->getValidFileName($f);
@@ -500,12 +500,15 @@ class TaskSetController extends Controller{
 					'password' => getVar($_POST['user']['pass']),
 					'lifetime' => (int)getVar($_POST['lifetime']),
 				);
+			$_myproxyServer = MyproxyServer::load($myProxyAuthData['serverId'])->getAllFields();
+			$myProxyAuthData['url'] = $_myproxyServer['url'];
+			$myProxyAuthData['port'] = $_myproxyServer['port'];
 		} catch (Exception $e) {
 			Messenger::get()->addError(Lng::get('task.warnings'), $e->getMessage());
 			return FALSE;
 		}
 			
-		if($instance->submit($myProxyAuthData, getVar($_POST['prefer-server']))){
+		if($report = $instance->submit($myProxyAuthData, getVar($_POST['prefer-server']))){
 		
 			App::stopDisplay();
 			
@@ -513,13 +516,13 @@ class TaskSetController extends Controller{
 			if($instance->hasError())
 				Messenger::get()->addError(Lng::get('task.warnings'), $instance->getError());
 				
-			$this->snippet_submit_complete($instance);
+			$this->snippet_submit_complete($instance, $report['queue_length']);
 			return TRUE;
 		}
 		else{
 			Messenger::get()->addError(
 				Lng::get('Task.controller.task-run-fail'),
-				$instance->lastSubmit->getError().'<h3>Лог</h3>'.$instance->lastSubmit->getLog()
+				$instance->firstSubmit->getError().'<h3>Лог</h3>'.$instance->firstSubmit->getLog()
 			);
 			return FALSE;
 		}
@@ -529,12 +532,13 @@ class TaskSetController extends Controller{
 	////// SNIPPETS //////
 	//////////////////////
 	
-	public function snippet_submit_complete(TaskSet $taskModel){
+	public function snippet_submit_complete(TaskSet $taskModel, $queueLength){
 		
 		$variables = array(
 			'id' => $taskModel->id,
 			'numSubmits' => count($taskModel->submits),
-			'log' => $taskModel->lastSubmit->getLog(),
+			'queueLength' => $queueLength,
+			'log' => $taskModel->firstSubmit->getLog(),
 		);
 		
 		FrontendViewer::get()

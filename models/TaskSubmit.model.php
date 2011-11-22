@@ -95,7 +95,7 @@ class TaskSubmit extends GenericObject{
                 'set_id' => array('settype' => 'int'),
                 'index' => array('settype' => 'int'),
                 'status' => array('settype' => 'int'),
-                'is_submitted' => array('settype' => 'bool'),
+                'is_submitted' => array('settype' => 'int'),
                 'is_completed' => array('settype' => 'int'),
                 'is_fetched' => array('settype' => 'bool'),
                 'start_date' => array('settype' => 'int'),
@@ -128,10 +128,8 @@ class TaskSubmit extends GenericObject{
 	/** ПОСТ-ВАЛИДАЦИЯ ДАННЫХ */
 	public function postValidation(&$data){
 		
-		// $data['author'] = USER_AUTH_ID;
-		// $data['modif_date'] = time();
-		// if($this->isNewObj)
-			// $data['create_date'] = time();
+		if($this->isNewObj)
+			$data['create_date'] = time();
 	}
 	
 	/** ДЕЙСТВИЕ ПОСЛЕ СОХРАНЕНИЯ */
@@ -140,6 +138,9 @@ class TaskSubmit extends GenericObject{
 		$dir = $this->getFilesDir();
 		if (!is_dir($dir))
 			mkdir($dir, 0777, TRUE);
+		
+		if (!is_dir($dir.'src/'))
+			mkdir($dir.'src/', 0777, TRUE);
 	}
 	
 	/** ПОДГОТОВКА К УДАЛЕНИЮ ОБЪЕКТА */
@@ -159,21 +160,13 @@ class TaskSubmit extends GenericObject{
 	
 	public function submit($myproxyAuth, $preferedServer){
 		
-		// получение данных сервера myproxy
-		try {
-			$myproxyServer = MyproxyServer::load($myproxyAuth['serverId'])->getAllFields();
-		} catch (Exception $e) {
-			$this->setError(Lng::get('Task.model.myproxy-server-not-faund'));
-			return FALSE;
-		}
-		
 		$debug = 0;
 		$tmpfile = tempnam("/tmp", "x509_mp_");
 		
 		require_once(FS_ROOT.'includes/myproxy/myproxyClient.php');
 		$myProxyIsLogged = myproxy_logon(
-			$myproxyServer['url'],
-			$myproxyServer['port'],
+			$myproxyAuth['url'],
+			$myproxyAuth['port'],
 			$myproxyAuth['login'],
 			$myproxyAuth['password'],
 			$myproxyAuth['lifetime'],
@@ -195,7 +188,7 @@ class TaskSubmit extends GenericObject{
 		
 		$env = "/bin/env";
 		$ngsub = "/opt/nordugrid-8.1/bin/ngsub";
-		$taskdir = $this->getFilesDir();
+		$taskdir = $this->getFilesDir().'src/';
 		$ngjob = $this->getNgjobStr();
 		
 		$command  = ''
@@ -220,8 +213,10 @@ class TaskSubmit extends GenericObject{
 			
 			$jobid = preg_match('/(gsiftp:\/\/\S+\d+)/', $response, $matches) ? $matches[1] : null;
 			if(!empty($jobid)){
-				$this->setField('start_date', time());
 				$this->setField('jobid', $jobid);
+				$this->setField('prefered_server', $preferedServer);
+				$this->setField('start_date', time());
+				$this->setField('is_submitted', 1);
 				$this->_save();
 			}else{
 				$this->setError('Не удалось сохранить jobid задачи');
@@ -383,8 +378,7 @@ class TaskSubmit extends GenericObject{
 	
 	public function getNgjobStr(){
 		
-		// return file_get_contents($this->getFilesDir().'nordujob');
-		return str_replace("\r\n", "\n", file_get_contents($this->getFilesDir().'nordujob'));
+		return str_replace("\r\n", "\n", file_get_contents($this->getFilesDir().'src/nordujob'));
 		
 	//	return "&(executable=/bin/sleep)(arguments=1000)(jobname='GJSWI sleep test')";
 		
@@ -399,7 +393,38 @@ class TaskSubmit extends GenericObject{
 		
 		return FS_ROOT.'files/users/'.$this->getUid().'/task_sets/'.$this->getField('set_id').'/submits/'.$this->id.'/';
 	}
-
+	
+	/** ПОЛУЧИТЬ СПИСОК ИСХОДНЫХ ФАЙЛОВ ЗАДАЧИ */
+	public function getSrcFiles(){
+			
+		$taskDir = $this->getFilesDir().'src/';
+		
+		if(!is_dir($taskDir))
+			return array();
+		
+		$elms = array();
+		foreach(scandir($taskDir) as $elm)
+			if(!in_array($elm, array('.', '..')))
+				$elms[] = $elm;
+		
+		return $elms;
+	}
+	
+	/** ПОЛУЧИТЬ ПОЛНЫЙ ПУТЬ ФАЙЛА ПО ИМЕНИ */
+	public function getValidFileName($fname){
+		
+		$dir = realpath($this->getFilesDir().'src/').DIRECTORY_SEPARATOR;
+		$fullname = realpath($dir.$fname);
+		
+		if (strpos($fullname, $dir) === FALSE)
+			return null;
+		
+		if (!file_exists($fullname))
+			return null;
+		
+		return $fullname;
+	}
+	
 	/** ПОЛУЧИТЬ ФАЙЛЫ РЕЗУЛЬТАТОВ */
 	public function getResultFiles($_path){
 		
@@ -546,6 +571,7 @@ class TaskSubmitCollection extends GenericObjectCollection{
 		'is_submitted' => 'Отправлена',
 		'is_completed' => 'Завершена',
 		'is_fetched' => 'Получена',
+		'create_date' => 'Дата создания',
 		'start_date' => 'Дата запуска',
 		'finish_date' => 'Дата завершения',
 	);

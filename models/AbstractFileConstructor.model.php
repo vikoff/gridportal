@@ -10,6 +10,7 @@
 abstract class AbstractFileConstructor {
 	
 	public $filename = null;
+	public $basename = null;
 	
 	public $multiplierLeftTag = '{*';
 	public $multiplierRightTag = '*}';
@@ -20,6 +21,7 @@ abstract class AbstractFileConstructor {
 	public function __construct($filename){
 	
 		$this->filename = $filename;
+		$this->basename = basename($this->filename);
 	}
 	
 	public function getConstructorFormData(){
@@ -39,7 +41,7 @@ abstract class AbstractFileConstructor {
 			if (preg_match_all('/\{\*(.+?)\*\}/', $row, $matches)) {
 				foreach ($matches[1] as $mult) {
 					$multipliers[] = array(
-						'file' => $this->filename,
+						'file' => $this->basename,
 						'row' => $index,
 						'valuesStr' => $mult,
 						'values' => $this->parseMultiplier($mult),

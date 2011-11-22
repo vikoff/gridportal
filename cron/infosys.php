@@ -7,6 +7,7 @@ ini_set('display_errors', 1);
 define('FS_ROOT', realpath('..').DIRECTORY_SEPARATOR);
 
 define('TASK_TABLE', 'task_submits');
+define('TASK_QUEUE_TABLE', 'task_submit_queue');
 // define('TASK_TABLE', 'tasks');
 
 // отправка Content-type заголовка
@@ -16,7 +17,14 @@ require_once('setup.php');
 require_once(FS_ROOT.'includes/infosys/infosys.php');
 
 $db = db::get();
-$jobs = $db->getColIndexed('SELECT id, jobid FROM '.TASK_TABLE.' WHERE jobid IS NOT NULL AND LENGTH(jobid) > 0 ORDER BY id');
+$jobs = $db->getAllIndexed('
+	SELECT id, jobid, is_submitted FROM '.TASK_TABLE.'
+	WHERE 
+		jobid IS NOT NULL AND LENGTH(jobid) > 0 AND
+		is_submitted > 0 AND
+		is_completed = 0
+	ORDER BY id
+', 'jobid');
 
 echo "TASKS ".print_r($jobs, 1)."\n";
 
@@ -32,7 +40,7 @@ $query = new BDIIQuery_ARCJobs(array(
 ));
 
 $attrs = array ( 'nordugrid-job-status');
-$statuses = $query->query_ARCJobs($jobs, $attrs);
+$statuses = $query->query_ARCJobs(array_keys($jobs), $attrs);
 
 echo "RESPONSE ".print_r($statuses, 1)."\n";
 
@@ -53,13 +61,27 @@ foreach($statuses as $jobid => $data){
 	}
 	
 	$db->update(TASK_TABLE, array(
-			'is_submitted' => TRUE,
+			'is_submitted' => 2,
 			'is_completed' => $isCompleted,
 			'status'       => $allStatuses[$status]
 		),
 		'jobid='.$db->qe($jobid)
 	);
 	echo 'update '.$jobid.' with status "'.$data['nordugrid-job-status']."\"\n";
+	
+	// если задача только что получила свой первый статус
+	if ($jobs[$jobid]['is_submitted'] == 1) {
+		
+		// запуск зависимых задач (если есть)
+		if ($dependentTasksNum = $db->getCol('SELECT COUNT(1) FROM '.TASK_QUEUE_TABLE.' WHERE trigger_task_id='.$jobs[$jobid]['id'])) {
+			
+			echo "starting ".$dependentTasksNum." dependent tasks, triggered by task #".$jobs[$jobid]['id']."\n";
+			$script = FS_ROOT.'cron/submitter.php '.$jobs[$jobid]['id'];
+			`php $script > /dev/null &`;
+		}
+			
+		
+	}
 }
 
 

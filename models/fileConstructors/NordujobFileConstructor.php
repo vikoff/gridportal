@@ -1,7 +1,5 @@
 <?php
 
-// запоминаем редактируемую строку и редактируемый фрагмент текста чтобы потом туда подставить мультиплаер
-
 class NordujobFileConstructor extends AbstractFileConstructor {
 
 	
@@ -14,7 +12,7 @@ class NordujobFileConstructor extends AbstractFileConstructor {
 			return null;
 			
 		if (preg_match('/^(\((.+)="?)([^"]+)("?\))$/', $row, $matches)) {
-			//            (---------)(-----)(----)
+			//            (---pre---)(value)(post)
 			// echo '<pre>'; print_r($matches); echo '</pre>';
 			$field = $matches[2];
 			$value = $matches[3];

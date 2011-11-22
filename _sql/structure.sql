@@ -231,13 +231,22 @@ CREATE TABLE `task_submits` (
   `id`				BIGINT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `set_id`			INT(10) UNSIGNED,
   `index`			INT UNSIGNED,
+  `prefered_server`	VARCHAR(255),
   `jobid`			VARCHAR(255),
   `status`			SMALLINT,
-  `is_submitted`	BOOLEAN,  /* отправлена ли задача на выполнение */
+  `is_submitted`	SMALLINT,  /* 0 - не отправлена; 1 - отправлена в grid; 2 - отправлена и присвоен статус */
   `is_completed`	SMALLINT, /* 0 - в процессе; 1 - успешно завершена; 2 - завершена с ошибкой; 3 - удалена */
   `is_fetched`		BOOLEAN,  /* получена ли задача из grid */
-  `start_date`		INT(10) UNSIGNED,
-  `finish_date`		INT(10) UNSIGNED
+  `create_date`		INT(10) UNSIGNED, /* дата создания */
+  `start_date`		INT(10) UNSIGNED, /* дата запуска */
+  `finish_date`		INT(10) UNSIGNED /* дата завершения */
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+/* ОЧЕРЕДЬ ЗАПУСКА ЗАДАЧ */
+DROP TABLE IF EXISTS `task_submit_queue`;
+CREATE TABLE `task_submit_queue` (
+  `trigger_task_id`		INT(10) UNSIGNED,
+  `dependent_task_id`	INT(10) UNSIGNED
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* СТАТУСЫ ЗАДАЧ */

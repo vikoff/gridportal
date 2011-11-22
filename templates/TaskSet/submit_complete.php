@@ -4,11 +4,18 @@
 	<?=$this->log;?>
 </div>
 
-<? if($this->numSubmits == 1): ?>
-	Задача успешно запущена
-<? else: ?>
-	Одна задача из пакета (<?= $this->numSubmits ?> задач) успешно запущена.
-<? endif; ?>
+<div>
+	<? if($this->numSubmits == 1): ?>
+		Задача успешно запущена
+	<? else: ?>
+		Одна задача из пакета (<?= $this->numSubmits ?> задач) успешно запущена.
+	<? endif; ?>
+</div>
+<div>
+	<? if($this->queueLength): ?>
+		<?= $this->queueLength; ?> задач поставлено в очередь на запуск.
+	<? endif; ?>
+</div>
 
 <div class="paragraph" style="text-align: center;">
 	<a href="<?= href('task-set/view/'.$this->id);?>" class="button"><?=Lng::get('task.go-to-current-task');?></a>

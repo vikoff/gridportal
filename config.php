@@ -1,6 +1,6 @@
 <?
 
-if(!defined('WWW_ROOT'))
+if(!defined('FS_ROOT'))
 	die("access denided (config file)");
 
 // название сайта

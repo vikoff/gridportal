@@ -45,7 +45,7 @@
 	<tr>
 		<td><?= $s['index']; ?></td>
 		<td><?= $s['jobid']; ?></td>
-		<td><?= Lng::get($s['status_str']); ?></td>
+		<td><?= $s['is_submitted'] ? Lng::get($s['status_str']) : 'В очереди на запуск'; ?></td>
 		<td><?= $s['start_date_str']; ?></td>
 		<td><?= $s['finish_date_str']; ?></td>
 		<td>
