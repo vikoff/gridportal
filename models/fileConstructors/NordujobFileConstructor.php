@@ -15,14 +15,18 @@ class NordujobFileConstructor extends AbstractFileConstructor {
 			//            (---pre---)(value)(post)
 			// echo '<pre>'; print_r($matches); echo '</pre>';
 			$field = $matches[2];
-			$value = $matches[3];
+			$value = trim($matches[3]);
+			
+			if (preg_match('/^\{\*(.+)\*\}$/', $value, $submatches))
+				$value = $this->parseStrMultiplier($submatches[1]);
+			
 			return array(
 				'row' => $rowIndex,
 				'field' => $field,
 				'pre_text' => $matches[1],
 				'value' => $value,
 				'post_text' => $matches[4],
-				'allow_multiple' => is_numeric(trim($value)),
+				'allow_multiple' => is_array($value) || is_numeric(trim($value)),
 			);
 		} else {
 			return null;

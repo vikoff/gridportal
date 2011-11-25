@@ -256,7 +256,7 @@ class TaskSetController extends Controller{
 				'formData' => TaskSet::getFileConstructor($fileType, $fullname)->getConstructorFormData()
 			);
 			
-			// echo '<pre>'; print_r($vars); die;
+			// echo '<pre>'; print_r(TaskSet::getFileConstructor($fileType, $fullname)->getConstructorFormData()); die;
 			include(FS_ROOT.'templates/'.self::TPL_PATH.'file_constructor.php');
 		}
 		catch(Exception $e){
@@ -458,7 +458,11 @@ class TaskSetController extends Controller{
 
 	public function action_save_constructor($params = array()){
 		
-		// echo '<pre>'; print_r($_POST); die;
+		// echo '<pre>'; print_r($_POST); echo '</pre><hr />';
+		// foreach (Tools::unescape($_POST['items']) as $index => $data) // DEBUG
+			// echo TaskSet::parseFormMultiplier($data['value']).'<br />'; // DEBUG
+		
+		// die; // DEBUG
 		
 		$fname = getVar($_GET['file']);
 		if (empty($fname))
@@ -477,7 +481,7 @@ class TaskSetController extends Controller{
 		$modifiedRows = Tools::unescape($_POST['items']);
 		$contentArr = file($fullname);
 		foreach($modifiedRows as $index => $data)
-			$contentArr[$index] = $data['pre_text'].$data['value'].$data['post_text']."\n";
+			$contentArr[$index] = $data['pre_text'].TaskSet::parseFormMultiplier($data['value']).$data['post_text']."\n";
 		file_put_contents($fullname, implode('', $contentArr));
 		
 		return TRUE;

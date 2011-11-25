@@ -44,7 +44,7 @@ abstract class AbstractFileConstructor {
 						'file' => $this->basename,
 						'row' => $index,
 						'valuesStr' => $mult,
-						'values' => $this->parseMultiplier($mult),
+						'values' => $this->parseStrMultiplier($mult),
 					);
 				}
 			}
@@ -69,12 +69,21 @@ abstract class AbstractFileConstructor {
 		return implode("", $fileArr)."\n";
 	}
 	
-	public function parseMultiplier($str){
+	public function parseStrMultiplier($str){
 		
 		$values = explode(',', $str);
-		foreach($values as &$v)
-			$v = trim($v);
-		
+		foreach ($values as &$v) {
+			// интервал
+			if (strpos($v, ';') !== FALSE) {
+				list($intervalStr, $step) = explode(':', $v) + array('', 0); // отделение шага
+				$interval = explode(';', $intervalStr) + array(0, 0);
+				$v = array('from' => $interval[0], 'to' => $interval[1], 'step' => $step);
+			}
+			// одиночное значение
+			else {
+				$v = trim($v);
+			}
+		}
 		return $values;
 	}
 	

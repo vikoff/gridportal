@@ -63,6 +63,22 @@ class TaskSet extends GenericObject{
 		}
 	}
 	
+	/** распарсить вывод конструктора файлов (множители) */
+	public static function parseFormMultiplier($value){
+		
+		if (is_array($value)) {
+			$combinations = array();
+			foreach ($value as $val) {
+				$combinations[] = isset($val['single'])
+					? $val['single']
+					: getVar($val['from']).';'.getVar($val['to']).':'.getVar($val['step']);
+			}
+			return implode(',', $combinations);
+		} else {
+			return $value;
+		}
+	}
+	
 	/** СЛУЖЕБНЫЙ МЕТОД (получение констант из родителя) */
 	public function getConst($name){
 		return constant(__CLASS__.'::'.$name);
