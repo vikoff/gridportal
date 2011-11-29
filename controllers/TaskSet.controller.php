@@ -126,42 +126,6 @@ class TaskSetController extends Controller{
 			->render();
 	}
 	
-	public function display_test($params = array()){
-		
-		$set = TaskSet::load(21);
-		$multipliers = array();
-		
-		// поиск всех множителей в файле
-		foreach($set->getAllFilesList() as $f) {
-			if ( $ftype = TaskSet::getFileType($f) ) {
-				$multipliers = array_merge(
-					$multipliers,
-					TaskSet::getFileConstructor($ftype, $set->getValidFileName($f))->getMultipliers()
-				);
-			}
-		}
-		
-		// создание обработчика множителей
-		$submitter = new BatchSubmitter();
-		foreach($multipliers as $mult)
-			$submitter->addMultiplier($mult['file'], $mult['row'], $mult['values'], $mult['valuesStr']);
-		
-		// создание комбинации
-		echo '<pre>';
-		while($combination = $submitter->getNextCombination()) {
-			print_r($combination);
-			continue;
-			foreach($set->getAllFilesList() as $f) {
-				if ( $ftype = TaskSet::getFileType($f) ) {
-					$fullname = $set->getValidFileName($f);
-					if (isset($combination[$fullname]))
-						echo 'file '.$fullname.' with combination: <br />'
-							.TaskSet::getFileConstructor($ftype, $fullname)->getCombination($combination[$fullname]);
-				}
-			}
-		}
-	}
-	
 	public function display_submit($params = array()){
 		
 		$user = CurUser::get();
@@ -182,13 +146,13 @@ class TaskSetController extends Controller{
 		
 		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
 			
-			$basedir = $instance->getFilesDir().'src/';
-			$numSubmits = 1;
-			foreach($instance->getAllFilesList() as $f)
-				if ( $ftype = TaskSet::getFileType($f) )
-					if ($mults = TaskSet::getFileConstructor($ftype, $instance->getValidFileName($f))->getMultipliers())
-						foreach($mults as $mult)
-							$numSubmits *= count($mult['values']);
+		$basedir = $instance->getFilesDir().'src/';
+		$numSubmits = 1;
+		foreach($instance->getAllFilesList() as $f)
+			if ( $ftype = TaskSet::getFileType($f) )
+				if ($mults = TaskSet::getFileConstructor($ftype, $instance->getValidFileName($f))->getMultipliers())
+					foreach($mults as $mult)
+						$numSubmits *= count($mult['values']);
 		
 		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
 			'showMyproxyLogin' => $manualMyproxyLogin,
@@ -246,7 +210,7 @@ class TaskSetController extends Controller{
 			if (empty($fullname))
 				throw new Exception('Файл не найден #1');
 			
-			$fileType = $instance->getFileType($fullname);
+			$fileType = TaskSet::getFileType($fullname);
 			if (empty($fileType))
 				throw new Exception('Неизвестный тип файла');
 			
@@ -256,7 +220,6 @@ class TaskSetController extends Controller{
 				'formData' => TaskSet::getFileConstructor($fileType, $fullname)->getConstructorFormData()
 			);
 			
-			// echo '<pre>'; print_r(TaskSet::getFileConstructor($fileType, $fullname)->getConstructorFormData()); die;
 			include(FS_ROOT.'templates/'.self::TPL_PATH.'file_constructor.php');
 		}
 		catch(Exception $e){
@@ -477,13 +440,12 @@ class TaskSetController extends Controller{
 		$fullname = $instance->getValidFileName($fname);
 		if (empty($fullname))
 			throw new Exception('Файл не найден #1');
+			
+		$fileType = TaskSet::getFileType($fullname);
+		if (empty($fileType))
+			throw new Exception('Неизвестный тип файла');
 		
-		$modifiedRows = Tools::unescape($_POST['items']);
-		$contentArr = file($fullname);
-		foreach($modifiedRows as $index => $data)
-			$contentArr[$index] = $data['pre_text'].TaskSet::parseFormMultiplier($data['value']).$data['post_text']."\n";
-		file_put_contents($fullname, implode('', $contentArr));
-		
+		TaskSet::getFileConstructor($fileType, $fullname)->saveConstructorFormData(Tools::unescape($_POST['items']));
 		return TRUE;
 	}
 	

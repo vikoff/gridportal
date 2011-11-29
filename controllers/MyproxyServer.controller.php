@@ -158,6 +158,24 @@ class MyproxyServerController extends Controller{
 	
 
 	////////////////////
+	///// SNIPPETS /////
+	////////////////////
+	
+	/** ФОРМА MYPROXY-АВТОРИЗАЦИИ */
+	public static function snippet_myproxy_login(){
+		
+		$user = CurUser::get();
+		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
+		
+		$vars = array(
+			'showMyproxyLogin' => $manualMyproxyLogin,
+			'myproxyServersList' => $manualMyproxyLogin ? MyproxyServerCollection::load()->getAll() : array(),
+		);
+		
+		return FrontendViewer::get()->getContentPhpFile('myproxy_login.php', $vars);
+	}
+
+	////////////////////
 	////// ACTION //////
 	////////////////////
 	

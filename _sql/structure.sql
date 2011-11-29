@@ -230,6 +230,7 @@ DROP TABLE IF EXISTS `task_submits`;
 CREATE TABLE `task_submits` (
   `id`				BIGINT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `set_id`			INT(10) UNSIGNED,
+  `uid`				INT(10) UNSIGNED,
   `index`			INT UNSIGNED,
   `prefered_server`	VARCHAR(255),
   `jobid`			VARCHAR(255),

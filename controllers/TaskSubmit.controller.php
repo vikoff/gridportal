@@ -112,12 +112,16 @@ class TaskSubmitController extends Controller{
 	/** DISPLAY DELETE */
 	public function display_delete($params = array()){
 		
-		$instanceId = getVar($params[0], 0 ,'int');
-		$instance = TaskSubmit::load($instanceId);
-
-		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
-			'instanceId' => $instanceId,
-		));
+		$taskIds = getVar($_GET['task'], array(), 'array');
+		$collection = !empty($taskIds)
+			? TaskSubmitCollection::load(array('uid' => USER_AUTH_ID, 'ids' => YArray::intvalsReturn($taskIds)))->getAll()
+			: array();
+		
+		$variables = array(
+			'collection' => $collection,
+			'setId' => !empty($collection) ? $collection[ YArray::getFirstKey($collection) ]['set_id'] : '',
+			'myproxyLoginForm' => MyproxyServerController::snippet_myproxy_login(),
+		);
 		
 		FrontendViewer::get()
 			->prependTitle('Удаление задачи')
@@ -347,17 +351,14 @@ class TaskSubmitController extends Controller{
 	/** ACTION DELETE */
 	public function action_delete($params = array()){
 		
-		$instanceId = getVar($_POST['id'], 0, 'int');
-		$instance = TaskSubmit::load($instanceId);
-	
-		if($instance->destroy()){
-			Messenger::get()->addSuccess(Lng::get('task.controller.RecordRemoveSucsess'));
+		$taskIds = getVar($_POST['task'], array(), 'array');
+		if (!empty($taskIds)) {
+			TaskSubmitCollection::load(array('uid' => USER_AUTH_ID, 'ids' => YArray::intvalsReturn($taskIds)))->delete();
+			Messenger::get()->addSuccess('Все задачи удалены');
 			return TRUE;
-		}else{
-			Messenger::get()->addError('Не удалось удалить запись:', $instance->getError());
-			return FALSE;
+		} else {
+			Messenger::get()->addError('Задачи не найдены');
 		}
-
 	}
 	
 }

@@ -60,6 +60,7 @@ class TaskSubmit extends GenericObject{
 		$data['status_str'] = $data['status'] ? TaskStatus::get()->statuses[$data['status']]['title'] : 'task.state.undefined';
 		$data['start_date_str'] = YDate::loadTimestamp($data['start_date'])->getStrDateShortTime();
 		$data['finish_date_str'] = YDate::loadTimestamp($data['finish_date'])->getStrDateShortTime();
+		$data['fullname'] = self::getSubmitName($data['name'], $data['gridjob_name'], $data['index']);
 		
 		$data['actions'] = array(
 			// остановка задачи доступна для выполняющихся в данный момент
@@ -529,12 +530,13 @@ class TaskSubmit extends GenericObject{
 		exit;
 	}
 	
+	/**
+	 * @TODO: раньше uid хранился только в таблице task_sets, а сейчас я денормализовал
+	 * и добавил колонку uid в task_sets. Надо переделать все вхождения на новый вариант
+	 */
 	public function getUid(){
-		
-		if (empty($this->_uid))
-			throw new Exception('uid not specified');
 			
-		return $this->_uid;
+		return $this->getField('uid');
 	}
 	
 	public function dbGetRow(){
@@ -550,6 +552,14 @@ class TaskSubmit extends GenericObject{
 		}
 		
 		return $data;
+	}
+
+	public static function getSubmitName($taskName, $taskNordujobName, $index) {
+		
+		$name = $taskName.'_'.$taskNordujobName.'_rc'.$index;
+		$name = Tools::translit($name);
+		$name = preg_replace('/\s/', '_', $name);
+		return $name;
 	}
 	
 }
@@ -597,8 +607,10 @@ class TaskSubmitCollection extends GenericObjectCollection{
 	public function getPaginated( $filters = array() ){
 		
 		$whereArr = array();
-		if(!empty($filters['uid']))
-			$whereArr[] = 'uid='.$filters['uid'];
+		if(!empty($this->filters['uid']))
+			$whereArr[] = 'uid='.$this->filters['uid'];
+		if(!empty($this->filters['ids']))
+			$whereArr[] = 't.id IN('.$this->filters['ids'].')';
 		
 		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
 		
@@ -619,6 +631,32 @@ class TaskSubmitCollection extends GenericObjectCollection{
 		return $data;
 	}
 	
+	public function getAll(){
+		
+		$whereArr = array();
+		if(!empty($this->filters['uid']))
+			$whereArr[] = 't.uid='.$this->filters['uid'];
+		if(!empty($this->filters['ids']))
+			$whereArr[] = 't.id IN('.implode(',', $this->filters['ids']).')';
+		
+		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
+		
+		$data = db::get()->getAllIndexed('
+			SELECT t.*, s.title AS state_title, sets.name, sets.gridjob_name
+			FROM '.TaskSubmit::TABLE.' t
+			JOIN '.TaskSet::TABLE.' sets ON sets.id=t.set_id
+			JOIN task_states s ON t.status=s.id '.$whereStr,
+			'id',
+			array()
+		);
+		
+		// echo '<pre>'; print_r($data); die;
+		foreach($data as &$row)
+			$row = TaskSubmit::forceLoad($row['id'], $row)->getAllFieldsPrepared();
+		
+		return $data;
+	}
+	
 	public function getFetchedSubmits(){
 		
 		$db = db::get();
@@ -633,7 +671,11 @@ class TaskSubmitCollection extends GenericObjectCollection{
 	
 	public function getTasksBySet($set_id){
 		
-		$data = db::get()->getAll('SELECT * FROM '.TaskSubmit::TABLE.' WHERE set_id='.$set_id.' ORDER BY `index` DESC');
+		$data = db::get()->getAll('
+			SELECT t.*, sets.name, sets.gridjob_name
+			FROM '.TaskSubmit::TABLE.' t
+			JOIN '.TaskSet::TABLE.' sets ON sets.id=t.set_id
+			WHERE t.set_id='.$set_id.' ORDER BY `index` DESC');
 		
 		foreach($data as &$row)
 			$row = TaskSubmit::forceLoad($row['id'], $row)->getAllFieldsPrepared();
@@ -720,6 +762,32 @@ class TaskSubmitCollection extends GenericObjectCollection{
 		exit;
 	}
 
+	public function delete(){
+		
+		$whereArr = array();
+		if(!empty($this->filters['uid']))
+			$whereArr[] = 't.uid='.$this->filters['uid'];
+		if(!empty($this->filters['ids']))
+			$whereArr[] = 't.id IN('.implode(',', $this->filters['ids']).')';
+		
+		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
+		
+		$data = db::get()->getAllIndexed('
+			SELECT t.*, s.title AS state_title, sets.name, sets.gridjob_name
+			FROM '.TaskSubmit::TABLE.' t
+			JOIN '.TaskSet::TABLE.' sets ON sets.id=t.set_id
+			JOIN task_states s ON t.status=s.id '.$whereStr,
+			'id',
+			array()
+		);
+		
+		// echo '<pre>'; print_r($data); die;
+		foreach($data as &$row)
+			TaskSubmit::forceLoad($row['id'], $row)->destroy();
+			
+		return TRUE;
+	}
+	
 }
 
 ?>

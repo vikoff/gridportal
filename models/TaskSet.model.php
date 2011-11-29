@@ -63,22 +63,6 @@ class TaskSet extends GenericObject{
 		}
 	}
 	
-	/** распарсить вывод конструктора файлов (множители) */
-	public static function parseFormMultiplier($value){
-		
-		if (is_array($value)) {
-			$combinations = array();
-			foreach ($value as $val) {
-				$combinations[] = isset($val['single'])
-					? $val['single']
-					: getVar($val['from']).';'.getVar($val['to']).':'.getVar($val['step']);
-			}
-			return implode(',', $combinations);
-		} else {
-			return $value;
-		}
-	}
-	
 	/** СЛУЖЕБНЫЙ МЕТОД (получение констант из родителя) */
 	public function getConst($name){
 		return constant(__CLASS__.'::'.$name);
@@ -394,6 +378,7 @@ class TaskSet extends GenericObject{
 		$taskSubmit->setUid($this->getField('uid'));
 		$taskSubmit->save(array(
 			'set_id' => $this->id,
+			'uid' => $this->getField('uid'),
 			'index' => $this->getLastSubmitIndex() + 1,
 			'status' => NULL,
 			'is_submitted' => 0,

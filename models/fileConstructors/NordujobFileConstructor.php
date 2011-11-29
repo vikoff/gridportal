@@ -17,6 +17,7 @@ class NordujobFileConstructor extends AbstractFileConstructor {
 			$field = $matches[2];
 			$value = trim($matches[3]);
 			
+			// отлавливаем множители
 			if (preg_match('/^\{\*(.+)\*\}$/', $value, $submatches))
 				$value = $this->parseStrMultiplier($submatches[1]);
 			
