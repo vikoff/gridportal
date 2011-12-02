@@ -316,7 +316,7 @@ class TaskSet extends GenericObject{
 		}
 	}
 	
-	public function submit($myproxyAuth, $preferServer = ''){
+	public function submit(MyproxyConnector $connector, $preferServer = ''){
 		
 		$basedir = $this->getFilesDir().'src/';
 		$multipliers = array();
@@ -341,7 +341,7 @@ class TaskSet extends GenericObject{
 		$this->submits[] = $this->firstSubmit;
 		
 		// запуск первого субмита
-		$success = $this->firstSubmit->submit($myproxyAuth, $preferServer);
+		$success = $this->firstSubmit->submit($connector, $preferServer);
 
 		if ($success) {
 			

@@ -5,7 +5,7 @@
 		<select name="submit">
 			<option value="">Выберите задачу...</option>
 		<? foreach($this->fetchedTasks as $t): ?>
-			<option value="<?= $t['id']; ?>" <? if($t['id'] == $this->curSubmitId): ?>selected="selected"<? endif; ?>><?= $t['name'].'_rc'.$t['index']; ?></option>
+			<option value="<?= $t['id']; ?>" <? if($t['id'] == $this->curSubmitId): ?>selected="selected"<? endif; ?>><?= $t['fullname'].'_rc'.$t['index']; ?></option>
 		<? endforeach; ?>
 		</select>
 		<input type="submit" value="Показать" />

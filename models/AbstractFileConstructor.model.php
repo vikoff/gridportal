@@ -36,7 +36,7 @@ abstract class AbstractFileConstructor {
 	}
 	
 	/** СОХРАНИТЬ ДАННЫЕ ИЗ ФОРМЫ-КОНСТРУКТОРА В ФАЙЛ */
-	public function saveConstructorFormData($formData){
+	public function saveConstructorFormData($formData, $setInstance = null){
 		
 		$contentArr = file($this->filename);
 		foreach($formData as $rowIndex => $data)

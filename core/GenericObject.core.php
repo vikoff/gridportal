@@ -252,7 +252,7 @@ class GenericObject{
 	}
 	
 	/** СОХРАНЕНИЕ ОБЪЕКТА */
-	protected function _save(){
+	public function _save(){
 	
 		$fields = array();
 		

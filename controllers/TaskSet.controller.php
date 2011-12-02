@@ -445,7 +445,7 @@ class TaskSetController extends Controller{
 		if (empty($fileType))
 			throw new Exception('Неизвестный тип файла');
 		
-		TaskSet::getFileConstructor($fileType, $fullname)->saveConstructorFormData(Tools::unescape($_POST['items']));
+		TaskSet::getFileConstructor($fileType, $fullname)->saveConstructorFormData(Tools::unescape($_POST['items']), $instance);
 		return TRUE;
 	}
 	
@@ -458,7 +458,7 @@ class TaskSetController extends Controller{
 		
 		// получение авторизационных данных myproxy
 		try {
-			$myProxyAuthData = !empty($_POST['myproxy-autologin'])
+			$myproxy = !empty($_POST['myproxy-autologin'])
 				? CurUser::get()->getMyproxyLoginData()
 				: array(
 					'serverId' => (int)getVar($_POST['server']),
@@ -466,15 +466,16 @@ class TaskSetController extends Controller{
 					'password' => getVar($_POST['user']['pass']),
 					'lifetime' => (int)getVar($_POST['lifetime']),
 				);
-			$_myproxyServer = MyproxyServer::load($myProxyAuthData['serverId'])->getAllFields();
-			$myProxyAuthData['url'] = $_myproxyServer['url'];
-			$myProxyAuthData['port'] = $_myproxyServer['port'];
+			$myproxyServer = MyproxyServer::load($myproxy['serverId'])->getAllFields();
+			$myproxy['url'] = $myproxyServer['url'];
+			$myproxy['port'] = $myproxyServer['port'];
 		} catch (Exception $e) {
 			Messenger::get()->addError(Lng::get('task.warnings'), $e->getMessage());
 			return FALSE;
 		}
+		$connector = new MyproxyConnector($myproxy);
 			
-		if($report = $instance->submit($myProxyAuthData, getVar($_POST['prefer-server']))){
+		if($report = $instance->submit($connector, getVar($_POST['prefer-server']))){
 		
 			App::stopDisplay();
 			

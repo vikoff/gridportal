@@ -159,29 +159,17 @@ class TaskSubmit extends GenericObject{
 		TaskSet::load($this->getField('set_id'))->updateNumSubmits();
 	}
 	
-	public function submit($myproxyAuth, $preferedServer){
+	public function submit(MyproxyConnector $connector, $preferedServer){
 		
-		$debug = 0;
-		$tmpfile = tempnam("/tmp", "x509_mp_");
-		
-		require_once(FS_ROOT.'includes/myproxy/myproxyClient.php');
-		$myProxyIsLogged = myproxy_logon(
-			$myproxyAuth['url'],
-			$myproxyAuth['port'],
-			$myproxyAuth['login'],
-			$myproxyAuth['password'],
-			$myproxyAuth['lifetime'],
-			$tmpfile,
-			$debug
-		);
-		
-		if(!$myProxyIsLogged){
+		// подключение myproxy
+		if (!$connector->connect()){
 			
-			$user = CurUser::get();
-			if(!$user->getField('myproxy_manual_login'))
-				$user->resetMyproxyExpireDate();
-			
-			$this->setError('Авторизация не пройдена. Уточните параметры в <a href="'.href('profile/edit#/temporary-cert').'">профиле</a>, или введите заново параметры вручную.');
+			$this->setError($connector->errcode == 104
+				? 'Авторизация не пройдена. Уточните параметры в <a href="'.href('profile/edit#/temporary-cert').'">профиле</a>, или введите заново параметры вручную.'
+				: $connector->getHumanReadableMsg($connector->errcode)
+			);
+			$this->setError('');
+			$this->setError($connector->errcode.' '.$connector->errmsg);
 			return FALSE;
 		}
 			
@@ -194,7 +182,7 @@ class TaskSubmit extends GenericObject{
 		
 		$command  = ''
 			." cd ".$taskdir. " && "
-			.$env . " X509_USER_PROXY=".$tmpfile." "
+			.$env . " X509_USER_PROXY=".$connector->tmpfile." "
 			.$ngsub . " -d2 -o /home/apache/.ngjobs"
 			.(!empty($preferedServer) ? ' -c '.escapeshellarg($preferedServer) : '')
 			." -e ". escapeshellarg(stripslashes($ngjob))." 2>&1";
@@ -232,37 +220,17 @@ class TaskSubmit extends GenericObject{
 		
 	}
 	
-	public function stop($myproxyAuth){
+	public function stop(MyproxyConnector $connector){
 		
-		// получение данных сервера myproxy
-		try {
-			$myproxyServer = MyproxyServer::load($myproxyAuth['serverId'])->getAllFields();
-		} catch (Exception $e) {
-			$this->setError(Lng::get('Task.model.myproxy-server-not-faund'));
-			return FALSE;
-		}
-		
-		$debug = 0;
-		$tmpfile = tempnam("/tmp", "x509_mp_");
-		
-		require_once(FS_ROOT.'includes/myproxy/myproxyClient.php');
-		$myProxyIsLogged = myproxy_logon(
-			$myproxyServer['url'],
-			$myproxyServer['port'],
-			$myproxyAuth['login'],
-			$myproxyAuth['password'],
-			$myproxyAuth['lifetime'],
-			$tmpfile,
-			$debug
-		);
-		
-		if(!$myProxyIsLogged){
+		// подключение myproxy
+		if (!$connector->connect()){
 			
-			$user = CurUser::get();
-			if(!$user->getField('myproxy_manual_login'))
-				$user->resetMyproxyExpireDate();
-			
-			$this->setError('Авторизация не пройдена. Уточните параметры в <a href="'.href('profile/edit#/temporary-cert').'">профиле</a>, или введите заново параметры вручную.');
+			$this->setError($connector->errcode == 104
+				? 'Авторизация не пройдена. Уточните параметры в <a href="'.href('profile/edit#/temporary-cert').'">профиле</a>, или введите заново параметры вручную.'
+				: $connector->getHumanReadableMsg($connector->errcode)
+			);
+			$this->setError('');
+			$this->setError($connector->errcode.' '.$connector->errmsg);
 			return FALSE;
 		}
 			
@@ -272,7 +240,7 @@ class TaskSubmit extends GenericObject{
 		$ngkill = "/opt/nordugrid-8.1/bin/ngkill";
 		
 		$command  = ''
-			.$env . " X509_USER_PROXY=".$tmpfile." "
+			.$env . " X509_USER_PROXY=".$connector->tmpfile." "
 			.$ngkill . " -d2 ".escapeshellarg($this->getField('jobid'))." 2>&1";
 		
 		$this->log("Запуск ngkill: $command ...");
@@ -296,37 +264,17 @@ class TaskSubmit extends GenericObject{
 		}
 	}
 	
-	public function getResults($myproxyAuth){
+	public function getResults(MyproxyConnector $connector){
 		
-		// получение данных сервера myproxy
-		try {
-			$myproxyServer = MyproxyServer::load($myproxyAuth['serverId'])->getAllFields();
-		} catch (Exception $e) {
-			$this->setError(Lng::get('Task.model.myproxy-server-not-faund'));
-			return FALSE;
-		}
-		
-		$debug = 0;
-		$tmpfile = tempnam("/tmp", "x509_mp_");
-
-		require_once(FS_ROOT.'includes/myproxy/myproxyClient.php');
-		$myProxyIsLogged = myproxy_logon(
-			$myproxyServer['url'],
-			$myproxyServer['port'],
-			$myproxyAuth['login'],
-			$myproxyAuth['password'],
-			$myproxyAuth['lifetime'],
-			$tmpfile,
-			$debug
-		);
-		
-		if(!$myProxyIsLogged){
+		// подключение myproxy
+		if (!$connector->connect()){
 			
-			$user = CurUser::get();
-			if(!$user->getField('myproxy_manual_login'))
-				$user->resetMyproxyExpireDate();
-			
-			$this->setError('Авторизация не пройдена. Уточните параметры в <a href="'.href('profile/edit#/temporary-cert').'">профиле</a>, или введите заново параметры вручную.');
+			$this->setError($connector->errcode == 104
+				? 'Авторизация не пройдена. Уточните параметры в <a href="'.href('profile/edit#/temporary-cert').'">профиле</a>, или введите заново параметры вручную.'
+				: $connector->getHumanReadableMsg($connector->errcode)
+			);
+			$this->setError('');
+			$this->setError($connector->errcode.' '.$connector->errmsg);
 			return FALSE;
 		}
 			
@@ -341,7 +289,7 @@ class TaskSubmit extends GenericObject{
 			
 		$command  = ''
 			." cd ".$taskdir. " && "
-			.$env . " X509_USER_PROXY=".$tmpfile." "
+			.$env . " X509_USER_PROXY=".$connector->tmpfile." "
 			.$ngget . " -d2 ".escapeshellarg($this->getField('jobid'))." 2>&1";
 
 		$this->log("Запуск ngget: $command ...");
@@ -535,21 +483,16 @@ class TaskSubmit extends GenericObject{
 	 * и добавил колонку uid в task_sets. Надо переделать все вхождения на новый вариант
 	 */
 	public function getUid(){
-			
+		
 		return $this->getField('uid');
 	}
 	
 	public function dbGetRow(){
 		
 		$data = db::get()->getRow(
-			"SELECT sub.*, s.uid, s.name FROM ".self::TABLE." sub
+			"SELECT sub.*, s.name, s.gridjob_name FROM ".self::TABLE." sub
 			JOIN ".TaskSet::TABLE." s ON s.id=sub.set_id
 			WHERE sub.id='".$this->id."'");
-		
-		if (!empty($data)) {
-			$this->_uid = $data['uid'];
-			unset($data['uid']);
-		}
 		
 		return $data;
 	}
@@ -661,10 +604,13 @@ class TaskSubmitCollection extends GenericObjectCollection{
 		
 		$db = db::get();
 		$data = $db->getAll('
-			SELECT sub.*, s.uid, s.name FROM '.TaskSubmit::TABLE.' sub
+			SELECT sub.*, s.uid, s.name, s.gridjob_name FROM '.TaskSubmit::TABLE.' sub
 			JOIN '.TaskSet::TABLE.' s ON s.id=sub.set_id
 			WHERE sub.is_fetched=true '.(!empty($this->filters['uid']) ? ' AND s.uid='.$this->filters['uid'] : '').'
 			ORDER BY `index`');
+		
+		foreach($data as &$row)
+			$row = TaskSubmit::forceLoad($row['id'], $row)->getAllFieldsPrepared();
 		
 		return $data;
 	}

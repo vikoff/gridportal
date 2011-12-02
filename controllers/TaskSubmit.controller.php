@@ -95,12 +95,9 @@ class TaskSubmitController extends Controller{
 		$instance = TaskSubmit::load($instanceId);
 		$user = CurUser::get();
 		
-		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
-
 		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
 			'instanceId' => $instanceId,
-			'showMyproxyLogin' => $manualMyproxyLogin,
-			'myproxyServersList' => $manualMyproxyLogin ? MyproxyServerCollection::load()->getAll() : array(),
+			'myproxyLoginForm' => MyproxyServerController::snippet_myproxy_login(),
 		));
 		
 		FrontendViewer::get()
@@ -306,16 +303,26 @@ class TaskSubmitController extends Controller{
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSubmit::load($instanceId);
 		
-		$myProxyAuthData = !empty($_POST['myproxy-autologin'])
-			? CurUser::get()->getMyproxyLoginData()
-			: array(
-				'serverId' => getVar($_POST['server']),
-				'login' => getVar($_POST['user']['name']),
-				'password' => getVar($_POST['user']['pass']),
-				'lifetime' => getVar($_POST['lifetime']),
-			);
+		// получение авторизационных данных myproxy
+		try {
+			$myproxy = !empty($_POST['myproxy-autologin'])
+				? CurUser::get()->getMyproxyLoginData()
+				: array(
+					'serverId' => (int)getVar($_POST['server']),
+					'login' => getVar($_POST['user']['name']),
+					'password' => getVar($_POST['user']['pass']),
+					'lifetime' => (int)getVar($_POST['lifetime']),
+				);
+			$myproxyServer = MyproxyServer::load($myproxy['serverId'])->getAllFields();
+			$myproxy['url'] = $myproxyServer['url'];
+			$myproxy['port'] = $myproxyServer['port'];
+		} catch (Exception $e) {
+			Messenger::get()->addError(Lng::get('task.warnings'), $e->getMessage());
+			return FALSE;
+		}
+		$connector = new MyproxyConnector($myproxy);
 	
-		if($instance->getResults($myProxyAuthData)){
+		if($instance->getResults($connector)){
 			Messenger::get()->addSuccess(Lng::get('xrls_edit.success'));
 			return TRUE;
 		}else{
@@ -330,16 +337,26 @@ class TaskSubmitController extends Controller{
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSubmit::load($instanceId);
 		
-		$myProxyAuthData = !empty($_POST['myproxy-autologin'])
-			? CurUser::get()->getMyproxyLoginData()
-			: array(
-				'serverId' => getVar($_POST['server']),
-				'login' => getVar($_POST['user']['name']),
-				'password' => getVar($_POST['user']['pass']),
-				'lifetime' => getVar($_POST['lifetime']),
-			);
-	
-		if($instance->stop($myProxyAuthData)){
+		// получение авторизационных данных myproxy
+		try {
+			$myproxy = !empty($_POST['myproxy-autologin'])
+				? CurUser::get()->getMyproxyLoginData()
+				: array(
+					'serverId' => (int)getVar($_POST['server']),
+					'login' => getVar($_POST['user']['name']),
+					'password' => getVar($_POST['user']['pass']),
+					'lifetime' => (int)getVar($_POST['lifetime']),
+				);
+			$myproxyServer = MyproxyServer::load($myproxy['serverId'])->getAllFields();
+			$myproxy['url'] = $myproxyServer['url'];
+			$myproxy['port'] = $myproxyServer['port'];
+		} catch (Exception $e) {
+			Messenger::get()->addError(Lng::get('task.warnings'), $e->getMessage());
+			return FALSE;
+		}
+		$connector = new MyproxyConnector($myproxy);
+
+		if($instance->stop($connector)){
 			Messenger::get()->addSuccess('Задача остановлена и удалена.');
 			return TRUE;
 		}else{

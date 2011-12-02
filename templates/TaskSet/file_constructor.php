@@ -142,6 +142,7 @@ $(function(){
 						<td>
 							<input type="hidden" name="items[<?= $row['row']; ?>][pre_text]" value="<?= htmlspecialchars($row['pre_text']); ?>" />
 							<input type="hidden" name="items[<?= $row['row']; ?>][post_text]" value="<?= htmlspecialchars($row['post_text']); ?>" />
+							<input type="hidden" name="items[<?= $row['row']; ?>][field]" value="<?= htmlspecialchars($row['field']); ?>" />
 							
 							<? if ($row['allow_multiple']): ?>
 							

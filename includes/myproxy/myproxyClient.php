@@ -207,24 +207,26 @@ function myproxy_logon ($myproxy_server, $myproxy_port, $username, $passphrase, 
     $der_csr = pem2der($csr_data);
     
     //open a normal socket connection to the server
-    $fd=fsockopen( $MYPROXY_SERVER, $PORT, $errno, $errstr);
+	Error::config(array('display' => FALSE));
+    $fd = @fsockopen( $MYPROXY_SERVER, $PORT, $errno, $errstr);
+	Error::config(array('display' => TRUE));
     if(!$fd) {
         if($DEBUG) { 
             echo "\n<br>Could not create socket connection to $MYPROXY_SERVER: ". $errno.":".$errstr; 
         }
-        return false;
+        return "101 Could not create socket connection to $MYPROXY_SERVER: ". $errno.":".$errstr;
     }
     
     //convert normal socket to an SSL v3 Client socket connection
     if(stream_socket_enable_crypto( $fd, true, STREAM_CRYPTO_METHOD_SSLv3_CLIENT ) === false) {
         fclose($fd);
         if ($DEBUG) { echo "<br>Unable to establish SSLv3 Connection with $MYPROXY_SERVER"; }
-        return false;
+        return "102 Unable to establish SSLv3 Connection with $MYPROXY_SERVER";
     }
     if($fd === false) {
         fclose($fd);
         if ($DEBUG) { echo "<br>Unable to establish SSLv3 Connection with $MYPROXY_SERVER"; }
-        return false;
+        return "103 Unable to establish SSLv3 Connection with $MYPROXY_SERVER";
     }
     
     if($DEBUG) { echo "\n<br>SSLv3 connection established with $MYPROXY_SERVER.<br>"; }
@@ -237,7 +239,7 @@ function myproxy_logon ($myproxy_server, $myproxy_port, $username, $passphrase, 
             if(strpos($dat,"RESPONSE=0") === false) {
                 if($DEBUG) { echo "\n<br>Server reponse: $dat"; }
                 fclose($fd);
-                return false;
+                return "104 Server reponse: $dat";
             }
             
             if($DEBUG) { echo "\n<br>read $dat from myproxy server<br>"; }
@@ -271,21 +273,21 @@ function myproxy_logon ($myproxy_server, $myproxy_port, $username, $passphrase, 
                 }
                 fclose($fh);
                 umask($oldmask);
-                return true;
+                return 'ok';
             } else {
                 fclose($fd);
                 if($DEBUG) { echo "\n<br>No certificate recieved from $MYPROXY_SERVER"; }
-                return false;
+                return "105 No certificate recieved from $MYPROXY_SERVER";
             }
         }
     } else {
         fclose($fd);
         if($DEBUG) { echo "\n<br>Could not write to SSL socket at $MYPROXY_SERVER"; }
-        return false;
+        return "106 Could not write to SSL socket at $MYPROXY_SERVER";
     }
     
     fclose($fd);
-    return true;
+    return 'ok';
     
 
 }
