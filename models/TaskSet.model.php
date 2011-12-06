@@ -341,7 +341,7 @@ class TaskSet extends GenericObject{
 		$this->submits[] = $this->firstSubmit;
 		
 		// запуск первого субмита
-		$success = $this->firstSubmit->submit($connector, $preferServer);
+		$success = $this->firstSubmit->submit($connector, $preferServer, $this->getAllFields());
 
 		if ($success) {
 			
@@ -420,6 +420,15 @@ class TaskSet extends GenericObject{
 		$this->setField('num_submits', $num);
 		$this->_save();
 	}
+	
+	public function dbGetRow(){
+		
+		return db::get()->getRow(
+			"SELECT * FROM ".$this->tableName."
+			WHERE ".$this->pkField."='".$this->id."'"
+		);
+	}
+	
 }
 
 class TaskSetCollection extends GenericObjectCollection{

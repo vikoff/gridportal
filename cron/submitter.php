@@ -37,6 +37,7 @@ if (empty($taskIds)) {
 }
 
 $preferedServer =  $db->getOne('SELECT prefered_server FROM task_submits WHERE id='.$triggerTask);
+$taskSetData = $db->getOne('SELECT s.* FROM task_sets s JOIN task_submits sb ON sb.set_id=s.id WHERE sb.id='.$triggerTask);
 logMsg("prefered server: ".$preferedServer);
 
 $myProxyAuthData = null;
@@ -56,7 +57,7 @@ foreach ($taskIds as $id) {
 		$myProxyAuthData['port'] = $_myproxyServer['port'];
 	}
 	
-	$submitInstance->submit($myProxyAuthData, $preferedServer);
+	$submitInstance->submit($myProxyAuthData, $preferedServer, $taskSetData);
 	logMsg('task #'.$submitInstance->id.' submitted');
 	$db->delete('task_submit_queue', 'dependent_task_id='.$submitInstance->id);
 }

@@ -35,6 +35,7 @@ class TaskSetController extends Controller{
 		
 		'ajax_get_task_files'	=> PERMS_REG,
 		'ajax_delete_task_file'	=> PERMS_REG,
+		'ajax_get_statuses'	=> PERMS_REG,
 	);
 	
 	protected $_title = null;
@@ -144,9 +145,6 @@ class TaskSetController extends Controller{
 			return;
 		}
 		
-		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
-			
-		$basedir = $instance->getFilesDir().'src/';
 		$numSubmits = 1;
 		foreach($instance->getAllFilesList() as $f)
 			if ( $ftype = TaskSet::getFileType($f) )
@@ -155,8 +153,7 @@ class TaskSetController extends Controller{
 						$numSubmits *= count($mult['values']);
 		
 		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
-			'showMyproxyLogin' => $manualMyproxyLogin,
-			'myproxyServersList' => $manualMyproxyLogin ? MyproxyServerCollection::load()->getAll() : array(),
+			'myproxyLoginForm' => MyproxyServerController::snippet_myproxy_login(),
 			'numSubmits' => $numSubmits,
 		));
 		
@@ -451,8 +448,6 @@ class TaskSetController extends Controller{
 	
 	public function action_submit($params = array()){
 		
-		// echo '<pre>'; print_r($_POST); die;
-		
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSet::load($instanceId);
 		
@@ -466,6 +461,7 @@ class TaskSetController extends Controller{
 					'password' => getVar($_POST['user']['pass']),
 					'lifetime' => (int)getVar($_POST['lifetime']),
 				);
+			
 			$myproxyServer = MyproxyServer::load($myproxy['serverId'])->getAllFields();
 			$myproxy['url'] = $myproxyServer['url'];
 			$myproxy['port'] = $myproxyServer['port'];
@@ -574,6 +570,16 @@ class TaskSetController extends Controller{
 		return TRUE;
 	}
 	
+	public function ajax_get_statuses($params = array()){
+		
+		$setId = getVar($_GET['set_id'], 0, 'int');
+		$collection = TaskSubmitCollection::load()->getTasksBySet($setId, TRUE);
+		$statuses = array('В очереди на запуск', '', '', '', 'Завершена');
+		foreach ($collection as $i => $v){
+			$collection[$i]['status'] = $statuses[(int)$collection[$i]['status']];
+		}
+		echo json_encode($collection);
+	}
 
 }
 

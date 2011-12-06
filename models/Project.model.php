@@ -4,7 +4,7 @@ class Project extends GenericObject{
 	
 	const TABLE = 'projects';
 	
-	const NOT_FOUND_MESSAGE = 'Страница не найдена';
+	const NOT_FOUND_MESSAGE = 'Проект не найден';
 	
 	const DEFAULT_FILES_PATH = 'files/project_default_files/';
 

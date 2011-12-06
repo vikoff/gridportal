@@ -351,20 +351,27 @@ class User extends GenericObject{
 		$this->_save();
 	}
 	
-	public function checkCert($login, $password, $server_id, $ttl){
+	public function checkCert($login, $password, $server_id, $lifetime){
 		
 		//проверка существует ли сервер с переданным id
 		try{
 			$serverData = MyproxyServer::load($server_id)->getAllFieldsPrepared();
 		}catch(Exception $e){
 			$this->setError('Сервер myproxy не найден');
-			return;
+			return FALSE;
 		}
+		$serverData['login'] = $login;
+		$serverData['password'] = $password;
+		$serverData['lifetime'] = $lifetime;
+		$connector = new MyproxyConnector($serverData);
 		
-		$myproxySuccess = $this->myproxyLogon($serverData['url'], $serverData['port'], $login, $password, $ttl);
-		
-		if(!$myproxySuccess){
-			$this->setError('Авторизация myproxy не пройдена');
+		if (!$connector->connect()){
+			$this->setError($connector->errcode == 104
+				? 'Авторизация myproxy не пройдена'
+				: $connector->getHumanReadableMsg($connector->errcode)
+			);
+			$this->setError('');
+			$this->setError($connector->errcode.' '.$connector->errmsg);
 			return FALSE;
 		}
 		
@@ -374,7 +381,7 @@ class User extends GenericObject{
 			'myproxy_login' => $login,
 			'myproxy_password' => base64_encode($password),
 			'myproxy_server_id' => $server_id,
-			'myproxy_expire_date' => time() + (int)$ttl,
+			'myproxy_expire_date' => time() + (int)$lifetime,
 		));
 		$this->_save();
 		
@@ -457,16 +464,6 @@ class User extends GenericObject{
 	public function getAllowedSoftware(){
 		
 		return db::get()->getAllIndexed('SELECT s.* FROM '.Software::TABLE.' s JOIN user_allowed_software us ON us.software_id=s.id WHERE us.uid='.$this->id, 'id');
-	}
-	
-	public function myproxyLogon($server, $port, $login, $password, $ttl){
-		
-		// $debug = TRUE;
-		$debug = FALSE;
-		$tmpfile = tempnam("/tmp", "x509_mp_");
-		
-		require_once(FS_ROOT.'includes/myproxy/myproxyClient.php');
-		return myproxy_logon($server, $port, $login, $password, $ttl, $tmpfile, $debug);
 	}
 
 	public function resetMyproxyExpireDate(){

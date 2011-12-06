@@ -4,7 +4,7 @@ class Voms extends GenericObject{
 	
 	const TABLE = 'voms';
 	
-	const NOT_FOUND_MESSAGE = 'Страница не найдена';
+	const NOT_FOUND_MESSAGE = 'Виртуальная организация не найдена';
 
 	
 	/** ТОЧКА ВХОДА В КЛАСС (СОЗДАНИЕ НОВОГО ОБЪЕКТА) */

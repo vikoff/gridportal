@@ -4,7 +4,7 @@ class MyproxyServer extends GenericObject{
 	
 	const TABLE = 'myproxy_servers';
 	
-	const NOT_FOUND_MESSAGE = 'Страница не найдена';
+	const NOT_FOUND_MESSAGE = 'myproxy сервер не найден';
 
 	
 	/** ТОЧКА ВХОДА В КЛАСС (СОЗДАНИЕ НОВОГО ОБЪЕКТА) */

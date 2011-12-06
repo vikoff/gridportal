@@ -17,7 +17,7 @@
 		css/common.css,
 		css/frontend.css,
 		css/simplemodal.css,
-		css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" />
+		css/redmond/jquery-ui-1.8.16.custom.css" type="text/css" />
 	
 	<!--link rel="stylesheet" href="css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" />
 	<link rel="stylesheet" href="css/common.css" type="text/css" />

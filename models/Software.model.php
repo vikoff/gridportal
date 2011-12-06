@@ -4,7 +4,7 @@ class Software extends GenericObject{
 	
 	const TABLE = 'software';
 	
-	const NOT_FOUND_MESSAGE = 'Страница не найдена';
+	const NOT_FOUND_MESSAGE = 'Программное обеспечение не найдено';
 
 	
 	/** ТОЧКА ВХОДА В КЛАСС (СОЗДАНИЕ НОВОГО ОБЪЕКТА) */

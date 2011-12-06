@@ -4,7 +4,7 @@ class TaskSubmit extends GenericObject{
 	
 	const TABLE = 'task_submits';
 	
-	const NOT_FOUND_MESSAGE = 'Страница не найдена';
+	const NOT_FOUND_MESSAGE = 'Запуск задачи не найден';
 
 	private $_uid = 0;
 	
@@ -159,7 +159,7 @@ class TaskSubmit extends GenericObject{
 		TaskSet::load($this->getField('set_id'))->updateNumSubmits();
 	}
 	
-	public function submit(MyproxyConnector $connector, $preferedServer){
+	public function submit(MyproxyConnector $connector, $preferedServer, $taskSetData){
 		
 		// подключение myproxy
 		if (!$connector->connect()){
@@ -175,10 +175,18 @@ class TaskSubmit extends GenericObject{
 			
 		$this->log(Lng::get('Task.model.myproxy-success-proceed'));
 		
+		
 		$env = "/bin/env";
 		$ngsub = "/opt/nordugrid-8.1/bin/ngsub";
 		$taskdir = $this->getFilesDir().'src/';
 		$ngjob = $this->getNgjobStr();
+		
+		// подстановка правильного имени в gridjob файл
+		$realGridjobName = self::getSubmitName($taskSetData['name'], $taskSetData['gridjob_name'], $this->getField('index'));
+		// ( jobname="Test job on CrimeaEco VO" )
+		$ngjob = preg_replace('/\(\s*jobname\s*=\s*".+"\s*\)/', '( jobname="'.$realGridjobName.'" )', $ngjob);
+		//                       (   jobname   =   "**"    )
+		// echo $ngjob; die;
 		
 		$command  = ''
 			." cd ".$taskdir. " && "
@@ -499,7 +507,14 @@ class TaskSubmit extends GenericObject{
 
 	public static function getSubmitName($taskName, $taskNordujobName, $index) {
 		
-		$name = $taskName.'_'.$taskNordujobName.'_rc'.$index;
+		$nameArr = array();
+		if ($taskName)
+			$nameArr[] = $taskName;
+		if ($taskNordujobName)
+			$nameArr[] = $taskNordujobName;
+		$nameArr[] = 'rc'.$index;
+		
+		$name = implode('_', $nameArr);
 		$name = Tools::translit($name);
 		$name = preg_replace('/\s/', '_', $name);
 		return $name;
@@ -588,7 +603,7 @@ class TaskSubmitCollection extends GenericObjectCollection{
 			SELECT t.*, s.title AS state_title, sets.name, sets.gridjob_name
 			FROM '.TaskSubmit::TABLE.' t
 			JOIN '.TaskSet::TABLE.' sets ON sets.id=t.set_id
-			JOIN task_states s ON t.status=s.id '.$whereStr,
+			LEFT JOIN task_states s ON t.status=s.id '.$whereStr,
 			'id',
 			array()
 		);
@@ -615,16 +630,21 @@ class TaskSubmitCollection extends GenericObjectCollection{
 		return $data;
 	}
 	
-	public function getTasksBySet($set_id){
+	public function getTasksBySet($set_id, $short = FALSE){
 		
+		$fields = $short
+			? 't.id, t.status'
+			: 't.*, sets.name, sets.gridjob_name';
+			
 		$data = db::get()->getAll('
-			SELECT t.*, sets.name, sets.gridjob_name
+			SELECT '.$fields.'
 			FROM '.TaskSubmit::TABLE.' t
 			JOIN '.TaskSet::TABLE.' sets ON sets.id=t.set_id
 			WHERE t.set_id='.$set_id.' ORDER BY `index` DESC');
 		
-		foreach($data as &$row)
-			$row = TaskSubmit::forceLoad($row['id'], $row)->getAllFieldsPrepared();
+		if (!$short)
+			foreach($data as &$row)
+				$row = TaskSubmit::forceLoad($row['id'], $row)->getAllFieldsPrepared();
 			
 		return $data;
 	}
@@ -722,7 +742,7 @@ class TaskSubmitCollection extends GenericObjectCollection{
 			SELECT t.*, s.title AS state_title, sets.name, sets.gridjob_name
 			FROM '.TaskSubmit::TABLE.' t
 			JOIN '.TaskSet::TABLE.' sets ON sets.id=t.set_id
-			JOIN task_states s ON t.status=s.id '.$whereStr,
+			LEFT JOIN task_states s ON t.status=s.id '.$whereStr,
 			'id',
 			array()
 		);

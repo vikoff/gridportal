@@ -31,42 +31,47 @@
 </tr>
 </table>
 
-<form id="grid-form" action="" method="get">
-	<table style="margin: 1em auto 0;" class="std-grid">
-	<tr>
-		<th>Имя задачи</th>
-		<th>JobID</th>
-		<th>Сатус</th>
-		<th>Дата запуска</th>
-		<th>Дата завершения</th>
-		<th>Управление</th>
-		<th><input type="checkbox" onchange="$('input.row-check').attr('checked', $(this).attr('checked') ? true : false)" /></th>
-		
-	</tr>
-	<? foreach($this->submits as $s): ?>
+<? if ($this->submits): ?>
+	<form id="grid-form" action="" method="get">
+		<table style="margin: 1em auto 0;" class="std-grid">
 		<tr>
-			<td><?= $s['fullname']; ?></td>
-			<td><?= $s['jobid']; ?></td>
-			<td><?= $s['is_submitted'] ? Lng::get($s['status_str']) : 'В очереди на запуск'; ?></td>
-			<td><?= $s['start_date_str']; ?></td>
-			<td><?= $s['finish_date_str']; ?></td>
-			<td>
-				<? if($s['actions']['to_analyze']): ?>  <a href="<?= href('task-submit/analyze?submit='.$s['id']); ?>" class="button-small"><?= Lng::get('task.to-analyze'); ?></a> <? endif; ?>
-				<? if($s['actions']['get_results']): ?> <a href="<?= href('task-submit/get-results/'.$s['id']); ?>" class="button-small"><?= Lng::get('task.get-result'); ?></a> <? endif; ?>
-				<? if($s['actions']['stop']): ?>        <a href="<?= href('task-submit/stop/'.$s['id']); ?>" class="button-small"><?= Lng::get('task.stop'); ?></a>              <? endif; ?>
-				<? if($s['actions']['delete']): ?>      <a href="<?= href('task-submit/delete?task[]='.$s['id']); ?>" class="button-small"><?= Lng::get('task.delete'); ?></a>          <? endif; ?>
-			</td>
-			<td>
-				<input class="row-check" type="checkbox" name="task[]" value="<?= $s['id'] ?>" />
-			</td>
+			<th>Имя задачи</th>
+			<th>JobID</th>
+			<th>Сатус</th>
+			<th>Дата запуска</th>
+			<th>Дата завершения</th>
+			<th>Управление</th>
+			<th><input type="checkbox" onchange="$('input.row-check').attr('checked', $(this).attr('checked') ? true : false)" /></th>
+			
 		</tr>
-	<? endforeach; ?>
-	</table>
-	<div style="text-align: right; margin-right: 10px; margin-top: 5px;">
-		С выделенными:
-		<input id="btn-del-all" type="button" class="button-small" value="<?= Lng::get('task.delete'); ?>" />
-	</div>
-</form>
+		<? foreach($this->submits as $s): ?>
+			<tr>
+				<td><?= $s['fullname']; ?></td>
+				<td><?= $s['jobid']; ?></td>
+				<td class="task<?= $s['id'] ?>-status"><?= $s['is_submitted'] ? Lng::get($s['status_str']) : 'В очереди на запуск'; ?></td>
+				<td><?= $s['start_date_str']; ?></td>
+				<td><?= $s['finish_date_str']; ?></td>
+				<td>
+					<? if($s['actions']['to_analyze']): ?>  <a href="<?= href('task-submit/analyze?submit='.$s['id']); ?>" class="button-small"><?= Lng::get('task.to-analyze'); ?></a> <? endif; ?>
+					<? if($s['actions']['get_results']): ?> <a href="<?= href('task-submit/get-results/'.$s['id']); ?>" class="button-small"><?= Lng::get('task.get-result'); ?></a> <? endif; ?>
+					<? if($s['actions']['stop']): ?>        <a href="<?= href('task-submit/stop/'.$s['id']); ?>" class="button-small"><?= Lng::get('task.stop'); ?></a>              <? endif; ?>
+					<? if($s['actions']['delete']): ?>      <a href="<?= href('task-submit/delete?task[]='.$s['id']); ?>" class="button-small"><?= Lng::get('task.delete'); ?></a>          <? endif; ?>
+				</td>
+				<td>
+					<input class="row-check" type="checkbox" name="task[]" value="<?= $s['id'] ?>" />
+				</td>
+			</tr>
+		<? endforeach; ?>
+		</table>
+		<div style="text-align: right; margin-right: 10px; margin-top: 5px;">
+			С выделенными:
+			<input id="btn-del-all" type="button" class="button-small" value="<?= Lng::get('task.delete'); ?>" />
+		</div>
+	</form>
+
+<? else: ?>
+	<p>Нет запущенных задач</p>
+<? endif; ?>
 
 <div style="margin: 1em 0; text-align: center;">
 	<a href="<?= href('task-set/customize/'.$this->instanceId); ?>" class="button">Запустить</a>
@@ -79,5 +84,14 @@ $(function(){
 	$('#btn-del-all').click(function(){
 		$('#grid-form').attr('action', '<?= href('task-submit/delete'); ?>').submit();
 	});
+	
+	setInterval(function(){
+		$.get(href('task-set/get-statuses'), {set_id: <?= $this->id; ?>}, function(response){
+			for (var i = 0; i < response.length; i++){
+				$('.task'+response[i].id+'-status').html(response[i].status);
+			}
+		}, 'json');
+	}, 30000);
 });
+
 </script>

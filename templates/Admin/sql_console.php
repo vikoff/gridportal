@@ -30,7 +30,6 @@
 					return false;
 				}
 			});
-		$('.thead-floatblock').floatblock({placeholder: 'clone'});
 	});
 </script>
 
