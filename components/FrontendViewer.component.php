@@ -59,9 +59,13 @@ class FrontendViewer extends CommonViewer{
 	
 	protected function _getTopMenuHTML(){
 
-		$html = '';
+		/*$html = '';
 		foreach($this->_topMenu->getItems() as $item)
-			$html .= '<a href="'.$item['href'].'" '.(!empty($item['attrs']) ? $item['attrs'] : '').' '.($item['active'] ? 'class="active"' : '').'>'.Lng::get($item['title']).'</a> ';
+			$html .= '<a href="'.$item['href'].'" '.(!empty($item['attrs']) ? $item['attrs'] : '').' '.($item['active'] ? 'class="active"' : '').'>'.Lng::get($item['title']).'</a> ';*/
+		$html = '<ul>';
+		foreach($this->_topMenu->getItems() as $item)
+			$html .= '<li><a href="'.$item['href'].'" '.(!empty($item['attrs']) ? $item['attrs'] : '').' '.($item['active'] ? 'class="active"' : '').'>'.Lng::get($item['title']).'</a></li>';
+		$html .= '</ul>';
 
 		return $html;
 	}

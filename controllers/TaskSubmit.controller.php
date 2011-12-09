@@ -74,12 +74,9 @@ class TaskSubmitController extends Controller{
 		$instance = TaskSubmit::load($instanceId);
 		$user = CurUser::get();
 		
-		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
-
 		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
 			'instanceId' => $instanceId,
-			'showMyproxyLogin' => $manualMyproxyLogin,
-			'myproxyServersList' => $manualMyproxyLogin ? MyproxyServerCollection::load()->getAll() : array(),
+			'myproxyLoginForm' => MyproxyServerController::snippet_myproxy_login(),
 		));
 		
 		FrontendViewer::get()
@@ -313,6 +310,7 @@ class TaskSubmitController extends Controller{
 					'password' => getVar($_POST['user']['pass']),
 					'lifetime' => (int)getVar($_POST['lifetime']),
 				);
+				
 			$myproxyServer = MyproxyServer::load($myproxy['serverId'])->getAllFields();
 			$myproxy['url'] = $myproxyServer['url'];
 			$myproxy['port'] = $myproxyServer['port'];

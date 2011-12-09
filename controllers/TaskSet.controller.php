@@ -574,9 +574,8 @@ class TaskSetController extends Controller{
 		
 		$setId = getVar($_GET['set_id'], 0, 'int');
 		$collection = TaskSubmitCollection::load()->getTasksBySet($setId, TRUE);
-		$statuses = array('В очереди на запуск', '', '', '', 'Завершена');
 		foreach ($collection as $i => $v){
-			$collection[$i]['status'] = $statuses[(int)$collection[$i]['status']];
+			$collection[$i]['status'] = $collection[$i]['status'] ? Lng::get($collection[$i]['title']) : 'В очереди на запуск';
 		}
 		echo json_encode($collection);
 	}

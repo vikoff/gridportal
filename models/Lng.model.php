@@ -217,6 +217,7 @@ class Lng {
 		
 		return db::get()->getRow('SELECT s.id, s.name, s.description '.$fields.' FROM lng_snippets s '.$joins.' WHERE s.id='.(int)$id, FALSE);
 	}
+	
 }
 
 ?>

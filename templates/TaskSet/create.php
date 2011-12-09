@@ -1,12 +1,6 @@
 
 <h2><?= $this->pageTitle; ?></h2>
 
-<div>
-	<a href="">Название</a>
-	<a href="">Редактирование</a>
-	<a href="">Запуск</a>
-</div>
-
 <form id="edit-form" action="" method="post">
 	<?= FORMCODE ?>
 	<input type="hidden" name="project_id" value="<?= $this->projectId; ?>" />

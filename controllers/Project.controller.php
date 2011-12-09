@@ -93,12 +93,13 @@ class ProjectController extends Controller{
 			'validation'  => Project::Create()->getValidator()->getJsRules(),
 			'allowedVoms' => array(),
 			'vomsList'    => VomsCollection::load()->getAll(),
+			'curLng'     => Lng::get()->getCurLng(),
 		));
 		
 		BackendViewer::get()
 			->prependTitle($pageTitle)
 			->setBreadcrumbs('add', array(null, $pageTitle))
-			->setContentSmarty(self::TPL_PATH.'edit.tpl', $variables);
+			->setContentPhpFile(self::TPL_PATH.'edit.php', $variables);
 	}
 	
 	/** DISPLAY EDIT (ADMIN) */
@@ -115,6 +116,7 @@ class ProjectController extends Controller{
 			'validation'  => $instance->getValidator()->getJsRules(),
 			'allowedVoms' => $instance->getVoms(),
 			'vomsList'    => VomsCollection::load()->getAll(),
+			'curLng'     => Lng::get()->getCurLng(),
 		));
 		
 		// echo '<pre>'; print_r(); die;
@@ -122,7 +124,7 @@ class ProjectController extends Controller{
 		BackendViewer::get()
 			->prependTitle('Редактирование записи')
 			->setBreadcrumbs('add', array(null, 'Редактирование записи'))
-			->setContentSmarty(self::TPL_PATH.'edit.tpl', $variables);
+			->setContentPhpFile(self::TPL_PATH.'edit.php', $variables);
 		
 	}
 	
@@ -138,12 +140,13 @@ class ProjectController extends Controller{
 			'instanceId' => 0,
 			'pageTitle'  => $pageTitle,
 			'validation' => $instance->getValidator()->getJsRules(),
+			'curLng'     => Lng::get()->getCurLng(),
 		));
 		
 		BackendViewer::get()
 			->prependTitle($pageTitle)
 			->setBreadcrumbs('add', array(null, $pageTitle))
-			->setContentSmarty(self::TPL_PATH.'edit.tpl', $variables);
+			->setContentPhpFile(self::TPL_PATH.'edit.php', $variables);
 		
 	}
 	

@@ -1,6 +1,3 @@
-
-<div id="language-block">
-	<? foreach($langs as $lang): ?>
-		<a href="<?=App::getHrefLngReplaced($lang);?>"<?=$lang == $curLng ? ' class="active"' : '';?>><img src="images/lang/<?=$lang;?>.gif" alt="<?=$lang;?>" title="<?=$lang;?>" /></a>
-	<? endforeach; ?>
-</div>
+<? foreach($langs as $lang): ?>
+	<a href="<?=App::getHrefLngReplaced($lang);?>"<?=$lang == $curLng ? ' class="active"' : '';?>><img src="/images/spacer.gif" class="flag flag-<?=$lang;?>" alt="<?=$lang;?>" title="<?=$lang;?>" /></a>
+<? endforeach; ?>

@@ -33,7 +33,7 @@
 
 <? if ($this->submits): ?>
 	<form id="grid-form" action="" method="get">
-		<table style="margin: 1em auto 0;" class="std-grid">
+		<table style="margin: 1em auto 0;" class="std-grid c">
 		<tr>
 			<th>Имя задачи</th>
 			<th>JobID</th>
@@ -48,7 +48,7 @@
 			<tr>
 				<td><?= $s['fullname']; ?></td>
 				<td><?= $s['jobid']; ?></td>
-				<td class="task<?= $s['id'] ?>-status"><?= $s['is_submitted'] ? Lng::get($s['status_str']) : 'В очереди на запуск'; ?></td>
+				<td class="task<?= $s['id'] ?>-status task-state-<?= (int)$s['status'] ?>"><?= $s['is_submitted'] ? Lng::get($s['status_str']) : 'В очереди на запуск'; ?></td>
 				<td><?= $s['start_date_str']; ?></td>
 				<td><?= $s['finish_date_str']; ?></td>
 				<td>

@@ -26,6 +26,7 @@ class ProfileController extends Controller{
 		'action_check_cert'			=> PERMS_REG,
 		'admin_action_delete' 		=> PERMS_ADMIN,
 		
+		'ajax_ping'		 			=> PERMS_UNREG,
 		'ajax_check_email' 			=> PERMS_UNREG,
 		'ajax_save_user_stat'		=> PERMS_UNREG,
 	);
@@ -290,6 +291,12 @@ class ProfileController extends Controller{
 	////// AJAX //////
 	//////////////////
 
+	// AJAX PING
+	public function ajax_ping($params = array()){
+		
+		echo 'ok';
+	}
+	
 	// AJAX CHECK EMAIL
 	public static function ajax_check_email($params = array()){
 		

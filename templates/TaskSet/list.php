@@ -4,18 +4,16 @@
 <? if($this->collection): ?>
 	<table class="std-grid">
 	<tr>
-		<th>id</th>
-		<th>Проект</th>
-		<th>Профиль</th>
-		<th>Имя набора</th>
-		<th>Количество запусков</th>
-		<th>Дата создания</th>
+		<th><?= $this->sorters['project_id']; ?></th>
+		<th><?= $this->sorters['profile_id']; ?></th>
+		<th><?= $this->sorters['name']; ?></th>
+		<th><?= $this->sorters['num_submits']; ?></th>
+		<th><?= $this->sorters['create_date']; ?></th>
 		
-		<th>опции</th>
+		<th><?= Lng::get('options'); ?></th>
 	</tr>
 	<? foreach($this->collection as $item): ?>	
 	<tr>
-		<td><?= $item['id']; ?></td>
 		<td><?= $item['project_id']; ?></td>
 		<td><?= $item['profile_id']; ?></td>
 		<td><?= $item['name']; ?></td>

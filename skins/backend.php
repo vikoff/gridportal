@@ -14,11 +14,9 @@
 
 <?=$this->_getHtmlLinkTags();?>
 
-	<link rel="stylesheet" href="
-		css/common.css,
-		css/backend.css,
-		css/smoothness/jquery-ui-1.8.16.custom.css
-	" type="text/css" />
+	<link rel="stylesheet" href="css/redmond/jquery-ui-1.8.16.custom.css" type="text/css" />
+	<link rel="stylesheet" href="css/common.css" type="text/css" />
+	<link rel="stylesheet" href="css/backend.css" type="text/css" />
 	<!-- <link rel="icon" type="image/png" href="favicon.ico" /> -->
 	
 	<script type="text/javascript">
@@ -28,13 +26,13 @@
 	<script type="text/javascript" src="
 		js/jquery-1.6.2.min.js,
 		js/jquery-ui-1.8.16.custom.min.js,
-		js/jquery.validate.pack.js,
 		js/jquery.ctrlentersend.min.js,
 		js/jquery.floatblock.js,
 		js/autoresize.jquery.min.js,
 		js/common.js,
 		js/backend.js,
 		js/jquery.simplemodal.js"></script>
+		<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
 	
 </head>
 <body>

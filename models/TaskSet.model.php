@@ -440,16 +440,18 @@ class TaskSetCollection extends GenericObjectCollection{
 	 * каждый ключ должен быть корректным выражением для SQL ORDER BY
 	 * var array $_sortableFieldsTitles
 	 */
-	protected $_sortableFieldsTitles = array(
-		'id' => 'id',
-		'uid' => 'uid',
-		'project_id' => 'Проект',
-		'profile_id' => 'Профиль',
-		'name' => 'Имя набора',
-		'ready_to_start' => 'ready_to_start',
-		'num_submits' => 'num_submits',
-		'create_date' => 'create_date',
-	);
+	protected function _getSortableFieldsTitles(){
+		
+		return array(
+			'id' => 'id',
+			'project_id' => Lng::get('taskset.list.project'),
+			'profile_id' => Lng::get('taskset.list.profile'),
+			'name' => Lng::get('taskset.list.name'),
+			'num_submits' => Lng::get('taskset.list.num-submits'),
+			'create_date' => Lng::get('taskset.list.create-date'),
+		);
+	}
+	
 	
 	
 	/** ТОЧКА ВХОДА В КЛАСС */
@@ -477,7 +479,7 @@ class TaskSetCollection extends GenericObjectCollection{
 			
 		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
 		
-		$sorter = new Sorter('id', 'DESC', $this->_sortableFieldsTitles);
+		$sorter = new Sorter('id', 'DESC', $this->_getSortableFieldsTitles());
 		$paginator = new Paginator('sql', array('*', 'FROM '.TaskSet::TABLE.' '.$whereStr.' ORDER BY '.$sorter->getOrderBy()), 50);
 		
 		$data = db::get()->getAll($paginator->getSql(), array());

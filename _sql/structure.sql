@@ -103,10 +103,10 @@ CREATE TABLE `user_statistics` (
 /* ЯЗЫКОВЫЕ ФРАГМЕНТЫ */
 DROP TABLE IF EXISTS `lng_snippets`;
 CREATE TABLE `lng_snippets` (
-  `id`				int(10) UNSIGNED AUTO_INCREMENT,
+  `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   `name`			VARCHAR(255) UNIQUE,
   `description`		TEXT,
-  PRIMARY KEY (`id`)
+  `is_external`		BOOLEAN
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* РУССКИЙ ЯЗЫК */
@@ -149,8 +149,9 @@ CREATE TABLE IF NOT EXISTS `user_accepted_voms` (
 /* ПРОЕКТЫ */
 DROP TABLE IF EXISTS `projects`;
 CREATE TABLE `projects` (
-  `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  `name`			VARCHAR(255)
+  `id`				INT(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `name_id`			INT(10) UNSIGNED,
+  `text_id`			INT(10) UNSIGNED
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* ПРОГРАМНОЕ ОБЕСПЕЧЕНИЕ */
@@ -247,7 +248,8 @@ CREATE TABLE `task_submits` (
 DROP TABLE IF EXISTS `task_submit_queue`;
 CREATE TABLE `task_submit_queue` (
   `trigger_task_id`		INT(10) UNSIGNED,
-  `dependent_task_id`	INT(10) UNSIGNED
+  `dependent_task_id`	INT(10) UNSIGNED,
+  `error_code`			INT(10) /* 1 - авторизация myproxy не пройдена */
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* СТАТУСЫ ЗАДАЧ */

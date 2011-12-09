@@ -8,6 +8,9 @@ class Project extends GenericObject{
 	
 	const DEFAULT_FILES_PATH = 'files/project_default_files/';
 
+	public $validLngData = array();
+	public static $lngFields = array();
+	
 	
 	/** ТОЧКА ВХОДА В КЛАСС (СОЗДАНИЕ НОВОГО ОБЪЕКТА) */
 	public static function create(){
@@ -63,11 +66,10 @@ class Project extends GenericObject{
 		if(is_null($this->validator)){
 		
 			$this->validator = new Validator();
-			$this->validator->rules(array(
-                'allowed' => array('name'),
-            ),
+			$this->validator->rules(array(),
 			array(
-                'name' => array('required' => true, 'length' => array('max' => '255')),
+                'name' => array('length' => array('max' => '255'), 'strip' => true),
+                'text' => array('length' => array('max' => '50000')),
             ));
 			$this->validator->setFieldTitles(array(
 				'id' => 'id',
@@ -90,6 +92,45 @@ class Project extends GenericObject{
 			$this->setError('Необходимо выбрать хотя бы одну виртуальную организацию');
 		else
 			$this->_data['voms'] = $data['voms'];
+	}
+	
+	/**
+	 * ВАЛИДАЦИЯ ДАННЫХ
+	 * Производит некоторые валидационные преобразования.
+	 * Если данные не прошли валидацию, сохраняет ошибки в стандартный контейнер
+	 * @param &$data - массив данных для валидации
+	 * @return void
+	 */
+	public function validation(&$data){
+		
+		$validator = $this->getValidator();
+		$curLng = Lng::get()->getCurLng();
+		
+		// группировка данных по языкам и валидация
+		foreach(Lng::$allowedLngs as $l){
+			
+			echo $l.'<br />';
+			
+			// дополнительные правила валидации для текущего языка
+			$additRules = $l == $curLng ? array('title' => array('required' => TRUE)) : null;
+			$this->validLngData[$l] = $validator->validate( getVar($data['lng'][$l], array(), 'array'), $additRules );
+			
+			if($validator->hasError()){
+				$this->setError(
+					'<div style="padding: 5px; margin: 5px; border :solid 1px black;">'
+						.'<div style="font-weight: bold">'.Lng::getLngTitle($l).'</div>'
+						.$validator->getError()
+					.'</div>'
+				);
+			}
+			
+			$validator->reset();
+		}
+		
+		echo '<pre>'; print_r($this->validLngData); die;
+		
+		
+		return !$this->hasError();
 	}
 	
 	/** ПОСТ-ВАЛИДАЦИЯ ДАННЫХ */

@@ -23,7 +23,7 @@ $settings['compressionLevel'] = 9;
 $settings['gzipExceptions'] = array('gif','jpeg','jpg','png','swf'); 
 
 //use this to set Minifier On or Off
-$settings['minify'] = true;
+$settings['minify'] = false;
 
 //use this to set file concatenation On or Off
 $settings['concatenate'] = true;

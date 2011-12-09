@@ -633,13 +633,14 @@ class TaskSubmitCollection extends GenericObjectCollection{
 	public function getTasksBySet($set_id, $short = FALSE){
 		
 		$fields = $short
-			? 't.id, t.status'
+			? 't.id, t.status, states.title'
 			: 't.*, sets.name, sets.gridjob_name';
 			
 		$data = db::get()->getAll('
 			SELECT '.$fields.'
 			FROM '.TaskSubmit::TABLE.' t
 			JOIN '.TaskSet::TABLE.' sets ON sets.id=t.set_id
+			LEFT JOIN task_states states ON states.id=t.status
 			WHERE t.set_id='.$set_id.' ORDER BY `index` DESC');
 		
 		if (!$short)

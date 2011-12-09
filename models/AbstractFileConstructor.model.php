@@ -94,12 +94,19 @@ abstract class AbstractFileConstructor {
 		
 		$resolvedMult = array();
 		
-		foreach ($mult as &$val)
-			if (is_array($val))
-				for ($i = $val['from']; $i <= $val['to']; $i += $val['step'])
-					$resolvedMult[] = $i;
-			else
+		foreach ($mult as &$val) {
+			if (is_array($val)) {
+				$val['step'] = abs($val['step']);
+				if ($val['to'] > $val['from'])
+					for ($i = $val['from']; $i <= $val['to']; $i += $val['step'])
+						$resolvedMult[] = $i;
+				else
+					for ($i = $val['from']; $i >= $val['to']; $i -= $val['step'])
+						$resolvedMult[] = $i;
+			} else {
 				$resolvedMult[] = $val;
+			}
+		}
 	
 		return $resolvedMult;
 	}
