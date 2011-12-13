@@ -12,8 +12,8 @@
 		
 		<th><?= Lng::get('options'); ?></th>
 	</tr>
-	<? foreach($this->collection as $item): ?>	
-	<tr>
+	<? foreach($this->collection as $i => $item): ?>	
+	<tr class="<?= $i % 2 ? 'odd' : 'even' ?>">
 		<td><?= $item['project_id']; ?></td>
 		<td><?= $item['profile_id']; ?></td>
 		<td><?= $item['name']; ?></td>

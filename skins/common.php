@@ -17,7 +17,7 @@
 	<link rel="stylesheet" href="css/common.css" type="text/css" />
 	<link rel="stylesheet" href="css/frontend.css" type="text/css" />
 	<link rel="stylesheet" href="css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" />
-	<!-- <link rel="icon" type="image/png" href="favicon.ico" /> -->
+	<link rel="icon" type="image/png" href="images/favicon.ico" />
 	
 	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>

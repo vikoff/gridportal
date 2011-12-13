@@ -36,6 +36,7 @@ class TaskSetController extends Controller{
 		'ajax_get_task_files'	=> PERMS_REG,
 		'ajax_delete_task_file'	=> PERMS_REG,
 		'ajax_get_statuses'	=> PERMS_REG,
+		'ajax_view'	=> PERMS_REG,
 	);
 	
 	protected $_title = null;
@@ -575,9 +576,25 @@ class TaskSetController extends Controller{
 		$setId = getVar($_GET['set_id'], 0, 'int');
 		$collection = TaskSubmitCollection::load()->getTasksBySet($setId, TRUE);
 		foreach ($collection as $i => $v){
-			$collection[$i]['status'] = $collection[$i]['status'] ? Lng::get($collection[$i]['title']) : 'В очереди на запуск';
+			$collection[$i]['status'] = $collection[$i]['status'] ? Lng::get($collection[$i]['title']) : Lng::get('task.state.');
 		}
 		echo json_encode($collection);
+	}
+	
+	/** DISPLAY VIEW */
+	public function ajax_view($params = array()){
+		
+		$instanceId = getVar($params[0], 0, 'int');
+		
+		$variables = array_merge(TaskSet::Load($instanceId)->GetAllFieldsPrepared(), array(
+			'instanceId' => $instanceId,
+			'submits' => TaskSubmitCollection::load()->getTasksBySet($instanceId),
+		));
+		
+		// echo '<pre>'; print_r(TaskSubmitCollection::load()->getTasksBySet($instanceId)); die;
+		AjaxViewer::get()
+			->setContentPhpFile(self::TPL_PATH.'view.php', $variables)
+			->render();
 	}
 
 }

@@ -17,7 +17,7 @@
 	<div id="task-uploaded-files-comment" style="margin-top: 1em;"></div>
 </div>
 
-<div class="paragraph">
+<div class="paragraph c">
 
 	<a href="<?= href('task-set/submit/'.$this->instanceId); ?>" class="button">Перейти к запуску</a>
 	<a href="<?= href('task-set/view/'.$this->instanceId) ?>" class="button">Вернуться к задаче</a>

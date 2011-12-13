@@ -1,15 +1,16 @@
 
 <? if(count($this->fetchedTasks)): ?>
-	<form action="<?= href('task-submit/analyze'); ?>" method="get" style="margin: 1em 0;">
-		Задача
-		<select name="submit">
-			<option value="">Выберите задачу...</option>
-		<? foreach($this->fetchedTasks as $t): ?>
-			<option value="<?= $t['id']; ?>" <? if($t['id'] == $this->curSubmitId): ?>selected="selected"<? endif; ?>><?= $t['fullname']; ?></option>
-		<? endforeach; ?>
-		</select>
-		<input type="submit" value="Показать" />
-	</form>
+	<div class="c">
+		<form action="<?= href('task-submit/analyze'); ?>" method="get" style="margin: 1em 0;">
+			Задача
+			<select name="submit">
+				<option value="">Выберите задачу...</option>
+			<? foreach($this->fetchedTasks as $t): ?>
+				<option value="<?= $t['id']; ?>" <? if($t['id'] == $this->curSubmitId): ?>selected="selected"<? endif; ?>><?= $t['fullname']; ?></option>
+			<? endforeach; ?>
+			</select>
+			<input type="submit" value="Показать" />
+		</form>
 
 	<? if($this->curSubmitId): ?>
 		<? if(empty($this->fileTree['dirs']) && empty($this->fileTree['files'])): ?>
@@ -59,3 +60,5 @@
 	У вас нет задач для просмотра.
 	
 <? endif; ?>
+
+	</div>

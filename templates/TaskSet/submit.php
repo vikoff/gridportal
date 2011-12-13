@@ -26,7 +26,7 @@ $(document).ready(function() {
 </script>
 
 <h2><?= Lng::get('xrls_edit.taskset'); ?></h2>
-
+<div class="c">
 <form action="" method="post">
 	<?= FORMCODE; ?>
 	<input type="hidden" name="id" value="<?= $this->id; ?>" />
@@ -62,3 +62,4 @@ $(document).ready(function() {
 	</div>
 </div>
 </form>
+</div>

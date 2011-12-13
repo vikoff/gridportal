@@ -44,11 +44,11 @@
 			<th><input type="checkbox" onchange="$('input.row-check').attr('checked', $(this).attr('checked') ? true : false)" /></th>
 			
 		</tr>
-		<? foreach($this->submits as $s): ?>
-			<tr>
+		<? foreach($this->submits as $i => $s): ?>
+			<tr class="<?= $i % 2 ? 'odd' : 'even' ?>">
 				<td><?= $s['fullname']; ?></td>
 				<td><?= $s['jobid']; ?></td>
-				<td class="task<?= $s['id'] ?>-status task-state-<?= (int)$s['status'] ?>"><?= $s['is_submitted'] ? Lng::get($s['status_str']) : 'В очереди на запуск'; ?></td>
+				<td class="task<?= $s['id'] ?>-status task-state-<?= (int)$s['status'] ?>"><?= $s['is_submitted'] ? Lng::get($s['status_str']) : Lng::get('task.state.inqueue'); ?></td>
 				<td><?= $s['start_date_str']; ?></td>
 				<td><?= $s['finish_date_str']; ?></td>
 				<td>
@@ -86,11 +86,15 @@ $(function(){
 	});
 	
 	setInterval(function(){
-		$.get(href('task-set/get-statuses'), {set_id: <?= $this->id; ?>}, function(response){
+		/*$.get(href('task-set/get-statuses'), {set_id: <?= $this->id; ?>}, function(response){
 			for (var i = 0; i < response.length; i++){
-				$('.task'+response[i].id+'-status').html(response[i].status);
+				$('.task'+response[i].id+'-status')
+					.html(response[i].status);
 			}
-		}, 'json');
+		}, 'json');*/
+		$.get(href('task-set/view/<?= $this->id; ?>'), function(response){
+			$('#main').html(response);
+		});
 	}, 30000);
 });
 

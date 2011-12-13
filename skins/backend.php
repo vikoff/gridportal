@@ -17,7 +17,7 @@
 	<link rel="stylesheet" href="css/redmond/jquery-ui-1.8.16.custom.css" type="text/css" />
 	<link rel="stylesheet" href="css/common.css" type="text/css" />
 	<link rel="stylesheet" href="css/backend.css" type="text/css" />
-	<!-- <link rel="icon" type="image/png" href="favicon.ico" /> -->
+	<link rel="icon" type="image/png" href="images/favicon.ico" />
 	
 	<script type="text/javascript">
 		var WWW_ROOT = '<?= WWW_ROOT; ?>';
@@ -40,7 +40,8 @@
 <div id="site-container">
 
 	<div id="top">
-		<div style="float: left; padding: 10px; background-color: #FFD46D;"><strong><?=CFG_SITE_NAME;?></strong> + логотип</div>
+		<!-- <div style="float: left; padding: 10px; background-color: #FFD46D;"><strong><?=CFG_SITE_NAME;?></strong> + логотип</div> -->
+		<div style="float: left; padding: 10px;"><strong><img src="images/admin_logo.jpg" width="140" height="50" alt="Logo"></strong></div>
 		<div style="text-align: right;"><a href="<?App::href('');?>">На сайт</a></div>
 		
 		<div id="top-menu-list">

@@ -30,6 +30,7 @@ function __autoload($className){
 		'FormBuilder'		=> 'core/FormBuilder.core.php',
 		'Tools'				=> 'core/Tools.core.php',
 		
+		'AjaxViewer'		=> 'components/AjaxViewer.component.php',
 		'BackendViewer'		=> 'components/BackendViewer.component.php',
 		'Def'				=> 'components/Def.component.php',
 		'FrontendViewer'	=> 'components/FrontendViewer.component.php',

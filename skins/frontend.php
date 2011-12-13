@@ -13,7 +13,7 @@
 		<meta name="generator" content="GridPortal" />
 
 		<?=$this->_getHtmlLinkTags();?>
-
+        <link rel="icon" type="image/png" href="images/favicon.ico" />
 		<link rel="stylesheet" href="
 			css/common.css,
 			css/frontend.css,

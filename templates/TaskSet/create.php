@@ -30,7 +30,7 @@
 	
 	</table>
 	
-	<div class="paragraph">
+	<div class="paragraph c">
 		<input class="button" type="submit" name="action[task-set/create][task-set/customize]" value="<?= Lng::get('save'); ?>" />
 		<a class="button" href="<?= href('task-set'); ?>"><?= Lng::get('task.delete-5'); ?></a>
 	</div>
