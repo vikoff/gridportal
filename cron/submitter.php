@@ -53,7 +53,7 @@ if (empty($taskIds)) {
 }
 
 $preferedServer =  $db->getOne('SELECT prefered_server FROM task_submits WHERE id='.$triggerTask);
-$taskSetData = $db->getOne('SELECT s.* FROM task_sets s JOIN task_submits sb ON sb.set_id=s.id WHERE sb.id='.$triggerTask);
+$taskSetData = $db->getRow('SELECT s.* FROM task_sets s JOIN task_submits sb ON sb.set_id=s.id WHERE sb.id='.$triggerTask);
 logMsg("prefered server: ".$preferedServer);
 
 $connector = null;

@@ -365,6 +365,7 @@ class TaskSet extends GenericObject{
 			
 		} else {
 			
+			$this->firstSubmit->destroy();
 			$this->updateNumSubmits();
 			return FALSE;
 		}
@@ -375,7 +376,6 @@ class TaskSet extends GenericObject{
 		// echo '<pre>'; print_r($combination); die;
 		
 		$taskSubmit = TaskSubmit::create();
-		$taskSubmit->setUid($this->getField('uid'));
 		$taskSubmit->save(array(
 			'set_id' => $this->id,
 			'uid' => $this->getField('uid'),
@@ -424,9 +424,10 @@ class TaskSet extends GenericObject{
 	public function dbGetRow(){
 		
 		return db::get()->getRow(
-			"SELECT * FROM ".$this->tableName."
-			WHERE ".$this->pkField."='".$this->id."'"
+			'SELECT s.* FROM '.self::TABLE.' s
+			WHERE id='.$this->id
 		);
+		// LEFT JOIN '.Project::TABLE.' proj ON proj.id=s.project_id
 	}
 	
 }

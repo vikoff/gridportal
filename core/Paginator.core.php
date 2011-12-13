@@ -25,9 +25,6 @@ class Paginator{
 	// число элементов на странице по умолчанию
 	static private $_defaultItemsPerPage = 10;
 	
-	// допустимые варианты количества элементов на странице
-	static public $itemsPerPageVariants = array('10' => 'по 10', '20' => 'по 20', '50' => 'по 50', '100' => 'по 100', 'all' => 'Все');
-	
 	// число элементов на странице
 	private $_itemsPerPage = null;
 	
@@ -72,6 +69,17 @@ class Paginator{
 	// номер текущей страницы (начиная с 1)
 	private $_curPage = 1;
 
+	// допустимые варианты количества элементов на странице
+	static public function getItemsPerPageVariants($key = null){
+		
+		$till = Lng::get('paginator.till'); // по
+		$all  = Lng::get('paginator.all');  // Все
+		
+		$variants = array('10' => $till.' 10', '20' => $till.' 20', '50' => $till.' 50', '100' => $till.' 100', 'all' => $all);
+		return $key
+			? isset($variants[$key]) ? $variants[$key] : null
+			: $variants;
+	}
 	
 	///////////////////////////
 	//////// АКСЕССОРЫ ////////
@@ -139,8 +147,9 @@ class Paginator{
 			}else{
 				$this->_isItemsPerPageChangeable = FALSE;
 			}
-				
-			if(!isset(self::$itemsPerPageVariants[$num]))
+			
+			$numTitle = self::getItemsPerPageVariants($num);
+			if(!$numTitle)
 				trigger_error('Количество элементов на странице имеет недопустимое значение: '.$num, E_USER_ERROR);
 			
 			if($this->_isItemsPerPageChangeable)
@@ -189,9 +198,14 @@ class Paginator{
 	
 	// ПОЛУЧИТЬ HTML КНОПКИ ПАГИНАЦИИ (ВСЕ, В КОНТЕЙНЕРЕ)
 	public function getButtons(){
-
+		
+		$form = $this->_isItemsPerPageChangeable
+			// ? 'Всего '.$this->_totalNumItems.' элементов. Отображать '.$this->_getItemsPerPageForm()
+			? Lng::get('paginator.form-label', array($this->_totalNumItems)).' '.$this->_getItemsPerPageForm()
+			: '';
+			
 		return ''
-			.'<div class="pagination-num-form">'.($this->_isItemsPerPageChangeable ? 'Всего '.$this->_totalNumItems.' элементов. Отображать '.$this->_getItemsPerPageForm() : '').'</div>'
+			.'<div class="pagination-num-form">'.$form.'</div>'
 			.'<div class="pagination">'
 				.$this->_buttons['prev']
 				.$this->_buttons['pages']
@@ -203,7 +217,7 @@ class Paginator{
 	private function _getItemsPerPageForm(){
 		
 		$options = '';
-		foreach(self::$itemsPerPageVariants as $k => $v)
+		foreach(self::getItemsPerPageVariants() as $k => $v)
 			$options .= '<option value="'.$k.'" '.($k == $this->_itemsPerPage ? 'selected="selected"' : '').'>'.$v.'</option>';
 		
 		return '

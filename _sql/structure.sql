@@ -103,10 +103,11 @@ CREATE TABLE `user_statistics` (
 /* ЯЗЫКОВЫЕ ФРАГМЕНТЫ */
 DROP TABLE IF EXISTS `lng_snippets`;
 CREATE TABLE `lng_snippets` (
-  `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  `name`			VARCHAR(255) UNIQUE,
-  `description`		TEXT,
-  `is_external`		BOOLEAN
+  `id`				 int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `name`			 VARCHAR(255) UNIQUE,
+  `num_placeholders` INT UNSIGNED NOT NULL DEFAULT '0',
+  `description`		 TEXT,
+  `is_external`		 BOOLEAN
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* РУССКИЙ ЯЗЫК */

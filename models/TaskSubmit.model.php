@@ -165,7 +165,7 @@ class TaskSubmit extends GenericObject{
 		if (!$connector->connect()){
 			
 			$this->setError($connector->errcode == 104
-				? 'Авторизация не пройдена. Уточните параметры в <a href="'.href('profile/edit#/temporary-cert').'">профиле</a>, или введите заново параметры вручную.'
+				? Lng::get('myproxy.auth-fail', array('<a href="'.href('profile/edit#/temporary-cert').'">', '</a>'))
 				: $connector->getHumanReadableMsg($connector->errcode)
 			);
 			$this->setError('');
@@ -527,22 +527,26 @@ class TaskSubmitCollection extends GenericObjectCollection{
 	protected $_filters = array();
 	
 	/**
-	 * поля, по которым возможна сортировка коллекции
+	 * получить поля, по которым возможна сортировка коллекции
 	 * каждый ключ должен быть корректным выражением для SQL ORDER BY
 	 * var array $_sortableFieldsTitles
 	 */
-	protected $_sortableFieldsTitles = array(
-		'id' => 'id',
-		'set_id' => 'Набор',
-		'index' => 'Порядковый номер',
-		'status' => 'Сатус',
-		'is_submitted' => 'Отправлена',
-		'is_completed' => 'Завершена',
-		'is_fetched' => 'Получена',
-		'create_date' => 'Дата создания',
-		'start_date' => 'Дата запуска',
-		'finish_date' => 'Дата завершения',
-	);
+	public function _getSortableFieldsTitles(){
+		return array(
+			'id' => array('t.id _DIR_', 'id'),
+			'name' => array('`index` _DIR_', Lng::get('tasklist.name')),
+			'jobid' => 'JobID',
+			'set_id' => 'Набор',
+			'index' => 'Порядковый номер',
+			'status' => 'Статус',
+			'is_submitted' => 'Отправлена',
+			'is_completed' => 'Завершена',
+			'is_fetched' => 'Получена',
+			'create_date' => 'Дата создания',
+			'start_date' => 'Дата запуска',
+			'finish_date' => 'Дата завершения',
+		);
+	}
 	
 	
 	/** ТОЧКА ВХОДА В КЛАСС */
@@ -569,18 +573,25 @@ class TaskSubmitCollection extends GenericObjectCollection{
 			$whereArr[] = 'uid='.$this->filters['uid'];
 		if(!empty($this->filters['ids']))
 			$whereArr[] = 't.id IN('.$this->filters['ids'].')';
+		if(!empty($this->filters['set_id']))
+			$whereArr[] = 'set_id='.$this->filters['set_id'];
 		
 		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
 		
 		$sorter = new Sorter('s.id', 'DESC', $this->_getSortableFieldsTitles());
-		$paginator = new Paginator('sql', array('t.*, s.title AS state_title',
-			'FROM '.TaskSubmit::TABLE.' t LEFT JOIN task_states s ON t.state=s.id '.$whereStr.' ORDER BY '.$sorter->getOrderBy()), 50);
+		$paginator = new Paginator('sql', array(
+			't.*, sets.name, sets.gridjob_name',
+			'FROM '.TaskSubmit::TABLE.' t
+			LEFT JOIN task_states s ON t.status=s.id 
+			JOIN '.TaskSet::TABLE.' sets ON sets.id=t.set_id
+			'.$whereStr.'
+			ORDER BY '.$sorter->getOrderBy()), '~50');
 		
 		$data = db::get()->getAll($paginator->getSql(), array());
 		
 		// echo '<pre>'; print_r($data);
 		foreach($data as &$row)
-			$row = Task::forceLoad($row['id'], $row)->getAllFieldsPrepared();
+			$row = TaskSubmit::forceLoad($row['id'], $row)->getAllFieldsPrepared();
 		
 		$this->_sortableLinks = $sorter->getSortableLinks();
 		$this->_pagination = $paginator->getButtons();

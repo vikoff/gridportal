@@ -175,6 +175,7 @@ class ProjectController extends Controller{
 	/** ACTION SAVE (ADMIN) */
 	public function action_save($params = array()){
 		
+		// echo '<pre>'; print_r($_POST) ;die;
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = new Project($instanceId);
 		

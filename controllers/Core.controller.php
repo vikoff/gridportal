@@ -29,7 +29,8 @@ class CoreController extends Controller{
 	public function action_paginator_set_items_per_page($params = array()){
 		
 		$num = $_POST['num'];
-		if(isset(Paginator::$itemsPerPageVariants[$num]))
+		$numTitle = Paginator::getItemsPerPageVariants($num);
+		if($numTitle)
 			$_SESSION['paginator-items-per-page'] = $num;
 		else
 			trigger_error('invalid num: '.$num);

@@ -24,12 +24,12 @@
 			<div id="tab-lng-<?= $l; ?>">
 				<div class="paragraph">
 					<label class="title">Название <span class="required">*</span></label>
-					<input type="text" name="lng[<?= $l; ?>][name]" value="<?= !empty($this->name) ? $this->name[$l] : ''; ?>" style="width: 300px;" />
+					<input type="text" name="lng[<?= $l; ?>][name]" value="<?= !empty($this->lng) ? $this->lng[$l]['name'] : ''; ?>" style="width: 300px;" />
 				</div>
 				
 				<div class="paragraph">
 					<label class="title">Описание</label>
-					<textarea class="wysiwyg" style="width: 98%; height: 400px;" name="lng[<?= $l; ?>][text]"><?= !empty($this->text) ? $this->text[$l] : ''; ?></textarea>
+					<textarea class="wysiwyg" style="width: 98%; height: 400px;" name="lng[<?= $l; ?>][text]"><?= !empty($this->lng) ? $this->lng[$l]['text'] : ''; ?></textarea>
 				</div>
 			</div>
 		<? endforeach; ?>

@@ -261,9 +261,6 @@ class GenericObject{
 
 			foreach($this->dbFieldValues as $key => $val)
 				$fields[$key] = $val;
-			
-			if(!count($fields))
-				trigger_error('Нечего сохранять', E_USER_ERROR);
 				
 			$this->id = $this->dbFieldValues[$this->pkField] = $this->dbInsert($fields);
 			$this->modifiedFields = array();
@@ -370,11 +367,22 @@ class GenericObject{
 
 class GenericObjectCollection{
 	
+	protected $_filters = array();
+	
 	protected $_pagination = '';
 	protected $_linkTags = array();
 	protected $_sortableFieldsTitles = array();
 	protected $_sortableLinks = array();
 	
+	protected function _getSqlFilter(){
+		
+		$db = db::get();
+		$whereArr = array();
+		foreach($this->_filters as $k => $v)
+			$whereArr[] = $db->quoteFieldName($k).'='.$db->qe($v);
+			
+		return !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
+	}
 	
 	// ПОЛУЧИТЬ SORTABLE LINKS
 	public function getSortableLinks(){

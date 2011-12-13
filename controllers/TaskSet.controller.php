@@ -67,13 +67,15 @@ class TaskSetController extends Controller{
 	public function display_view($params = array()){
 		
 		$instanceId = getVar($params[0], 0, 'int');
+		$submits = TaskSubmitCollection::load(array('set_id' => $instanceId));
 		
 		$variables = array_merge(TaskSet::Load($instanceId)->GetAllFieldsPrepared(), array(
 			'instanceId' => $instanceId,
-			'submits' => TaskSubmitCollection::load()->getTasksBySet($instanceId),
+			'submits' => $submits->getPaginated(),
+			'submitPagination' => $submits->getPagination(),
+			'submitSorters' => $submits->getSortableLinks(),
 		));
 		
-		// echo '<pre>'; print_r(TaskSubmitCollection::load()->getTasksBySet($instanceId)); die;
 		FrontendViewer::get()
 			->setTitle('Детально')
 			->setTopMenuActiveItem('tasks')
@@ -585,10 +587,13 @@ class TaskSetController extends Controller{
 	public function ajax_view($params = array()){
 		
 		$instanceId = getVar($params[0], 0, 'int');
+		$submits = TaskSubmitCollection::load(array('set_id' => $instanceId));
 		
 		$variables = array_merge(TaskSet::Load($instanceId)->GetAllFieldsPrepared(), array(
 			'instanceId' => $instanceId,
-			'submits' => TaskSubmitCollection::load()->getTasksBySet($instanceId),
+			'submits' => $submits->getPaginated(),
+			'submitPagination' => $submits->getPagination(),
+			'submitSorters' => $submits->getSortableLinks(),
 		));
 		
 		// echo '<pre>'; print_r(TaskSubmitCollection::load()->getTasksBySet($instanceId)); die;

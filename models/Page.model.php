@@ -313,6 +313,12 @@ class Page extends GenericObject{
 			default: trigger_error('Неизвестный тип страницы: '.$type, E_USER_ERROR);
 		}
 	}
+
+	public static function getHelpIcon($lngKey){
+		
+		$text = Lng::get($lngKey);
+		return '<img src="" alt="" title="'.$text.'">';
+	}
 }
 
 class PageCollection extends GenericObjectCollection{

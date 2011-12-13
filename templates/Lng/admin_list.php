@@ -10,6 +10,7 @@
 			<th>Ключ</th>
 			<th>Описание</th>
 			<th>Текст</th>
+			<th>Количество<br />подстановщиков</th>
 			<th>Опции</th>
 		</tr>
 		<? foreach($collection as $item): ?>
@@ -20,6 +21,9 @@
 					<? foreach($lngs as $l): ?>
 						<div><strong><?=$l;?>:</strong> <?=!empty($item[$l]) ? $item[$l] : '<span class="red">не назначено</span>';?></div>
 					<? endforeach; ?>
+				</td>
+				<td class="center">
+					<?= $item['num_placeholders']; ?>
 				</td>
 				<td class="center" style="width: 90px;">
 					<div class="tr-hover-visible options">

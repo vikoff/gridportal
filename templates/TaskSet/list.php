@@ -4,9 +4,9 @@
 <? if($this->collection): ?>
 	<table class="std-grid">
 	<tr>
+		<th><?= $this->sorters['name']; ?></th>
 		<th><?= $this->sorters['project_id']; ?></th>
 		<th><?= $this->sorters['profile_id']; ?></th>
-		<th><?= $this->sorters['name']; ?></th>
 		<th><?= $this->sorters['num_submits']; ?></th>
 		<th><?= $this->sorters['create_date']; ?></th>
 		
@@ -14,9 +14,9 @@
 	</tr>
 	<? foreach($this->collection as $i => $item): ?>	
 	<tr class="<?= $i % 2 ? 'odd' : 'even' ?>">
+		<td><a href="<?= href('task-set/view/'.$item['id']); ?>"><?= $item['name']; ?></a></td>
 		<td><?= $item['project_id']; ?></td>
 		<td><?= $item['profile_id']; ?></td>
-		<td><?= $item['name']; ?></td>
 		<td><?= $item['num_submits']; ?></td>
 		<td><?= $item['create_date_str']; ?></td>
 		

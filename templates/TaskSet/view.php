@@ -14,10 +14,6 @@
 	<td class="data"><?= $this->name; ?></td>
 </tr>
 <tr>
-	<td class="title">Пользователь</td>
-	<td class="data"><?= $this->uid; ?></td>
-</tr>
-<tr>
 	<td class="title">Профиль</td>
 	<td class="data"><?= $this->profile_id; ?></td>
 </tr>
@@ -31,15 +27,17 @@
 </tr>
 </table>
 
+<?= $this->submitPagination; ?>
+
 <? if ($this->submits): ?>
 	<form id="grid-form" action="" method="get">
 		<table style="margin: 1em auto 0;" class="std-grid c">
 		<tr>
-			<th>Имя задачи</th>
-			<th>JobID</th>
-			<th>Сатус</th>
-			<th>Дата запуска</th>
-			<th>Дата завершения</th>
+			<th><?= $this->submitSorters['name']; ?></th>
+			<th><?= $this->submitSorters['jobid']; ?></th>
+			<th><?= $this->submitSorters['status']; ?></th>
+			<th><?= $this->submitSorters['start_date']; ?></th>
+			<th><?= $this->submitSorters['finish_date']; ?></th>
 			<th>Управление</th>
 			<th><input type="checkbox" onchange="$('input.row-check').attr('checked', $(this).attr('checked') ? true : false)" /></th>
 			
@@ -68,6 +66,8 @@
 			<input id="btn-del-all" type="button" class="button-small" value="<?= Lng::get('task.delete'); ?>" />
 		</div>
 	</form>
+	
+<?= $this->submitPagination; ?>
 
 <? else: ?>
 	<p>Нет запущенных задач</p>

@@ -29,6 +29,8 @@ class Lng {
 	/** все языковые данные */
 	private $_allData = null;
 	
+	/** последний сохраненный id */
+	private $_lastId = 0;
 	
 	/** ЗАДАТЬ ТЕКУЩИЙ ЯЗЫК ДО ИНИЦИАЛИЗАЦИИ КЛАССА */
 	public static function setCurLanguage($lng){
@@ -41,8 +43,15 @@ class Lng {
 		return self::$lngTitles[$lng];
 	}
 	
-	/** СОХРАНЕНИЕ ЯЗЫКОВОГО ФРАГМЕНТА */
+	/**
+	 * СОХРАНЕНИЕ ЯЗЫКОВОГО ФРАГМЕНТА
+	 * @param array $data - массив с ключами
+	 *                      'name', 'num_placeholders', 'description', 'is_external', 'text'=>array('ru', 'en', 'ua')
+	 * @return string 'ok' если сохранено успешно, или текст сообщения об ошибке
+	 */
 	public function save($data){
+		
+		$this->_lastId = 0;
 		
 		$id = getVar($data['id'], 0, 'int');
 		$name = trim(getVar($data['name']));
@@ -51,22 +60,31 @@ class Lng {
 		if(empty($name))
 			return 'Ключ не должно быть пустым';
 		
+		$fields = array(
+			'name' => $name,
+			'num_placeholders' => getVar($data['num_placeholders'], 0, 'int'),
+			'description' => getVar($data['description']),
+			'is_external' => !empty($data['is_external']),
+		);
+		
 		if($id){
 			if(!$db->getOne('SELECT COUNT(1) FROM lng_snippets WHERE id='.$id, 0))
 				return 'Запись не найдена';
 			if($db->getOne('SELECT COUNT(1) FROM lng_snippets WHERE name='.$db->qe($name).' AND id!='.$id , 0))
 				return 'Фрагмент с таким ключом уже существует';
 			
-			$db->update('lng_snippets', array('name' => $name, 'description' => getVar($data['description'])), 'id='.$id);
+			$db->update('lng_snippets', $fields, 'id='.$id);
 			foreach(self::$allowedLngs as $l)
 				$db->update('lng_'.$l, array('text' => !empty($data['text'][$l]) ? $data['text'][$l] : null), 'snippet_id='.$id);
+			$this->_lastId = $id;
 		}
 		else{
 			if($db->getOne('SELECT COUNT(1) FROM lng_snippets WHERE name='.$db->qe($name), 0))
 				return 'Фрагмент с таким ключом уже существует';
-			$id = $db->insert('lng_snippets', array('name' => $name, 'description' => getVar($data['description'])));
+			$id = $db->insert('lng_snippets', $fields);
 			foreach(self::$allowedLngs as $l)
 				$db->insert('lng_'.$l, array('snippet_id' => $id, 'text' => !empty($data['text'][$l]) ? $data['text'][$l] : null));
+			$this->_lastId = $id;
 		}
 		
 		$this->snippets[$name] = !empty($data['text'][$this->_curLng])
@@ -76,6 +94,11 @@ class Lng {
 				: $name);
 		
 		return 'ok';
+	}
+	
+	public function getLastId(){
+		
+		return $this->_lastId;
 	}
 	
 	/** УДАЛЕНИЕ ЯЗЫКОВОГО ФРАГМЕНТА */
@@ -95,9 +118,11 @@ class Lng {
 	/**
 	 * ПОЛУЧИТЬ ФРАГМЕНТ ТЕКСТА ПО ЗАДАННОМУ КЛЮЧУ ИЛИ ЭКЗЕМПЛЯР КЛАССА LNG
 	 * @param null|string $key - ключ вида "sect1.sect2.part3"
+	 * @param array $placeholders - массив подстановщиков (строки, которые будут подставлены
+	 *                              вместо $1, $2, $n в результирующую строку. Нумерация начинается с 1)
 	 * @return Lng-instance|string - экземпляр класса lng или языковой фрагмент
 	 */
-	public static function get($key = null){
+	public static function get($key = null, $placeholders = array()){
 		
 		if(is_null(self::$_instance))
 			self::$_instance = new Lng();
@@ -105,7 +130,8 @@ class Lng {
 		if(is_null($key))
 			return self::$_instance;
 		
-		return self::$_instance->getSnippet($key);
+		return self::$_instance->getSnippet($key, $placeholders);
+		
 	}
 	
 	/** КОНСТРУКТОР */
@@ -120,12 +146,18 @@ class Lng {
 	 * @param tring $key - ключ вида "sect1.sect2.part3"
 	 * @return string - языковой фрагмент
 	 */
-	public function getSnippet($key){
+	public function getSnippet($key, $placeholders = array()){
 		
 		if(!isset($this->snippets[$key]))
-			$this->save(array('id' => 0, 'name' => $key));
+			$this->save(array('id' => 0, 'name' => $key, 'num_placeholders' => count($placeholders)));
 		
-		return $this->snippets[$key];
+		$text = $this->snippets[$key];
+		
+		if (!empty($placeholders)) {
+			foreach (array_values($placeholders) as $index => $val)
+				$text = str_replace('$'.($index + 1), $val, $text);
+		}
+		return $text;
 	}
 	
 	/**
@@ -203,7 +235,7 @@ class Lng {
 			$fields .= ', '.$lng.'.text AS '.$lng;
 			$joins  .= ' LEFT JOIN lng_'.$lng.' '.$lng.' ON '.$lng.'.snippet_id = s.id ';
 		}
-		return db::get()->getAll('SELECT s.id, s.name, s.description '.$fields.' FROM lng_snippets s '.$joins.' ORDER BY s.name');
+		return db::get()->getAll('SELECT s.* '.$fields.' FROM lng_snippets s '.$joins.' ORDER BY s.name');
 	}
 	
 	public static function getSnippetAllData($id){
@@ -215,7 +247,7 @@ class Lng {
 			$joins  .= ' LEFT JOIN lng_'.$lng.' '.$lng.' ON '.$lng.'.snippet_id = s.id ';
 		}
 		
-		return db::get()->getRow('SELECT s.id, s.name, s.description '.$fields.' FROM lng_snippets s '.$joins.' WHERE s.id='.(int)$id, FALSE);
+		return db::get()->getRow('SELECT s.* '.$fields.' FROM lng_snippets s '.$joins.' WHERE s.id='.(int)$id, FALSE);
 	}
 	
 }

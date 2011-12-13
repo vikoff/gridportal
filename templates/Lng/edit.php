@@ -12,6 +12,12 @@
 	</div>
 	
 	<div class="paragraph">
+		<label class="title">Количество подстановщиков</label>
+		<div class="description">В тексте для каждого из языков должны находится подстановщики вида $1, $2, $n (где n - количество подстановщиков)</div>
+		<input type="text" name="num_placeholders" value="<?=getVar($num_placeholders);?>" style="width: 30px;" />
+	</div>
+	
+	<div class="paragraph">
 		<label class="title">Описание</label>
 		<div class="description">для того, чтобы напомнить себе, что это за фрагмент</div>
 		<textarea name="description" style="width: 300px; height: 3em;"><?=getVar($description);?></textarea>

@@ -24,6 +24,14 @@ class Project extends GenericObject{
 		return new Project($id, self::INIT_EXISTS);
 	}
 	
+	/** ЗАГРУЗИТЬ ОБЪЕКТ СО ВСЕМИ ЯЗЫКАМИ */
+	public static function loadWithLngs($id){
+		
+		$instance = new Project($id, self::INIT_EXISTS);
+		$instance->setHiddenField('name' => Lng::getSnippetAllData($instance->getField('name_id')));
+		$instance->setHiddenField('text' => Lng::getSnippetAllData($instance->getField('text_id')));
+	}
+	
 	/** ТОЧКА ВХОДА В КЛАСС (ЗАГРУЗКА СУЩЕСТВУЮЩЕГО ОБЪЕКТА) */
 	public static function forceLoad($id, $fieldvalues){
 		
@@ -62,29 +70,20 @@ class Project extends GenericObject{
 	/** ПОЛУЧИТЬ ЭКЗЕМПЛЯР ВАЛИДАТОРА */
 	public function getValidator(){
 		
-		// инициализация экземпляра валидатора
-		if(is_null($this->validator)){
+		$validator = new Validator();
+		$validator->rules(array(),
+		array(
+			'name' => array('length' => array('max' => '255'), 'strip' => true),
+			'text' => array('length' => array('max' => '50000')),
+		));
+		$validator->setFieldTitles(array(
+			'id' => 'id',
+			'name' => 'Название',
+		));
 		
-			$this->validator = new Validator();
-			$this->validator->rules(array(),
-			array(
-                'name' => array('length' => array('max' => '255'), 'strip' => true),
-                'text' => array('length' => array('max' => '50000')),
-            ));
-			$this->validator->setFieldTitles(array(
-				'id' => 'id',
-				'name' => 'Название',
-			));
-		}
-		
-		// применение специальных правил для редактирования или добавления объекта
-		if($this->isExistsObj){
-		
-		}
-		
-		return $this->validator;
+		return $validator;
 	}
-		
+	
 	/** ПРЕ-ВАЛИДАЦИЯ ДАННЫХ */
 	public function preValidation(&$data){
 		
@@ -109,10 +108,8 @@ class Project extends GenericObject{
 		// группировка данных по языкам и валидация
 		foreach(Lng::$allowedLngs as $l){
 			
-			echo $l.'<br />';
-			
 			// дополнительные правила валидации для текущего языка
-			$additRules = $l == $curLng ? array('title' => array('required' => TRUE)) : null;
+			$additRules = $l == $curLng ? array('name' => array('required' => TRUE)) : null;
 			$this->validLngData[$l] = $validator->validate( getVar($data['lng'][$l], array(), 'array'), $additRules );
 			
 			if($validator->hasError()){
@@ -127,9 +124,6 @@ class Project extends GenericObject{
 			$validator->reset();
 		}
 		
-		echo '<pre>'; print_r($this->validLngData); die;
-		
-		
 		return !$this->hasError();
 	}
 	
@@ -139,17 +133,39 @@ class Project extends GenericObject{
 		// echo '<pre>'; print_r($data); die;
 		// $data['author'] = USER_AUTH_ID;
 		// $data['modif_date'] = time();
-		// if($this->isNewObj)
-			// $data['create_date'] = time();
+		
+		$data = array();
+		// echo '<pre>'; print_r($this->validLngData); die;
 	}
 	
 	/** ДЕЙСТВИЕ ПОСЛЕ СОХРАНЕНИЯ */
 	public function afterSave($data){
 		
 		$db = db::get();
+		$lng = Lng::get();
 		
+		// сохранение языковых фрагментов
+		$lngFields = array('name' => array(), 'text' => array());
+		foreach (Lng::$allowedLngs as $l) {
+			$lngFields['name'][$l] = $this->validLngData[$l]['name'];
+			$lngFields['text'][$l] = $this->validLngData[$l]['text'];
+		}
+		foreach ($lngFields as $fieldName => $lngData) {
+			$key = $fieldName.'_id';
+			$lng->save(array(
+				'id' => getVar($data[$key]),
+				'name' => 'project.'.$this->id.'.'.$fieldName,
+				'is_external' => TRUE,
+				'text' => $lngData,
+			));
+			if ($this->isNewlyCreated)
+				$this->setField($key, $lng->getLastId());
+		}
+		if ($this->isNewlyCreated)
+			$this->_save();
+		
+		// сохранение виртуальных организаций
 		$db->delete('project_allowed_voms', 'project_id='.$this->id);
-		
 		foreach($this->_data['voms'] as $vid)
 			$db->insert('project_allowed_voms', array('project_id' => $this->id, 'voms_id' => (int)$vid));
 	}
