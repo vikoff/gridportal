@@ -28,8 +28,8 @@ class Project extends GenericObject{
 	public static function loadWithLngs($id){
 		
 		$instance = new Project($id, self::INIT_EXISTS);
-		$instance->setHiddenField('name' => Lng::getSnippetAllData($instance->getField('name_id')));
-		$instance->setHiddenField('text' => Lng::getSnippetAllData($instance->getField('text_id')));
+		$instance->setHiddenField(array('name' => Lng::getSnippetAllData($instance->getField('name_id'))));
+		$instance->setHiddenField(array('text' => Lng::getSnippetAllData($instance->getField('text_id'))));
 	}
 	
 	/** ТОЧКА ВХОДА В КЛАСС (ЗАГРУЗКА СУЩЕСТВУЮЩЕГО ОБЪЕКТА) */
@@ -62,8 +62,7 @@ class Project extends GenericObject{
 	/** ПОДГОТОВКА ДАННЫХ К ОТОБРАЖЕНИЮ */
 	public function beforeDisplay($data){
 	
-		// $data['modif_date'] = YDate::loadTimestamp($data['modif_date'])->getStrDateShortTime();
-		// $data['create_date'] = YDate::loadTimestamp($data['create_date'])->getStrDateShortTime();
+		$data['name'] = Lng::get($data['name_key']);
 		return $data;
 	}
 	
@@ -150,16 +149,22 @@ class Project extends GenericObject{
 			$lngFields['name'][$l] = $this->validLngData[$l]['name'];
 			$lngFields['text'][$l] = $this->validLngData[$l]['text'];
 		}
+		
 		foreach ($lngFields as $fieldName => $lngData) {
-			$key = $fieldName.'_id';
-			$lng->save(array(
-				'id' => getVar($data[$key]),
-				'name' => 'project.'.$this->id.'.'.$fieldName,
+			
+			$key = $fieldName.'_key';
+			$lngKey = 'project.'.$this->id.'.'.$fieldName;
+			$lngFields = array(
+				'name' => $lngKey,
 				'is_external' => TRUE,
 				'text' => $lngData,
-			));
-			if ($this->isNewlyCreated)
-				$this->setField($key, $lng->getLastId());
+			);
+			if ($this->isNewlyCreated) {
+				$lng->save($lngFields);
+				$this->setField($key, $lngKey);
+			} else {
+				$lng->update($lngKey, $lngFields);
+			}
 		}
 		if ($this->isNewlyCreated)
 			$this->_save();
@@ -175,6 +180,10 @@ class Project extends GenericObject{
 		
 		$db = db::get();
 		$db->delete('project_allowed_voms', 'project_id='.$this->id);
+		
+		$lng = Lng::get();
+		$lng->delete($this->getField('name_key'));
+		$lng->delete($this->getField('text_key'));
 	}
 	
 	/** ПОЛУЧИТЬ СПИСОК ВИРТУАЛЬНЫХ ОРГАНИЗАЦИЙ ПРОЕКТА */
@@ -182,6 +191,7 @@ class Project extends GenericObject{
 		
 		return db::get()->getAllIndexed('SELECT * FROM voms v JOIN project_allowed_voms pv ON pv.voms_id=v.id WHERE pv.project_id='.$this->id, 'id');
 	}
+	
 }
 
 class ProjectCollection extends GenericObjectCollection{

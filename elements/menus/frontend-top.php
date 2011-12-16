@@ -24,7 +24,7 @@ return array (
 		array(
 			'title' => 'top-menu.tasks',
 			'href' => href('task-set'),
-			'active' => $r->getParts(array(0)) == 'task-set',
+			'active' => $r->getParts(array(0)) == 'task-set' && $r->getParts(array(1)) != 'statistics',
 		),
 	
 		array(
@@ -35,8 +35,8 @@ return array (
 	
 		array(
 			'title' => 'top-menu.results',
-			'href' => href('task-submit/statistics'),
-			'active' => $r->getParts(array(0, 1)) == 'task-submit/statistics',
+			'href' => href('task-set/statistics'),
+			'active' => $r->getParts(array(0, 1)) == 'task-set/statistics',
 		),
 	
 	)

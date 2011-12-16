@@ -1,72 +1,88 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
      "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-		<title><?=$this->_getHtmlTitle();?></title>
-		<base href="<?=$this->_getHtmlBaseHref();?>" />
-		
-		<meta name="robots" content="index, follow" />
-		<meta name="keywords" />
-		<meta name="author" content="CrimeaEco VO" />
-		<meta name="description" content="description words" />
-		<meta name="generator" content="GridPortal" />
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title><?=$this->_getHtmlTitle();?></title>
+	<base href="<?=$this->_getHtmlBaseHref();?>" />
+	
+	<meta name="robots" content="index, follow" />
+	<meta name="keywords" />
+	<meta name="author" content="CrimeaEco VO" />
+	<meta name="description" content="description words" />
+	<meta name="generator" content="GridPortal" />
 
-		<?=$this->_getHtmlLinkTags();?>
-        <link rel="icon" type="image/png" href="images/favicon.ico" />
-		<link rel="stylesheet" href="
-			css/common.css,
-			css/frontend.css,
-			css/simplemodal.css,
-			css/redmond/jquery-ui-1.8.16.custom.css" type="text/css" />
-		
-		<script type="text/javascript">
-			var WWW_ROOT = '<?= WWW_ROOT; ?>';
-			var CUR_LNG = '<?= Lng::get()->getCurLng(); ?>';
-		</script>
-		<script type="text/javascript" src="
-			js/jquery-1.6.2.min.js,
-			js/jquery-ui-1.8.16.custom.min.js,
-			js/jquery.ctrlentersend.min.js,
-			js/jquery.browser.min.js,
-			js/jquery.address-1.4.min.js,
-			js/common.js,
-			js/frontend.js,
-			js/jquery.simplemodal.js"></script>
-		<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
-		
-		<script type="text/javascript">
-			setInterval(function(){ $.get(href('profile/ping')); }, 40000);
-		</script>
-		
-	</head>
-	<body>
-		<div id="wrapper">
-			<div id="header">
-				<div id="logo"><!-- <?=Lng::get('top.title');?> --></div>
-				<div id="rightHeader">
-					<div id="langBlock">
-						<?=$this->getLanguageBlock();?>
-					</div>
-					<div id="profileBlock">
-						<?=$this->getLoginBlock();?>
-					</div>
+	<?=$this->_getHtmlLinkTags();?>
+
+	<link rel="stylesheet" href="
+		css/common.css,
+		css/frontend.css,
+		css/simplemodal.css,
+		css/redmond/jquery-ui-1.8.16.custom.css" type="text/css" />
+	
+	<!--link rel="stylesheet" href="css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css" />
+	<link rel="stylesheet" href="css/common.css" type="text/css" />
+	<link rel="stylesheet" href="css/frontend.css" type="text/css" />
+	<link rel="stylesheet" href="css/simplemodal.css" type="text/css" />
+	<!-- <link rel="icon" type="image/png" href="favicon.ico" /> -->
+	<link rel="icon" type="image/png" href="images/favicon.ico" />
+	
+	<script type="text/javascript">
+		var WWW_ROOT = '<?= WWW_ROOT; ?>';
+		var CUR_LNG = '<?= Lng::get()->getCurLng(); ?>';
+	</script>
+	<script type="text/javascript" src="
+		js/jquery-1.6.2.min.js,
+		js/jquery-ui-1.8.16.custom.min.js,
+		js/jquery.ctrlentersend.min.js,
+		js/jquery.browser.min.js,
+		js/jquery.address-1.4.min.js,
+		js/common.js,
+		js/frontend.js,
+		js/jquery.simplemodal.js"></script>
+	<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
+	
+	<!--script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
+	<script type="text/javascript" src="js/jquery.validate.pack.js"></script>
+	<script type="text/javascript" src="js/jquery.ctrlentersend.min.js"></script>
+	<script type="text/javascript" src="js/jquery.browser.min.js"></script>
+	<script type="text/javascript" src="js/jquery.address-1.4.min.js"></script>
+	<script type="text/javascript" src="js/jquery.simplemodal.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="js/frontend.js"></script-->
+	
+</head>
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<div id="logo"><!-- <?=Lng::get('top.title');?> --></div>
+			<div id="rightHeader">
+				<div id="langBlock">
+					<?=$this->getLanguageBlock();?>
 				</div>
-			</div>
-			<div id="menu">
-				<div id="menuWrapper">
-					<?=$this->_getTopMenuHTML(); ?>
-					<div class="cl"></div>
+				<div id="profileBlock">
+					<?=$this->getLoginBlock();?>
 				</div>
-				<div class="cl"></div>
-			</div>
-			<?=$this->_getUserMessages();?>
-			<div id="main">
-				<?=$this->_getHtmlContent();?>
-			</div>
-			<div id="footer">
-				<?=$this->_getClientStatisticsLoader();?>
 			</div>
 		</div>
-	</body>
+		<div id="menu">
+			<div id="menuWrapper">
+				<?=$this->_getTopMenuHTML(); ?>
+				<div class="cl"></div>
+			</div>
+			<div class="cl"></div>
+		</div>
+		<?=$this->_getUserMessages();?>
+		<div id="main">
+			<?=$this->_getHtmlContent();?>
+		</div>
+		<div id="footer">
+			<?=$this->_getClientStatisticsLoader();?>
+		</div>
+		<div id="popup">
+			
+		</div>
+	</div>
+</body>
 </html>

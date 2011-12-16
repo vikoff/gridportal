@@ -109,8 +109,27 @@ body {
 	border-top: solid #4f9ec9 1px;
 }
 
+#popup {
+	display: none;
+	position: absolute;
+	width: 250px;
+	min-height: 20px;
+	background: #c6dce4;
+	background: rgba(198, 220, 228, 0.8);
+	border: solid #4f9ec9 1px;
+	border: solid rgba(79, 158, 201, 0.8) 1px;
+	padding: 10px;
+}
+
+.help-icon {
+	width: 16px;
+	height: 16px;
+	background: url(/images/help2.png);
+}
+
 .cl { clear: both; }
 .c { text-align: center; }
+.l { text-align: left; }
 
 a {
 	color: #06c;

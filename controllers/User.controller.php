@@ -15,9 +15,11 @@ class UserController extends Controller{
 		'admin_display_list'	=> PERMS_ADMIN,
 		'admin_display_view'	=> PERMS_ADMIN,
 		'admin_display_delete'	=> PERMS_ADMIN,
+		'admin_display_create'	=> PERMS_ADMIN,
 
 		'action_save_perms' 	=> PERMS_ADMIN,
 		'action_delete' 		=> PERMS_ADMIN,
+		'action_create' 		=> PERMS_ADMIN,
 	);
 	
 	
@@ -92,6 +94,21 @@ class UserController extends Controller{
 		
 	}
 	
+	// DISPLAY CREATE (ADMIN)
+	public function admin_display_create($params = array()){
+		
+		$instance = User::Create();
+
+		$variables = null;//array_merge($instance->GetAllFieldsPrepared(), array(
+		//	'instanceId' => $instanceId,
+		//));
+		
+		BackendViewer::get()
+			->prependTitle('Создание нового пользователя')
+			->setContentSmarty(self::TPL_PATH.'admin_create.tpl', $variables);
+		
+	}
+	
 	
 	////////////////////
 	////// ACTION //////
@@ -130,6 +147,22 @@ class UserController extends Controller{
 			return TRUE;
 		}else{
 			Messenger::get()->addError('Не удалось удалить пользователя.');
+			return FALSE;
+		}
+
+	}
+	
+	// ACTION CREATE (ADMIN)
+	public function action_create($params = array()){
+		
+		$instance = User::Create();
+	
+		if($instance->Save($_POST)){
+			Messenger::get()->addSuccess('Пользователь создан');
+			return TRUE;
+		}else{
+			Messenger::get()->addError('Не удалось создать пользователя.');
+			Messenger::get()->addError($instance->getError());
 			return FALSE;
 		}
 

@@ -15,7 +15,7 @@
 	{foreach from=$collection item='item'}
 	<tr>
 		<td>{$item.id}</td>
-		<td>{$item.name}</td>
+		<td>{lng snippet=$item.name_key}</td>
 		<td class="center">
 			<div class="tr-hover-visible options">
 				<a href="{a href=project/view/`$item.id`}" class="item" title="Просмотреть"><img src="images/backend/icon-view.png" alt="Просмотреть" /></a>

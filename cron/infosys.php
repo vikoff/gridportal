@@ -60,13 +60,16 @@ foreach($statuses as $jobid => $data){
 		case 'DELETED':  $isCompleted = 3; break;
 	}
 	
-	$db->update(TASK_TABLE, array(
-			'is_submitted' => 2,
-			'is_completed' => $isCompleted,
-			'status'       => $allStatuses[$status]
-		),
-		'jobid='.$db->qe($jobid)
+	$fields = array(
+		'is_submitted' => 2,
+		'is_completed' => $isCompleted,
+		'status'       => $allStatuses[$status]
 	);
+	
+	if ($isCompleted) 
+		$fields['finish_date'] = time();
+		
+	$db->update(TASK_TABLE, $fields, 'jobid='.$db->qe($jobid));
 	echo 'update '.$jobid.' with status "'.$data['nordugrid-job-status']."\"\n";
 	
 	// если задача только что получила свой первый статус

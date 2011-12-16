@@ -424,10 +424,11 @@ class TaskSet extends GenericObject{
 	public function dbGetRow(){
 		
 		return db::get()->getRow(
-			'SELECT s.* FROM '.self::TABLE.' s
-			WHERE id='.$this->id
+			'SELECT s.*, proj.name AS project_name, prof.name AS profile_name FROM '.self::TABLE.' s
+			LEFT JOIN '.Project::TABLE.' proj ON proj.id=s.project_id
+			LEFT JOIN '.TaskProfile::TABLE.' prof ON prof.id=s.profile_id
+			WHERE s.id='.$this->id
 		);
-		// LEFT JOIN '.Project::TABLE.' proj ON proj.id=s.project_id
 	}
 	
 }
@@ -444,10 +445,11 @@ class TaskSetCollection extends GenericObjectCollection{
 	protected function _getSortableFieldsTitles(){
 		
 		return array(
-			'id' => 'id',
-			'project_id' => Lng::get('taskset.list.project'),
-			'profile_id' => Lng::get('taskset.list.profile'),
-			'name' => Lng::get('taskset.list.name'),
+			'id'          => array('s.id', 'id'),
+			'uid'         => array('s.uid', 'Пользователь'),
+			'project_id'  => Lng::get('taskset.list.project'),
+			'profile_id'  => Lng::get('taskset.list.profile'),
+			'name'        => array('s.name', Lng::get('taskset.list.name')),
 			'num_submits' => Lng::get('taskset.list.num-submits'),
 			'create_date' => Lng::get('taskset.list.create-date'),
 		);
@@ -472,22 +474,34 @@ class TaskSetCollection extends GenericObjectCollection{
 	}
 
 	/** ПОЛУЧИТЬ СПИСОК С ПОСТРАНИЧНОЙ РАЗБИВКОЙ */
-	public function getPaginated(){
+	public function getPaginated($options = array()){
 		
 		$whereArr = array();
 		if(!empty($this->filters['uid']))
-			$whereArr[] = 'uid='.$this->filters['uid'];
+			$whereArr[] = 's.uid='.$this->filters['uid'];
 			
 		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
 		
-		$sorter = new Sorter('id', 'DESC', $this->_getSortableFieldsTitles());
-		$paginator = new Paginator('sql', array('*', 'FROM '.TaskSet::TABLE.' '.$whereStr.' ORDER BY '.$sorter->getOrderBy()), 50);
+		$sqlFields = 's.*, proj.name AS project_name, prof.name AS profile_name';
+		$sqlFrom = '
+			FROM '.TaskSet::TABLE.' s
+			LEFT JOIN '.Project::TABLE.' proj ON proj.id=s.project_id
+			LEFT JOIN '.TaskProfile::TABLE.' prof ON prof.id=s.profile_id
+		';
+		
+		if (!empty($options['withUsers'])) {
+			
+		}
+		
+		$sorter = new Sorter('s.id', 'DESC', $this->_getSortableFieldsTitles());
+		$paginator = new Paginator('sql', array($sqlFields, $sqlFrom.' '.$whereStr.' ORDER BY '.$sorter->getOrderBy()), 50);
 		
 		$data = db::get()->getAll($paginator->getSql(), array());
 		
 		foreach($data as &$row)
 			$row = TaskSet::forceLoad($row['id'], $row)->getAllFieldsPrepared();
 		
+		// echo '<pre>'; print_r($data); die;
 		$this->_sortableLinks = $sorter->getSortableLinks();
 		$this->_pagination = $paginator->getButtons();
 		$this->_linkTags = $paginator->getLinkTags();

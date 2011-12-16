@@ -15,6 +15,7 @@ class TaskSetController extends Controller{
 		'display_view' 			=> PERMS_REG,
 		'display_new'			=> PERMS_REG,
 		'display_customize' 	=> PERMS_REG,
+		'display_statistics'	=> PERMS_REG,
 		'display_submit'		=> PERMS_REG,
 		'display_edit_file'		=> PERMS_REG,
 		'display_file_constructor' => PERMS_REG,
@@ -112,6 +113,7 @@ class TaskSetController extends Controller{
 			->render();
 	}
 	
+	/** DISPLAY CUSTOMIZE */
 	public function display_customize($params = array()){
 		
 		$instanceId = getVar($params[0], 0, 'int');
@@ -130,6 +132,25 @@ class TaskSetController extends Controller{
 			->render();
 	}
 	
+	/** DISPLAY STATISTICS */
+	public function display_statistics($params = array()){
+		
+		$collection = new TaskSetCollection();
+		$variables = array(
+			'collection' => $collection->getPaginated(array('withUsers' => TRUE)),
+			'pagination' => $collection->getPagination(),
+			'sorters' => $collection->getSortableLinks(),
+		);
+		
+		FrontendViewer::get()
+			->setTitle('Статистика')
+			->setLinkTags($collection->getLinkTags())
+			->setTopMenuActiveItem('tasks')
+			->setContentPhpFile(self::TPL_PATH.'statistics.php', $variables)
+			->render();
+	}
+	
+	/** DISPLAY SUBMIT */
 	public function display_submit($params = array()){
 		
 		$user = CurUser::get();

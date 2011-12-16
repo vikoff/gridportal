@@ -317,7 +317,7 @@ class Page extends GenericObject{
 	public static function getHelpIcon($lngKey){
 		
 		$text = Lng::get($lngKey);
-		return '<img src="" alt="" title="'.$text.'">';
+		return '<img alt="?" src="/images/spacer.gif" class="help-icon" onmouseover="showPopup(this, \''.$text.'\')" onmouseout="hidePopup(this)" />';
 	}
 }
 

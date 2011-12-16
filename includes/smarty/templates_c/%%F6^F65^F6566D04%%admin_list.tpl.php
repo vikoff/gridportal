@@ -1,7 +1,7 @@
-<?php /* Smarty version 2.6.26, created on 2011-09-23 19:45:25
+<?php /* Smarty version 2.6.26, created on 2011-12-16 19:59:42
          compiled from Project/admin_list.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'Project/admin_list.tpl', 3, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'Project/admin_list.tpl', 3, false),array('function', 'lng', 'Project/admin_list.tpl', 18, false),)), $this); ?>
 
 <div class="options-row">
 	<?php echo SmartyPlugins::function_a(array('href' => "admin/content/project/new",'text' => "Добавить запись"), $this);?>
@@ -26,7 +26,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'Projec
 	<tr>
 		<td><?php echo (isset($this->_tpl_vars['item']['id']) ? $this->_tpl_vars['item']['id'] : ''); ?>
 </td>
-		<td><?php echo (isset($this->_tpl_vars['item']['name']) ? $this->_tpl_vars['item']['name'] : ''); ?>
+		<td><?php echo SmartyPlugins::function_lng(array('snippet' => (isset($this->_tpl_vars['item']['name_key']) ? $this->_tpl_vars['item']['name_key'] : '')), $this);?>
 </td>
 		<td class="center">
 			<div class="tr-hover-visible options">
@@ -47,4 +47,3 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'Projec
 
 <?php echo (isset($this->_tpl_vars['pagination']) ? $this->_tpl_vars['pagination'] : ''); ?>
 
-

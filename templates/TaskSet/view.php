@@ -7,7 +7,7 @@
 <table class="std-grid narrow">
 <tr>
 	<td class="title">Проект</td>
-	<td class="data"><?= $this->project_id; ?></td>
+	<td class="data"><?= $this->project_name; ?></td>
 </tr>
 <tr>
 	<td class="title">Имя задачи</td>
@@ -15,7 +15,7 @@
 </tr>
 <tr>
 	<td class="title">Профиль</td>
-	<td class="data"><?= $this->profile_id; ?></td>
+	<td class="data"><?= $this->profile_name; ?></td>
 </tr>
 <tr>
 	<td class="title">Количество запусков</td>
@@ -44,8 +44,8 @@
 		</tr>
 		<? foreach($this->submits as $i => $s): ?>
 			<tr class="<?= $i % 2 ? 'odd' : 'even' ?>">
-				<td><?= $s['fullname']; ?></td>
-				<td><?= $s['jobid']; ?></td>
+				<td class="l"><?= $s['fullname']; ?></td>
+				<td class="l"><?= $s['jobid']; ?></td>
 				<td class="task<?= $s['id'] ?>-status task-state-<?= (int)$s['status'] ?>"><?= $s['is_submitted'] ? Lng::get($s['status_str']) : Lng::get('task.state.inqueue'); ?></td>
 				<td><?= $s['start_date_str']; ?></td>
 				<td><?= $s['finish_date_str']; ?></td>
@@ -85,14 +85,9 @@ $(function(){
 		$('#grid-form').attr('action', '<?= href('task-submit/delete'); ?>').submit();
 	});
 	
-	setInterval(function(){
-		/*$.get(href('task-set/get-statuses'), {set_id: <?= $this->id; ?>}, function(response){
-			for (var i = 0; i < response.length; i++){
-				$('.task'+response[i].id+'-status')
-					.html(response[i].status);
-			}
-		}, 'json');*/
-		$.get(href('task-set/view/<?= $this->id; ?>'), function(response){
+	// при каждом обновлении загружается новый экземпляр setTimeout
+	setTimeout(function(){
+		$.get(location.href, function(response){
 			$('#main').html(response);
 		});
 	}, 30000);

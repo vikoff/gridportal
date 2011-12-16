@@ -4,6 +4,7 @@
 <? if($this->collection): ?>
 	<table class="std-grid">
 	<tr>
+		<th><?= $this->sorters['uid']; ?></th>
 		<th><?= $this->sorters['name']; ?></th>
 		<th><?= $this->sorters['project_id']; ?></th>
 		<th><?= $this->sorters['profile_id']; ?></th>
@@ -14,6 +15,7 @@
 	</tr>
 	<? foreach($this->collection as $i => $item): ?>	
 	<tr class="<?= $i % 2 ? 'odd' : 'even' ?>">
+		<td><?= $item['uid']; ?></td>
 		<td><a href="<?= href('task-set/view/'.$item['id']); ?>"><?= $item['name']; ?></a></td>
 		<td><?= $item['project_name']; ?></td>
 		<td><?= !empty($item['profile_name']) ? $item['profile_name'] : '-'; ?></td>
@@ -22,7 +24,6 @@
 		
 		<td style="font-size: 11px;">
 			<a href="<?= href('task-set/view/'.$item['id']); ?>">просмотр</a>
-			<a href="<?= href('task-set/customize/'.$item['id']); ?>">запуск</a>
 		</td>
 	</tr>
 	<? endforeach; ?>	

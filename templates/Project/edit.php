@@ -48,10 +48,10 @@
 	<div class="paragraph" id="submit-box">
 		<input id="submit-save" class="button" type="submit" name="action[project/save][admin/content/project/list]" value="Сохранить" title="Созхранить изменения и вернуться к списку" />
 		<input id="submit-apply" class="button" type="submit" name="action[project/save][admin/content/project/edit/<?= $this->instanceId ? $this->instanceId : '(%id%)'; ?>]" value="Применить" title="Сохранить изменения и продолжить редактирование" />
-		<a id="submit-cancel" class="button" href="{a href=admin/content/project/list}" title="Отменить все изменения и вернуться к списку">отмена</a>
+		<a id="submit-cancel" class="button" href="<?= href('admin/content/project/list'); ?>" title="Отменить все изменения и вернуться к списку">отмена</a>
 		<? if ($this->instanceId): ?>
-			<a id="submit-delete" class="button" href="{a href=admin/content/project/delete/$instanceId}" title="Удалить запись">удалить</a>
-			<a id="submit-copy" class="button" href="{a href=admin/content/project/copy/$instanceId}" title="Сделать копию записи">копировать</a>
+			<a id="submit-delete" class="button" href="<?= href('admin/content/project/delete/'.$instanceId); ?>" title="Удалить запись">удалить</a>
+			<a id="submit-copy" class="button" href="<?= href('admin/content/project/copy/'.$instanceId); ?>" title="Сделать копию записи">копировать</a>
 		<? endif; ?>
 	</div>
 </form>

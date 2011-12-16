@@ -135,15 +135,17 @@ class SoftwareCollection extends GenericObjectCollection{
 	public function getPaginated(){
 		
 		$sorter = new Sorter('s.id', 'DESC', $this->_getSortableFieldsTitles());
-		$paginator = new Paginator('sql', array('s.*, p.name AS project_name',
+		$paginator = new Paginator('sql', array('s.*, p.name_key AS project_name_key',
 			'FROM '.Software::TABLE.' s LEFT JOIN projects p ON p.id=s.project_id ORDER BY '.$sorter->getOrderBy()), 50);
 		
 		$data = db::get()->getAll($paginator->getSql(), array());
 		
 		// echo '<pre>'; print_r($data); die;
 		
-		foreach($data as &$row)
+		foreach($data as &$row) {
+			$row['project_name'] = Lng::get($row['project_name_key']);
 			$row = Software::forceLoad($row['id'], $row)->getAllFieldsPrepared();
+		}
 		
 		$this->_sortableLinks = $sorter->getSortableLinks();
 		$this->_pagination = $paginator->getButtons();

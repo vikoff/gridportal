@@ -24,7 +24,6 @@ class ProjectController extends Controller{
 		'action_delete' 		=> PERMS_ADMIN,
 	);
 	
-	protected $_title = null;
 	
 	/////////////////////
 	////// DISPLAY //////
@@ -109,14 +108,21 @@ class ProjectController extends Controller{
 		$instance = Project::Load($instanceId);
 		
 		$pageTitle = '<span style="font-size: 14px;">Редактирование элемента</span> #'.$instance->getField('id');
-	
-		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
+		
+		$lngVals = array();
+		$data = $instance->GetAllFieldsPrepared();
+		foreach (array('name', 'text') as $k)
+			foreach(Lng::getAllLngs($data[$k.'_key']) as $l => $val)
+				$lngVals[$l][$k] = $val;
+		
+		$variables = array_merge($data, array(
+			'lng' 		  => $lngVals,
 			'instanceId'  => $instanceId,
 			'pageTitle'   => $pageTitle,
 			'validation'  => $instance->getValidator()->getJsRules(),
 			'allowedVoms' => $instance->getVoms(),
 			'vomsList'    => VomsCollection::load()->getAll(),
-			'curLng'     => Lng::get()->getCurLng(),
+			'curLng'      => Lng::get()->getCurLng(),
 		));
 		
 		// echo '<pre>'; print_r(); die;

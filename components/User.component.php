@@ -140,7 +140,7 @@ class User extends GenericObject{
 	
 	public function preValidation(&$data){
 		
-		$data['birthdate'] = YDate::loadArray($data['birth'])->getDbDate();
+		// YDate::loadArray($data['birth'])->getDbDate();
 	}
 	
 	public function postValidation(&$data){
@@ -446,7 +446,11 @@ class User extends GenericObject{
 	/** ПОЛУЧИТЬ СПИСОК ПРОЕКТОВ, В КОТОРЫХ УЧАСТВУЕТ ПОЛЬЗОВАТЕЛЬ */
 	public function getAllowedProjects(){
 		
-		return db::get()->getAllIndexed('SELECT p.* FROM '.Project::TABLE.' p JOIN user_allowed_projects ap ON ap.project_id=p.id WHERE ap.uid='.$this->id, 'id');
+		$data = db::get()->getAllIndexed('SELECT p.* FROM '.Project::TABLE.' p JOIN user_allowed_projects ap ON ap.project_id=p.id WHERE ap.uid='.$this->id, 'id');
+		foreach($data as &$row)
+			$row = Project::forceLoad($row['id'], $row)->getAllFieldsPrepared();
+		
+		return $data;
 	}
 	
 	/** ПОЛУЧИТЬ СПИСОК ВО, В КОТОРЫХ СОСТОИТ ПОЛЬЗОВАТЕЛЬ */

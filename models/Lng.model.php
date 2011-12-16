@@ -96,16 +96,52 @@ class Lng {
 		return 'ok';
 	}
 	
+	public function update($idOrName, $data){
+		
+		$db = db::get();
+		$name = $data['name'];
+		
+		$where = is_numeric($idOrName)
+			? 'id='.$idOrName
+			: 'name='.$db->qe($idOrName);
+		
+		$fields = array(
+			'num_placeholders' => getVar($data['num_placeholders'], 0, 'int'),
+			'description' => getVar($data['description']),
+			'is_external' => !empty($data['is_external']),
+		);
+		
+		if(! ($id = $db->getOne('SELECT id FROM lng_snippets WHERE '.$where, 0)))
+			return 'Запись не найдена';
+		
+		$db->update('lng_snippets', $fields, 'id='.$id);
+		foreach(self::$allowedLngs as $l)
+			$db->update('lng_'.$l, array('text' => !empty($data['text'][$l]) ? $data['text'][$l] : null), 'snippet_id='.$id);
+		$this->_lastId = $id;
+		
+		$this->snippets[$name] = !empty($data['text'][$this->_curLng])
+			? $data['text'][$this->_curLng]
+			: (!empty($data['text'][self::$defaultLng])
+				? $data['text'][self::$defaultLng]
+				: $name);
+		
+		return 'ok';
+	}
+	
 	public function getLastId(){
 		
 		return $this->_lastId;
 	}
 	
 	/** УДАЛЕНИЕ ЯЗЫКОВОГО ФРАГМЕНТА */
-	public function delete($id){
+	public function delete($idOrName){
 		
 		$db = db::get();
-		if(!$db->getOne('SELECT COUNT(1) FROM lng_snippets WHERE id='.$id, 0))
+		$where = is_numeric($idOrName)
+			? 'id='.$idOrName
+			: 'name='.$db->qe($idOrName);
+			
+		if( ! ($id = $db->getOne('SELECT id FROM lng_snippets WHERE '.$where, 0)))
 			return 'Запись не найдена';
 			
 		$db->delete('lng_snippets', 'id='.$id);
@@ -238,7 +274,12 @@ class Lng {
 		return db::get()->getAll('SELECT s.* '.$fields.' FROM lng_snippets s '.$joins.' ORDER BY s.name');
 	}
 	
-	public static function getSnippetAllData($id){
+	public static function getSnippetAllData($idOrName){
+		
+		$db = db::get();
+		$where = is_numeric($idOrName)
+			? 's.id='.$idOrName
+			: 's.name='.$db->qe($idOrName);
 	
 		$fields = '';
 		$joins = '';
@@ -247,7 +288,24 @@ class Lng {
 			$joins  .= ' LEFT JOIN lng_'.$lng.' '.$lng.' ON '.$lng.'.snippet_id = s.id ';
 		}
 		
-		return db::get()->getRow('SELECT s.* '.$fields.' FROM lng_snippets s '.$joins.' WHERE s.id='.(int)$id, FALSE);
+		return $db->getRow('SELECT s.* '.$fields.' FROM lng_snippets s '.$joins.' WHERE '.$where, FALSE);
+	}
+	
+	public static function getAllLngs($idOrName){
+		
+		$db = db::get();
+		$where = is_numeric($idOrName)
+			? 's.id='.$idOrName
+			: 's.name='.$db->qe($idOrName);
+	
+		$fields = array();
+		$joins = '';
+		foreach(self::$allowedLngs as $k => $lng){
+			$fields[] = $lng.'.text AS '.$lng;
+			$joins  .= ' LEFT JOIN lng_'.$lng.' '.$lng.' ON '.$lng.'.snippet_id = s.id ';
+		}
+		
+		return $db->getRow('SELECT '.implode(',', $fields).' FROM lng_snippets s '.$joins.' WHERE '.$where, FALSE);
 	}
 	
 }

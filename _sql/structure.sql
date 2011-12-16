@@ -151,8 +151,8 @@ CREATE TABLE IF NOT EXISTS `user_accepted_voms` (
 DROP TABLE IF EXISTS `projects`;
 CREATE TABLE `projects` (
   `id`				INT(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  `name_id`			INT(10) UNSIGNED,
-  `text_id`			INT(10) UNSIGNED
+  `name_key`		VARCHAR(50),
+  `text_key`		VARCHAR(50)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* ПРОГРАМНОЕ ОБЕСПЕЧЕНИЕ */
@@ -196,10 +196,6 @@ CREATE TABLE `user_allowed_software` (
   `software_id`		INT UNSIGNED,
 	PRIMARY KEY(`uid`, `software_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
-
-
------------------------------------------------------------------------------
 
 /* ПРОФИЛИ СОЗДАНИЯ ЗАДАЧ */
 DROP TABLE IF EXISTS `task_profiles`;
