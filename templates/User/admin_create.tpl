@@ -1,66 +1,57 @@
 
-<form id="edit-form" action="" method="post">
+<form name="edit-form" id="edit-form" action="" method="post">
 	{$formcode}
 	
-	<table class="stdItemEdit">
+	<h3>Создание новой записи</h3>
+	<table class="std-grid">
 	<tr>
-		<th class="title" colspan="2">
-			{if !$instanceId}
-				Создание новой записи
-			{else}
-				Редактирование записи #{$instanceId}
-			{/if}
-		</th>
+		<td>Логин</td>
+		<td><input type="text" name="login" /></td>
 	</tr>
 	<tr>
-		<th>email</th>
-		<td><input type="text" name="email" value="{$email}" /></td>
+		<td>Пароль</td>
+		<td><input type="text" name="password" /></td>
 	</tr>
 	<tr>
-		<th>Пароль</th>
-		<td><input type="text" name="password" value="{$password}" /></td>
+		<td>email</td>
+		<td><input type="text" name="email" /></td>
 	</tr>
 	<tr>
-		<th>Фамилия</th>
-		<td><input type="text" name="surname" value="{$surname}" /></td>
+		<td>Фамилия</td>
+		<td><input type="text" name="surname" /></td>
 	</tr>
 	<tr>
-		<th>Имя</th>
-		<td><input type="text" name="name" value="{$name}" /></td>
+		<td>Имя</td>
+		<td><input type="text" name="name" /></td>
 	</tr>
 	<tr>
-		<th>Отчество</th>
-		<td><input type="text" name="patronymic" value="{$patronymic}" /></td>
+		<td>dn</td>
+		<td><input type="text" name="dn" /> <span style="cursor:pointer;border-bottom:#3763fb 1px dashed;color:#3763fb;" onclick="document.forms['edit-form'].dn.value='/DC=org/DC=ugrid/O=people/O=UGRID/CN='+document.forms['edit-form'].name.value+' '+document.forms['edit-form'].surname.value">test</span></td>
 	</tr>
 	<tr>
-		<th>Права</th>
-		<td><input type="text" name="level" value="{$level}" /></td>
+		<td>dn_cn</td>
+		<td><input type="text" name="dn_cn" /> <span style="cursor:pointer;border-bottom:#3763fb 1px dashed;color:#3763fb;" onclick="document.forms['edit-form'].dn_cn.value=document.forms['edit-form'].name.value+' '+document.forms['edit-form'].surname.value">fill</span></td>
 	</tr>
 	<tr>
-		<th>Активация</th>
-		<td><input type="text" name="active" value="{$active}" /></td>
+		<td>Права</td>
+		<td><select name="level">{$perms}</select></td>
 	</tr>
 	<tr>
-		<th>Действия</th>
-		<td class="actions">
-		
-			<input class="button" type="submit" name="action[user/create]" value="Сохранить" />
-			<a class="button" href="{a href=admin/users}">отмена</a>
-			
-			<div class="after-action">
-				+ 
-				<select name="redirect" id="next-action-select">
-					<option value="{a href=admin/users}">К адм. списку записей</option>
-					<option value="{a href=admin/users/edit/$instanceId}">Продолжить редактирование</option>
-					<option value="{a href=admin/users/new}">Создать новую запись</option>
-				</select>
-			</div>
-			
+		<td>Активация</td>
+		<td>
+			<select name="active">
+				<option value="0">активный</option>
+				<option value="0">неактивный</option>
+			</select>
 		</td>
 	</tr>
 	<tr>
-		<td class="footer" colspan="2">
-			<a href="mailto:yurijnovikov@gmail.com" title="Разработчик: Юрий Новиков">vik-off CMF</a>
+		<td>Действия</td>
+		<td class="actions">
+		
+			<input class="button" type="submit" name="action[user/create]" />
+			<a class="button" href="{a href=admin/users}">отмена</a>
+			
 		</td>
 	</tr>
 	</table>

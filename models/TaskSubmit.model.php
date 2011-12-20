@@ -57,7 +57,11 @@ class TaskSubmit extends GenericObject{
 	/** ПОДГОТОВКА ДАННЫХ К ОТОБРАЖЕНИЮ */
 	public function beforeDisplay($data){
 	
-		$data['status_str'] = $data['status'] ? TaskStatus::get()->statuses[$data['status']]['title'] : 'task.state.undefined';
+		$data['status_str'] = $data['status']
+			? ($data['is_submitted']
+				? TaskStatus::get()->statuses[$data['status']]['title']
+				: 'task.state.inqueue')
+			: 'task.state.undefined';
 		$data['start_date_str'] = YDate::loadTimestamp($data['start_date'])->getStrDateShortTime();
 		$data['finish_date_str'] = YDate::loadTimestamp($data['finish_date'])->getStrDateShortTime();
 		$data['fullname'] = self::getSubmitName($data['name'], $data['gridjob_name'], $data['index']);
@@ -566,7 +570,7 @@ class TaskSubmitCollection extends GenericObjectCollection{
 	}
 	
 	/** ПОЛУЧИТЬ СПИСОК С ПОСТРАНИЧНОЙ РАЗБИВКОЙ */
-	public function getPaginated( $filters = array() ){
+	public function getPaginated(){
 		
 		$whereArr = array();
 		if(!empty($this->filters['uid']))
@@ -575,6 +579,8 @@ class TaskSubmitCollection extends GenericObjectCollection{
 			$whereArr[] = 't.id IN('.$this->filters['ids'].')';
 		if(!empty($this->filters['set_id']))
 			$whereArr[] = 'set_id='.$this->filters['set_id'];
+		if(!empty($this->filters['set_id']))
+			$whereArr[] = 't.set_id IN('.implode(',', (array)$this->filters['set_id']).')';
 		
 		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
 		
@@ -607,6 +613,8 @@ class TaskSubmitCollection extends GenericObjectCollection{
 			$whereArr[] = 't.uid='.$this->filters['uid'];
 		if(!empty($this->filters['ids']))
 			$whereArr[] = 't.id IN('.implode(',', $this->filters['ids']).')';
+		if(!empty($this->filters['set_id']))
+			$whereArr[] = 't.set_id IN('.implode(',', (array)$this->filters['set_id']).')';
 		
 		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
 		

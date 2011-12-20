@@ -46,7 +46,7 @@
 			<tr class="<?= $i % 2 ? 'odd' : 'even' ?>">
 				<td class="l"><?= $s['fullname']; ?></td>
 				<td class="l"><?= $s['jobid']; ?></td>
-				<td class="task<?= $s['id'] ?>-status task-state-<?= (int)$s['status'] ?>"><?= $s['is_submitted'] ? Lng::get($s['status_str']) : Lng::get('task.state.inqueue'); ?></td>
+				<td class="task<?= $s['id'] ?>-status task-state-<?= (int)$s['status'] ?>"><?= Lng::get($s['status_str']); ?></td>
 				<td><?= $s['start_date_str']; ?></td>
 				<td><?= $s['finish_date_str']; ?></td>
 				<td>

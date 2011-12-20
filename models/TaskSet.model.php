@@ -445,13 +445,13 @@ class TaskSetCollection extends GenericObjectCollection{
 	protected function _getSortableFieldsTitles(){
 		
 		return array(
-			'id'          => array('s.id', 'id'),
-			'uid'         => array('s.uid', 'Пользователь'),
-			'project_id'  => Lng::get('taskset.list.project'),
-			'profile_id'  => Lng::get('taskset.list.profile'),
-			'name'        => array('s.name', Lng::get('taskset.list.name')),
-			'num_submits' => Lng::get('taskset.list.num-submits'),
-			'create_date' => Lng::get('taskset.list.create-date'),
+			'id'          => array('s.id _DIR_', 'id'),
+			'uid'         => array('s.uid _DIR_', 'Пользователь'),
+			'project_id'  => array('s.project_id _DIR_', Lng::get('taskset.list.project')),
+			'profile_id'  => array('s.profile_id _DIR_', Lng::get('taskset.list.profile')),
+			'name'        => array('s.name _DIR_', Lng::get('taskset.list.name')),
+			'num_submits' => array('s.num_submits _DIR_', Lng::get('taskset.list.num-submits')),
+			'create_date' => array('s.create_date _DIR_', Lng::get('taskset.list.create-date')),
 		);
 	}
 	
@@ -490,16 +490,44 @@ class TaskSetCollection extends GenericObjectCollection{
 		';
 		
 		if (!empty($options['withUsers'])) {
-			
+			$sqlFields .= ", CONCAT(u.surname,' ',u.name) as user_name";
+			$sqlFrom .= ' LEFT JOIN '.User::TABLE.' u ON u.id=s.uid ';
 		}
 		
-		$sorter = new Sorter('s.id', 'DESC', $this->_getSortableFieldsTitles());
+		$sorter = new Sorter('create_date', 'DESC', $this->_getSortableFieldsTitles());
 		$paginator = new Paginator('sql', array($sqlFields, $sqlFrom.' '.$whereStr.' ORDER BY '.$sorter->getOrderBy()), 50);
 		
-		$data = db::get()->getAll($paginator->getSql(), array());
+		$db = db::get();
+		$data = $db->getAllIndexed($paginator->getSql(), 'id', array());
 		
-		foreach($data as &$row)
+		// echo '<pre>'; print_r($data); die;
+		if (empty($data))
+			return array();
+			
+		foreach ($data as &$row) {
 			$row = TaskSet::forceLoad($row['id'], $row)->getAllFieldsPrepared();
+			// $row['submits'] = array();
+			$row['num_total'] = 0;
+			$row['num_processing'] = 0;
+			$row['num_finished'] = 0;
+			$row['num_errors'] = 0;
+			$row['num_undefined'] = 0;
+		}
+		
+		// извлечение субмитов набора
+		// foreach (TaskSubmitCollection::load(array('set_id' => array_keys($data)))->getAll() as $s) {
+		foreach ($db->getAllIndexed('SELECT * FROM '.TaskSubmit::TABLE.' WHERE set_id IN ('.implode(',', array_keys($data)).')', 'id') as $s) {
+			// $data[ $s['set_id'] ]['submits'][] = $s;
+			$data[ $s['set_id'] ]['num_total']++;
+			if ($s['is_completed'] == 1)
+				$data[ $s['set_id'] ]['num_finished']++;
+			elseif ($s['is_completed'] == 2)
+				$data[ $s['set_id'] ]['num_errors']++;
+			elseif ($s['status'] && $s['is_submitted'])
+				$data[ $s['set_id'] ]['num_processing']++;
+			else
+				$data[ $s['set_id'] ]['num_undefined']++;
+		}
 		
 		// echo '<pre>'; print_r($data); die;
 		$this->_sortableLinks = $sorter->getSortableLinks();

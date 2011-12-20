@@ -70,7 +70,8 @@ class TaskSetController extends Controller{
 		$instanceId = getVar($params[0], 0, 'int');
 		$submits = TaskSubmitCollection::load(array('set_id' => $instanceId));
 		
-		$variables = array_merge(TaskSet::Load($instanceId)->GetAllFieldsPrepared(), array(
+		$data = TaskSet::Load($instanceId)->GetAllFieldsPrepared();
+		$variables = array_merge($data, array(
 			'instanceId' => $instanceId,
 			'submits' => $submits->getPaginated(),
 			'submitPagination' => $submits->getPagination(),
@@ -78,7 +79,7 @@ class TaskSetController extends Controller{
 		));
 		
 		FrontendViewer::get()
-			->setTitle('Детально')
+			->setTitle('Задача '.$data['name'])
 			->setTopMenuActiveItem('tasks')
 			->setContentPhpFile(self::TPL_PATH.'view.php', $variables)
 			->render();
@@ -135,6 +136,11 @@ class TaskSetController extends Controller{
 	/** DISPLAY STATISTICS */
 	public function display_statistics($params = array()){
 		
+		if ($curSet = getVar($params[0], 0, 'int')) {
+			$this->_display_set_statistics($curSet);
+			exit;
+		}
+		
 		$collection = new TaskSetCollection();
 		$variables = array(
 			'collection' => $collection->getPaginated(array('withUsers' => TRUE)),
@@ -147,6 +153,25 @@ class TaskSetController extends Controller{
 			->setLinkTags($collection->getLinkTags())
 			->setTopMenuActiveItem('tasks')
 			->setContentPhpFile(self::TPL_PATH.'statistics.php', $variables)
+			->render();
+	}
+	
+	public function _display_set_statistics($instanceId){
+		
+		$submits = TaskSubmitCollection::load(array('set_id' => $instanceId));
+		
+		$data = TaskSet::Load($instanceId)->GetAllFieldsPrepared();
+		$variables = array_merge($data, array(
+			'instanceId' => $instanceId,
+			'submits' => $submits->getPaginated(),
+			'submitPagination' => $submits->getPagination(),
+			'submitSorters' => $submits->getSortableLinks(),
+		));
+		
+		FrontendViewer::get()
+			->setTitle('Задача '.$data['name'])
+			->setTopMenuActiveItem('tasks')
+			->setContentPhpFile(self::TPL_PATH.'set_statistics.php', $variables)
 			->render();
 	}
 	

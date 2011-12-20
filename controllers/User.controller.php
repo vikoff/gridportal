@@ -103,6 +103,12 @@ class UserController extends Controller{
 		//	'instanceId' => $instanceId,
 		//));
 		
+		$perms = "";
+		foreach(User::getPermsList() as $perm)
+			$perms .= '<option value="'.$perm.'">'.User::getPermName($perm).'</option>';
+		
+		$variables['perms'] = $perms;
+		
 		BackendViewer::get()
 			->prependTitle('Создание нового пользователя')
 			->setContentSmarty(self::TPL_PATH.'admin_create.tpl', $variables);
@@ -156,7 +162,7 @@ class UserController extends Controller{
 	public function action_create($params = array()){
 		
 		$instance = User::Create();
-	
+		
 		if($instance->Save($_POST)){
 			Messenger::get()->addSuccess('Пользователь создан');
 			return TRUE;

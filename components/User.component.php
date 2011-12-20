@@ -48,35 +48,22 @@ class User extends GenericObject{
 		
 			$this->validator = new Validator();
 			$this->validator->rules(array(
-				'required' => array('login', 'email', 'password', 'password_confirm', 'surname', 'name', 'patronymic', 'sex', 'birthdate', 'country', 'region', 'settlement', 'city'),
+				'required' => array('login', 'email', 'password', 'surname', 'name'),
 				'strip' => '*',
 			),
 			array(
 				'login' => array('length' => array('max' => '255')),
 				'email' => array('length' => array('max' => '100'), 'email' => true),
 				'password' => array('length' => array('min' => '5', 'max' => '100'), 'password' => array('hash' => 'sha1')),
-				'password_confirm' => array('compare' => 'password', 'unsetAfter' => TRUE),
 				'surname' => array('length' => array('max' => '255')),
 				'name' => array('length' => array('max' => '255')),
-				'patronymic' => array('length' => array('max' => '255')),
-				'sex' => array('length' => array('max' => '10')),
-				'birthdate' => array('dbDate' => TRUE),
-				'country' => array('length' => array('max' => '255')),
-				'city' => array('length' => array('max' => '255')),
-				'captcha' => array('captcha' => isset($_SESSION['captcha']) ? $_SESSION['captcha'] : ''),
 			));
 			$this->validator->setFieldTitles(array(
 				'login' => 'Логин',
 				'email' => 'email-адрес',
 				'password' => 'пароль',
-				'password_confirm' => 'подтверждение пароля',
 				'surname' => 'фамилия',
 				'name' => 'имя',
-				'patronymic' => 'отчество',
-				'sex' => 'пол',
-				'birthdate' => 'дата рождения',
-				'country' => 'страна',
-				'city' => 'город',
 			));
 		}
 		
@@ -145,13 +132,18 @@ class User extends GenericObject{
 	
 	public function postValidation(&$data){
 		
-		if($this->isNewObj && self::isEmailInUse($data['email'])){
+		/*if($this->isNewObj && self::isEmailInUse($data['email'])){
 			$this->setError('Данные email-адрес уже используется, возможно Вам следует воспользатся функцией <a href="'.App::href('profile/forget-password').'">восстановления учетной записи</a>');
 			return FALSE;
-		}
+		}*/
+		$data['profile'] = serialize(array(
+			'email' => getVar($data['email']),
+		));
+		unset($data['email']);
+		
 		if($this->isNewObj){
 			$data['level'] = PERMS_REG;
-			$data['active'] = '1';
+			//$data['active'] = '1';
 			$data['regdate'] = time();
 		}
 	}

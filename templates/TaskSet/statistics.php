@@ -15,15 +15,15 @@
 	</tr>
 	<? foreach($this->collection as $i => $item): ?>	
 	<tr class="<?= $i % 2 ? 'odd' : 'even' ?>">
-		<td><?= $item['uid']; ?></td>
-		<td><a href="<?= href('task-set/view/'.$item['id']); ?>"><?= $item['name']; ?></a></td>
+		<td><?= $item['user_name']; ?></td>
+		<td><a href="<?= href('task-set/statistics/'.$item['id']); ?>"><?= $item['name']; ?></a></td>
 		<td><?= $item['project_name']; ?></td>
 		<td><?= !empty($item['profile_name']) ? $item['profile_name'] : '-'; ?></td>
 		<td><?= $item['num_submits']; ?></td>
 		<td><?= $item['create_date_str']; ?></td>
 		
 		<td style="font-size: 11px;">
-			<a href="<?= href('task-set/view/'.$item['id']); ?>">просмотр</a>
+			<a href="<?= href('task-set/statistics/'.$item['id']); ?>">просмотр</a>
 		</td>
 	</tr>
 	<? endforeach; ?>	

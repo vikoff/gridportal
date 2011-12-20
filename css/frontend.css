@@ -79,12 +79,12 @@ body {
 
 #menu li {
 	float: left;
-	padding: 12px 0;
+	padding: 8px 0;
 	margin-right: 4px;
 }
 
 #menu a {
-	padding: 12px 30px;
+	padding: 8px 30px;
 	color: #eee;
 	font-weight: bold;
 	text-decoration: none;
@@ -127,6 +127,7 @@ body {
 	background: url(/images/help2.png);
 }
 
+.fl { float: left; }
 .cl { clear: both; }
 .c { text-align: center; }
 .l { text-align: left; }
@@ -162,7 +163,7 @@ th, td {
 
 th {
 	background: #9cf;
-	color: #111;
+	color: #000;
 }
 
 tr.even td {
@@ -171,6 +172,14 @@ tr.even td {
 
 tr.odd td {
 	background: #d5d5d5;
+}
+
+tr:hover td {
+	background: #90d2ee;
+}
+
+th a {
+	color: #000;
 }
 
 
@@ -381,3 +390,13 @@ table.std-grid.narrow{
 .task-state-12 { background-color: #cc0 !important } /*preparing*/
 .task-state-13 { background-color: #fc6 !important } /*inlrms:q*/
 .task-state-14 { background-color: #e00 !important } /*executed*/
+
+.task-progress{
+	height: 5px;
+	margin-top: 1px;
+}
+
+.task-progress-item {
+	height: 5px;
+	float: left;
+}
