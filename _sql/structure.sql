@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 	`surname`				VARCHAR(255),
 	`name`					VARCHAR(255),
 	`level`					SMALLINT,
+	`active`				TINYINT(1) UNSIGNED,
 	`regdate`				INT(10) UNSIGNED,
 	`profile`				TEXT,
 	`default_voms`			INTEGER,
@@ -152,7 +153,8 @@ DROP TABLE IF EXISTS `projects`;
 CREATE TABLE `projects` (
   `id`				INT(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   `name_key`		VARCHAR(50),
-  `text_key`		VARCHAR(50)
+  `text_key`		VARCHAR(50),
+  `priority`		INT(10)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* ПРОГРАМНОЕ ОБЕСПЕЧЕНИЕ */
@@ -169,7 +171,8 @@ CREATE TABLE `myproxy_servers` (
   `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   `name`			VARCHAR(255),
   `url`				TEXT,
-  `port`			INT
+  `port`			INT,
+  `user_defined`	INT UNSIGNED DEFAULT '0'
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* ПРОГРАМНОЕ ОБЕСПЕЧЕНИЕ */

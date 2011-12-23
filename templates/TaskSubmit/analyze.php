@@ -13,8 +13,9 @@
 		</form>
 
 	<? if($this->curSubmitId): ?>
+	
 		<? if(empty($this->fileTree['dirs']) && empty($this->fileTree['files'])): ?>
-			У вас ничего нет. Перейдите в <a href="<?= href('task-set/list'); ?>">диспетчер задач</a>.
+			В этой задаче файлы отсутствуют.
 		<? else: ?>
 
 			<h2>Файлы задач</h2>

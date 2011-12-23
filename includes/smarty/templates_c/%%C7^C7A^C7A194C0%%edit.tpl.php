@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2011-12-06 20:32:06
+<?php /* Smarty version 2.6.26, created on 2011-12-23 22:25:42
          compiled from Profile/edit.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Profile/edit.tpl', 10, false),)), $this); ?>
@@ -10,7 +10,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 	</div>
 <?php endif; ?>
 
-<div id="profile-tabs" style="margin: 1em 2em;">
+<div id="profile-tabs" style="margin: 1em 2em;" class="tabs">
 	<ul>
 		<li><a href="#personal-data"><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.private-data'), $this);?>
 </a></li>
@@ -19,6 +19,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 		<li><a href="#temporary-cert"><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.temparal-cert-voms'), $this);?>
 </a></li>
 	</ul>
+	<div class="cl"></div>
 	
 	<!-- tab 1 -->
 	<div id="personal-data">
@@ -260,7 +261,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 					<td><?php echo SmartyPlugins::function_lng(array('snippet' => 'server'), $this);?>
 </td>
 					<td>
-						<select name="server">
+						<select id="myproxy-server" name="server">
 							<option value=""><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.select-server'), $this);?>
 ...</option>
 							<?php $_from = (isset($this->_tpl_vars['myproxyServersList']) ? $this->_tpl_vars['myproxyServersList'] : ''); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }if (count($_from)):
@@ -270,9 +271,14 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 "><?php echo (isset($this->_tpl_vars['item']['name']) ? $this->_tpl_vars['item']['name'] : ''); ?>
 </option>
 							<?php endforeach; endif; unset($_from); ?>
+							<option value="custom">ввести сервер вручную</option>
 						</select>
 					</td>
 				</tr>
+				<tbody id="custom-server-block" style="display: none;">
+					<tr><td>хост сервера</td><td><input type="name" name="custom-server" value="" /></td></tr>
+					<tr><td>порт сервера</td><td><input type="name" name="custom-server-port" value="7512" /></td></tr>
+				</tbody>
 				<tr>
 					<td><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.cert_ttl'), $this);?>
 </td>
@@ -300,17 +306,23 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 	
 	$(function(){
 		
-		$( "#profile-tabs" ).tabs({
+		/*$( "#profile-tabs" ).tabs({
 			// selected: data.value.substr(1),
-			fx: {opacity: \'toggle\', duration: \'slow\' }
-		});	
+			//fx: {opacity: \'toggle\', duration: \'slow\' }
+		});	*/
+		tabs("#profile-tabs");
+		
+		$(\'#myproxy-server\').change(function(){
+			$(\'#custom-server-block\')[$(this).val() == \'custom\' ? \'show\' : \'hide\']()
+		}).change();
 		
 		// var_dump($.address.value(), \'E=function\');
 		// alert($("#profile-tabs ul:first a[href=\'#" + data.value.substr(1) + "\']").parent().index());
 		$("#profile-tabs ul:first a").address();
 
 		$.address.externalChange(function(data){
-			$( "#profile-tabs" ).tabs(\'select\', data.value.substr(1));
+			//$( "#profile-tabs" ).tabs(\'select\', data.value.substr(1));
+			tabs("#profile-tabs");
 		});
 		
 		function certManualLogonCheck(){

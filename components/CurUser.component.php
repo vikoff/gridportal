@@ -45,6 +45,14 @@ class CurUser extends User{
 				App::reload();
 			
 		parent::__construct($this->getAuthData('id'), self::INIT_ANY);
+		if ($this->isExistsObj)
+			$this->checkBan();
+	}
+	
+	/** ПРОВЕРКА, НЕ ЗАБЛОКИРОВАН ЛИ ПОЛЬЗОВАТЕЛЬ */
+	public function checkBan(){
+		if (!$this->getField('active'))
+			FrontendViewer::get()->userBlocked();
 	}
 	
 	// ИНИЦИАЛИЗИРОВАНА ЛИ СЕССИЯ
@@ -75,12 +83,6 @@ class CurUser extends User{
 		if(empty($user)){
 			$user = $this->registerUserByDN($_SERVER['SSL_CLIENT_S_DN'], $_SERVER['SSL_CLIENT_S_DN_CN']);
 		}
-		
-		// если пользователь уже зарегистрирован, проверим права
-		// else{
-			// if($user['level'] == PERMS_ALIEN && $this->checkVO())
-				// db::get()->update(self::TABLE, array('level' => PERMS_REG), 'id='.$user['id']);
-		// }
 		
 		$this->setLoggedAuthData($user['id'], $user['level']);
 		return TRUE;
@@ -116,6 +118,7 @@ class CurUser extends User{
 			'surname' => $surname,
 			'name' => $name,
 			'level' => $level,
+			'active' => 1,
 		);
 		$data['id'] = $db->insert(self::TABLE, $data);
 		

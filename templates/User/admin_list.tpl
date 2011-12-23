@@ -16,11 +16,14 @@
 	{foreach from=$collection item='item'}
 	<tr>
 		<td>{$item.id}</td>
-		<td>{$item.email}</td>
+		<td>{$item.profile.email}</td>
 		<td>{$item.fio}</td>
 		<td>{$item.dn}</td>
 		<td>{$item.dn_cn}</td>
-		<td>{$item.level}</td>
+		<td>
+			{$item.level}
+			{if !$item.active}<div class="small red">заблокирован</div>{/if}
+		</td>
 		<td>{$item.regdate}</td>
 		<td style="font-size: 11px;">
 			{a href=admin/users/view/`$item.id` text="Подробней"}

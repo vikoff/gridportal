@@ -502,23 +502,11 @@ class TaskSetController extends Controller{
 		
 		// получение авторизационных данных myproxy
 		try {
-			$myproxy = !empty($_POST['myproxy-autologin'])
-				? CurUser::get()->getMyproxyLoginData()
-				: array(
-					'serverId' => (int)getVar($_POST['server']),
-					'login' => getVar($_POST['user']['name']),
-					'password' => getVar($_POST['user']['pass']),
-					'lifetime' => (int)getVar($_POST['lifetime']),
-				);
-			
-			$myproxyServer = MyproxyServer::load($myproxy['serverId'])->getAllFields();
-			$myproxy['url'] = $myproxyServer['url'];
-			$myproxy['port'] = $myproxyServer['port'];
+			$connector = MyproxyConnector::createByConnectForm($_POST);
 		} catch (Exception $e) {
 			Messenger::get()->addError(Lng::get('task.warnings'), $e->getMessage());
 			return FALSE;
 		}
-		$connector = new MyproxyConnector($myproxy);
 			
 		if($report = $instance->submit($connector, getVar($_POST['prefer-server']))){
 		

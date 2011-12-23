@@ -88,17 +88,12 @@ body {
 	color: #eee;
 	font-weight: bold;
 	text-decoration: none;
-	/*background: #1e1c17;*/
 	background: #4f9ec9;
-	/*border-bottom-left-radius: 12px;
-	border-bottom-right-radius: 12px;*/
 	border-top-left-radius: 12px;
 	border-top-right-radius: 12px;
 }
 
 #menu a:hover, #menu a:active, #menu a.active {
-	/*background: -o-linear-gradient(top, #1e1c17 0%,#757575 100%);*/
-	/*color: #17a410;*/
 	background: #227fb3;
 	color: #fff;
 }
@@ -119,6 +114,40 @@ body {
 	border: solid #4f9ec9 1px;
 	border: solid rgba(79, 158, 201, 0.8) 1px;
 	padding: 10px;
+}
+
+.tabs {
+	margin-top: 30px !important;
+	border: solid #4f9ec9 1px;
+	border-radius: 12px;
+}
+
+.tabs ul {
+	margin-left: 15px;
+	margin-top: -30px;
+	height: 30px;
+	list-style: none;
+}
+
+.tabs ul li {
+	float: left;
+	padding: 8px 0;
+	margin-right: 4px;
+}
+
+.tabs ul li a {
+	padding: 8px 30px;
+	color: #eee;
+	font-weight: bold;
+	text-decoration: none;
+	background: #4f9ec9;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+}
+
+.tabs ul li a:hover, .tabs ul li a:active, .tabs ul li a.active {
+	background: #227fb3;
+	color: #fff;
 }
 
 .help-icon {
@@ -174,7 +203,7 @@ tr.odd td {
 	background: #d5d5d5;
 }
 
-tr:hover td {
+table.hl tr:hover td {
 	background: #90d2ee;
 }
 
@@ -399,4 +428,14 @@ table.std-grid.narrow{
 .task-progress-item {
 	height: 5px;
 	float: left;
+}
+
+.refresh-indicator {
+	font-size: 11px;
+	text-align: right;
+	color: #888;
+}
+
+.myproxy-login td{
+	text-align: left;
 }

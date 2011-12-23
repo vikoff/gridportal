@@ -90,6 +90,8 @@ class Project extends GenericObject{
 			$this->setError('Необходимо выбрать хотя бы одну виртуальную организацию');
 		else
 			$this->_data['voms'] = $data['voms'];
+		
+		$data['priority'] = (int)getVar($data['priority']);
 	}
 	
 	/**
@@ -129,11 +131,14 @@ class Project extends GenericObject{
 	/** ПОСТ-ВАЛИДАЦИЯ ДАННЫХ */
 	public function postValidation(&$data){
 		
+		$data = array(
+			'priority' => $data['priority'],
+		);
+		
 		// echo '<pre>'; print_r($data); die;
 		// $data['author'] = USER_AUTH_ID;
 		// $data['modif_date'] = time();
 		
-		$data = array();
 		// echo '<pre>'; print_r($this->validLngData); die;
 	}
 	
@@ -204,6 +209,7 @@ class ProjectCollection extends GenericObjectCollection{
 	protected $_sortableFieldsTitles = array(
 		'id' => 'id',
 		'name' => 'Название',
+		'priority' => 'Приоритет',
 	);
 	
 	
@@ -217,7 +223,7 @@ class ProjectCollection extends GenericObjectCollection{
 	/** ПОЛУЧИТЬ СПИСОК С ПОСТРАНИЧНОЙ РАЗБИВКОЙ */
 	public function getPaginated(){
 		
-		$sorter = new Sorter('id', 'DESC', $this->_sortableFieldsTitles);
+		$sorter = new Sorter('priority', 'DESC', $this->_sortableFieldsTitles);
 		$paginator = new Paginator('sql', array('*', 'FROM '.Project::TABLE.' ORDER BY '.$sorter->getOrderBy()), 50);
 		
 		$data = db::get()->getAll($paginator->getSql(), array());
@@ -234,7 +240,7 @@ class ProjectCollection extends GenericObjectCollection{
 	
 	public function getAll(){
 		
-		$data = db::get()->getAllIndexed('SELECT * FROM '.Project::TABLE, 'id');
+		$data = db::get()->getAllIndexed('SELECT * FROM '.Project::TABLE.' ORDER BY priority DESC', 'id');
 		
 		foreach($data as &$row)
 			$row = Project::forceLoad($row['id'], $row)->getAllFieldsPrepared();

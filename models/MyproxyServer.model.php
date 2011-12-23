@@ -54,6 +54,11 @@ class MyproxyServer extends GenericObject{
 		return $data;
 	}
 	
+	public function userDefined($uid){
+		
+		$this->setField('user_defined', $uid);
+	}
+	
 	/** ПОЛУЧИТЬ ЭКЗЕМПЛЯР ВАЛИДАТОРА */
 	public function getValidator(){
 		
@@ -106,7 +111,6 @@ class MyproxyServer extends GenericObject{
 	public function beforeDestroy(){
 	
 	}
-	
 }
 
 class MyproxyServerCollection extends GenericObjectCollection{

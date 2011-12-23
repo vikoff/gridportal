@@ -3,6 +3,7 @@
 
 <h2>
 	Пользователь {$name} {$surname}
+	{if !$active}<span class="simple-text red">заблокирован</span>{/if}
 </h2>
 
 <table class="std-grid">
@@ -50,6 +51,19 @@
 	<td class="actions">
 		<a class="button" href="{a href=admin/users/list}">Вернуться к списку</a>
 		<a class="button" href="{a href=admin/users/delete/$instanceId}">Удалить пользователя</a>
+		{if $active}
+			<form class="inline" action="" method="post" onsubmit="return confirm('Заблокировать пользователя?');">
+				{$formcode}
+				<input type="hidden" name="instance-id" value="{$instanceId}" />
+				<input class="button" type="submit" name="action[user/ban]" value="Заблокировать" />
+			</form>
+		{else}
+			<form class="inline" action="" method="post" onsubmit="return confirm('Разблокировать пользователя?');">
+				{$formcode}
+				<input type="hidden" name="instance-id" value="{$instanceId}" />
+				<input class="button" type="submit" name="action[user/unban]" value="Разблокировать" />
+			</form>
+		{/if}
 	</td>
 </tr>
 </table>

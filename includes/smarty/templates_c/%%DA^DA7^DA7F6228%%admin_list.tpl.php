@@ -1,7 +1,7 @@
-<?php /* Smarty version 2.6.26, created on 2011-11-10 20:50:34
+<?php /* Smarty version 2.6.26, created on 2011-12-23 20:22:42
          compiled from User/admin_list.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/admin_list.tpl', 26, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/admin_list.tpl', 29, false),)), $this); ?>
 
 <?php echo (isset($this->_tpl_vars['pagination']) ? $this->_tpl_vars['pagination'] : ''); ?>
 
@@ -31,7 +31,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/a
 	<tr>
 		<td><?php echo (isset($this->_tpl_vars['item']['id']) ? $this->_tpl_vars['item']['id'] : ''); ?>
 </td>
-		<td><?php echo (isset($this->_tpl_vars['item']['email']) ? $this->_tpl_vars['item']['email'] : ''); ?>
+		<td><?php echo (isset($this->_tpl_vars['item']['profile']['email']) ? $this->_tpl_vars['item']['profile']['email'] : ''); ?>
 </td>
 		<td><?php echo (isset($this->_tpl_vars['item']['fio']) ? $this->_tpl_vars['item']['fio'] : ''); ?>
 </td>
@@ -39,8 +39,11 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/a
 </td>
 		<td><?php echo (isset($this->_tpl_vars['item']['dn_cn']) ? $this->_tpl_vars['item']['dn_cn'] : ''); ?>
 </td>
-		<td><?php echo (isset($this->_tpl_vars['item']['level']) ? $this->_tpl_vars['item']['level'] : ''); ?>
-</td>
+		<td>
+			<?php echo (isset($this->_tpl_vars['item']['level']) ? $this->_tpl_vars['item']['level'] : ''); ?>
+
+			<?php if (! (isset($this->_tpl_vars['item']['active']) ? $this->_tpl_vars['item']['active'] : '')): ?><div class="small red">заблокирован</div><?php endif; ?>
+		</td>
 		<td><?php echo (isset($this->_tpl_vars['item']['regdate']) ? $this->_tpl_vars['item']['regdate'] : ''); ?>
 </td>
 		<td style="font-size: 11px;">

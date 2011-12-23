@@ -36,6 +36,13 @@
 	</div>
 	
 	<div class="paragraph">
+	
+		<label class="title">Приоритет</label>
+		<div class="description">Целое число. Чем больше, тем выше проект будет отображаться в списке.</div>
+		<input type="text" name="priority" value="<?= (int)$this->priority; ?>" style="width: 30px;"/>
+	</div>
+	
+	<div class="paragraph">
 		<fieldset title="Виртуальные организации">
 			<legend style="font-weight: bold;">Виртуальные организации</legend>
 			<? foreach ($this->vomsList as $v): ?>

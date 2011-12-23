@@ -7,7 +7,7 @@
 	<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
 	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
 </head>
-<body style="width: 100%; height: 100%; margin: 0; padding: 0;">
+<body style="width: 100%; height: 100%; margin: 0; padding: 0; background: #eee;">
 
 <style type="text/css">
 table.multiplier tr{
@@ -137,7 +137,7 @@ $(function(){
 			<? if (!empty($vars['formData'])): ?>
 				<table class="std-grid narrow">
 					<? foreach($vars['formData'] as $row): ?>
-					<tr style="vertical-align: top;">
+					<tr style="vertical-align: top !important;">
 						<td><?= $row['field']; ?></td>
 						<td>
 							<input type="hidden" name="items[<?= $row['row']; ?>][pre_text]" value="<?= htmlspecialchars($row['pre_text']); ?>" />

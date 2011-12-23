@@ -14,14 +14,60 @@ class MyproxyConnector {
 	public $errcode = '';
 	public $errmsg = '';
 	
+	public $isCustomServer = true;
 	
-	public function __construct($data){
+	/** СОЗДАНИЕ ЭКЗЕМПЛЯРА КОННЕКТОРА НА ОСНОВЕ ДАННЫХ ФОРМЫ */
+	public static function createByConnectForm($data){
+		
+		$myproxy = array();
+		$isCustomServer = false;
+		
+		if (!empty($data['myproxy-autologin'])) {
+			
+			$myproxy = CurUser::get()->getMyproxyLoginData();
+			$myproxyServer = MyproxyServer::load($myproxy['serverId'])->getAllFields();
+			$myproxy['url'] = $myproxyServer['url'];
+			$myproxy['port'] = $myproxyServer['port'];
+			
+			
+		} else {
+			$server = getVar($data['server']);
+			if ($server == 'custom') {
+				
+				$isCustomServer = TRUE;
+				$myproxy = array(
+					'url' => getVar($data['custom-server']),
+					'port' => getVar($data['custom-server-port']),
+					'login' => getVar($data['login']),
+					'password' => getVar($data['password']),
+					'lifetime' => (int)getVar($data['lifetime']),
+				);
+			} else {
+				
+				$myproxyServer = MyproxyServer::load((int)$server)->getAllFields();
+				$myproxy = array(
+					'url' => $myproxyServer['url'],
+					'port' => $myproxyServer['port'],
+					'login' => getVar($data['user']['name']),
+					'password' => getVar($data['user']['pass']),
+					'lifetime' => (int)getVar($data['lifetime']),
+				);
+				
+			}
+		}
+		
+		return new MyproxyConnector($myproxy, $isCustomServer);
+	}
+	
+	public function __construct($data, $isCustomServer = FALSE){
 		
 		$this->host = $data['url'];
 		$this->port = $data['port'];
 		$this->login = $data['login'];
 		$this->password = $data['password'];
 		$this->lifetime = $data['lifetime'];
+		
+		$this->isCustomServer = $isCustomServer;
 	}
 	
 	public function connect(){
@@ -42,7 +88,10 @@ class MyproxyConnector {
 		);
 		
 		if ($myProxyIsLogged == 'ok') {
+			
 			$this->connected = TRUE;
+			if ($this->isCustomServer)
+				$this->saveCustomServer();
 			return TRUE;
 		} else {
 			
@@ -57,6 +106,23 @@ class MyproxyConnector {
 			}
 			return FALSE;
 		}
+	}
+	
+	public function saveCustomServer(){
+		
+		$server = MyproxyServer::create();
+		$server->userDefined(USER_AUTH_ID);
+		$server->save(array(
+			'name' => $this->host,
+			'url' => $this->host,
+			'port' => $this->port
+		));
+		CurUser::get()->saveMyproxyAuthData(array(
+			'login' => $this->login,
+			'password' => $this->password,
+			'server_id' => $server->id,
+			'lifetime' => $this->lifetime,
+		));
 	}
 	
 	public function getHumanReadableMsg($code){

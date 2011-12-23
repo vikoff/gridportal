@@ -16,19 +16,19 @@
 			<? if($this->type == Page::TYPE_FULL): ?>
 				<p>
 					<label class="title">URL текущей страницы</label>
-					<?= App::href('pages/'.$this->alias); ?>
+					<?= App::href('page/'.$this->alias); ?>
 				</p>
 				<p>
 					<label class="title">Вставка ссылки в php-код</label>
-					<code>&lt;a href="&lt;?= App::href('pages/<?= $this->alias; ?>'); ?&gt;"&gt;<?= $this->title[$this->curLng]; ?>&lt;/a&gt;</code>
+					<code>&lt;a href="&lt;?= App::href('page/<?= $this->alias; ?>'); ?&gt;"&gt;<?= $this->title[$this->curLng]; ?>&lt;/a&gt;</code>
 				</p>
 				<p>
 					<label class="title">Вставка ссылки в smarty-код</label>
-					<code>&lt;a href="{a href='pages/<?= $this->alias; ?>'}"&gt;<?= $this->title[$this->curLng]; ?>&lt;/a&gt;</code>
+					<code>&lt;a href="{a href='page/<?= $this->alias; ?>'}"&gt;<?= $this->title[$this->curLng]; ?>&lt;/a&gt;</code>
 				</p>
 				<p>
 					<label class="title">Вставка ссылки в html-код страницы контента</label>
-					<code>&lt;a href="{href('pages/<?= $this->alias; ?>')}"&gt;<?= $this->title[$this->curLng]; ?>&lt;/a&gt;</code>
+					<code>&lt;a href="{href('page/<?= $this->alias; ?>')}"&gt;<?= $this->title[$this->curLng]; ?>&lt;/a&gt;</code>
 				</p>
 			<? else: ?>
 				<p>

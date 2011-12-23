@@ -30,3 +30,48 @@ function positiontip(e) {
 	if (bottomedge < popup.offsetHeight) popup.style.top=curY-popup.offsetHeight-offsetfromcursorY+"px"
 	else popup.style.top=curY+offsetfromcursorY+15+"px";
 }
+
+var gAutoUpdateTimerID;
+var gAutoUpdateRemains;
+
+function autoUpdate(interval, indicator){
+	gAutoUpdateRemains = interval ? interval * 1000 : 30000;
+	gAutoUpdateTimerID = setInterval(function(){
+		gAutoUpdateRemains -= 1000;
+		if (indicator)
+			$(indicator).html(LNG.taskSetUpdateStr1 + " <b>" + (gAutoUpdateRemains / 1000) + "</b> " + LNG.taskSetUpdateSec);
+		if (!gAutoUpdateRemains){
+			clearInterval(gAutoUpdateTimerID);
+			$.get(location.href, function(response){
+				$('#main').html(response);
+			});
+		}
+	}, 1000);
+}
+
+function refresh(){
+	if (gAutoUpdateTimerID) clearInterval(gAutoUpdateTimerID);
+	$.get(location.href, function(response){
+		$('#main').html(response);
+	});
+}
+
+function tabs(el){
+	$(el+'>div').hide();
+	$(el+'>ul a').removeClass('active');
+	if (location.href.indexOf('#') != -1){
+		var tab = location.href.substr(location.href.lastIndexOf('/') + 1);
+		$('#' + tab).show();
+		$(el+'>ul a[href=#' + tab + ']').addClass('active');
+	}
+	else {
+		$(el+'>div:eq(1)').show();
+		$(el+'>ul a:first').addClass('active');
+	}
+	$(el+'>ul a').click(function(){
+		$(el+'>div').hide();
+		$(this.href.substr(this.href.lastIndexOf('/') + 1)).show();
+		$(el+'>ul a').removeClass('active');
+		$(this).addClass('active');
+	});
+}

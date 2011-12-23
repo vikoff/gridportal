@@ -2,7 +2,7 @@
 <?= $this->pagination; ?>
 
 <? if($this->collection): ?>
-	<table class="std-grid">
+	<table class="std-grid hl">
 	<tr>
 		<th><?= $this->sorters['name']; ?></th>
 		<th><?= $this->sorters['project_id']; ?></th>

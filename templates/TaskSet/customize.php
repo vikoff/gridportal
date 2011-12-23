@@ -63,19 +63,19 @@ $(function() {
 					
 					editLink = (function(file){
 						var url = href(self.editUrl + '?file=' + encodeURIComponent(file));
-						return $('<a href="' + url + '" class="small" target="_blank">редактировать</a>')
+						return $('<a href="' + url + '" class="small" target="_blank"><?= Lng::get('task-set.edit'); ?></a>')
 							.click(function(){ self.editFile(url); return false; });
 					})(response.data[i].name);
 						
 					delLink = (function(file){
-						return $('<a href="#" class="small">удалить</a>')
+						return $('<a href="#" class="small"><?= Lng::get('task-set.delete'); ?></a>')
 							.click(function(){ self.removeFile(file); return false; });
 					})(response.data[i].name);
 					
 					constructorLink = response.data[i].type
 						? (function(file){
 								var url = href(self.constructUrl + '?file=' + encodeURIComponent(file));
-								return $('<a href="' + url + '" class="small" target="_blank">редактировать в мастере</a>')
+								return $('<a href="' + url + '" class="small" target="_blank"><?= Lng::get('task-set.edit-in-master'); ?></a>')
 									.click(function(){ self.constructFile(url); return false; });
 							})(response.data[i].name)
 						: null;

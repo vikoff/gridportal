@@ -25,6 +25,15 @@
 	<script type="text/javascript">
 		var WWW_ROOT = '<?= WWW_ROOT; ?>';
 		var CUR_LNG = '<?= Lng::get()->getCurLng(); ?>';
+		
+		/**
+		 * языковые фрагменты
+		 * @example Lng.taskSetUpdateStr1 (в любом месте js на любой странице)
+		 */
+		var LNG = {
+			taskSetUpdateStr1: '<?= Lng::get('task-set.update.str1'); ?>',
+			taskSetUpdateSec: '<?= Lng::get('task-set.update.sec'); ?>',
+		};
 	</script>
 	<script type="text/javascript" src="
 		js/jquery-1.6.2.min.js,
@@ -36,7 +45,6 @@
 		js/frontend.js,
 		js/jquery.simplemodal.js"></script>
 	<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
-	
 </head>
 <body>
 	<div id="wrapper">
@@ -63,11 +71,32 @@
 			<?=$this->_getHtmlContent();?>
 		</div>
 		<div id="footer">
+			<a href="<?= App::href('page/developers'); ?>">Разработчики</a>
 			<?=$this->_getClientStatisticsLoader();?>
 		</div>
 		<div id="popup">
 			
 		</div>
 	</div>
+<script type="text/javascript">
+    var reformalOptions = {
+        project_id: 48381,
+        project_host: "crimeaecogrid.reformal.ru",
+        force_new_window: true,
+        tab_alignment: "left",
+        tab_top: "300",
+        tab_bg_color: "#8ceb9d",
+        tab_image_url: "http://tab.reformal.ru/0J7RgdGC0LDQstC40YLRjCDQvtGC0LfRi9Cy/FFFFFF/f5dab822e975a4eb45fcae69ce487412"
+//		tab_image_url: "http://tab.reformal.ru/0JLQsNGI0Lgg0L7RgtC30YvQstGLINC4INC%252F0YDQtdC00LvQvtC20LXQvdC40Y8=/FFFFFF/c931f419d308ca654c15aa9f4d2fa692"
+    };
+    
+    (function() {
+        //if ('https:' == document.location.protocol) return;
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'http://media.reformal.ru/widgets/v1/reformal.js';
+        document.getElementsByTagName('head')[0].appendChild(script);
+    })();
+</script>
 </body>
 </html>

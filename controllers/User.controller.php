@@ -20,6 +20,8 @@ class UserController extends Controller{
 		'action_save_perms' 	=> PERMS_ADMIN,
 		'action_delete' 		=> PERMS_ADMIN,
 		'action_create' 		=> PERMS_ADMIN,
+		'action_ban' 			=> PERMS_ADMIN,
+		'action_unban' 			=> PERMS_ADMIN,
 	);
 	
 	
@@ -64,6 +66,7 @@ class UserController extends Controller{
 			));
 			
 			BackendViewer::get()
+				->setLeftMenuActiveItem('list')
 				->prependTitle('Данные пользователя')
 				->setContentSmarty(self::TPL_PATH.'view.tpl', $variables);
 		}
@@ -105,7 +108,8 @@ class UserController extends Controller{
 		
 		$perms = "";
 		foreach(User::getPermsList() as $perm)
-			$perms .= '<option value="'.$perm.'">'.User::getPermName($perm).'</option>';
+			if ($perm > 0)
+				$perms .= '<option value="'.$perm.'">'.User::getPermName($perm).'</option>';
 		
 		$variables['perms'] = $perms;
 		
@@ -173,6 +177,21 @@ class UserController extends Controller{
 		}
 
 	}
+	
+	public function action_ban($params = array()){
+		
+		User::load(getVar($_POST['instance-id']))->ban();
+		Messenger::get()->addSuccess('Пользователь заблокирован');
+		return TRUE;
+	}
+	
+	public function action_unban($params = array()){
+		
+		User::load(getVar($_POST['instance-id']))->unban();
+		Messenger::get()->addSuccess('Пользователь разблокирован');
+		return TRUE;
+	}
+	
 }
 
 ?>

@@ -31,7 +31,7 @@
 
 <? if ($this->submits): ?>
 	<form id="grid-form" action="" method="get">
-		<table style="margin: 1em auto 0;" class="std-grid c">
+		<table style="margin: 1em auto 0;" class="std-grid c hl">
 		<tr>
 			<th><?= $this->submitSorters['name']; ?></th>
 			<th><?= $this->submitSorters['jobid']; ?></th>
@@ -79,18 +79,18 @@
 	<a href="<?= href('task-set/list'); ?>" class="button">Вернуться к списку</a>
 </div>
 
+<div class="refresh-indicator">
+	<span></span>
+	<a href="<?= href('task-set/view/'.$this->instanceId); ?>" onclick="refresh(0);return false">&nbsp;<img src="/images/refresh.png" alt="Обновить" title="Обновить" align="middle" /></a>
+</div>
+
 <script type="text/javascript">
 $(function(){
 	$('#btn-del-all').click(function(){
 		$('#grid-form').attr('action', '<?= href('task-submit/delete'); ?>').submit();
 	});
 	
-	// при каждом обновлении загружается новый экземпляр setTimeout
-	setTimeout(function(){
-		$.get(location.href, function(response){
-			$('#main').html(response);
-		});
-	}, 30000);
+	autoUpdate(30, ".refresh-indicator :first");
 });
 
 </script>

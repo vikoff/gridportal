@@ -17,7 +17,7 @@ class ProfileController extends Controller{
 		'display_edit' 				=> PERMS_UNREG,
 
 		'action_login' 				=> PERMS_UNREG,
-		'action_logout' 			=> PERMS_ALIEN,
+		'action_logout' 			=> PERMS_UNREG,
 		'action_registration' 		=> PERMS_UNREG,
 		'action_edit'		 		=> PERMS_REG,
 		'action_set_new_password'	=> PERMS_REG,

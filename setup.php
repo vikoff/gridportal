@@ -20,7 +20,6 @@ set_error_handler(array('Error', 'error_handler'));
 ########## ПРАВА ПОЛЬЗОВАТЕЛЕЙ ##########
 
 define('PERMS_UNREG', 		0);
-define('PERMS_ALIEN', 		5);
 define('PERMS_REG', 		10);
 define('PERMS_MODERATOR',	20);
 define('PERMS_ADMIN', 		30);

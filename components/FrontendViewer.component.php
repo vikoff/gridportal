@@ -94,6 +94,13 @@ class FrontendViewer extends CommonViewer{
 		exit();
 	}
 	
+	public function userBlocked(){
+		
+		$variables = array();
+		
+		echo $this->getContentPhpFile('user_blocked.php');
+		exit;
+	}
 }
 
 ?>

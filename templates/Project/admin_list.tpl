@@ -10,12 +10,14 @@
 	<tr>
 		<th>{$sorters.id}</th>
 		<th>{$sorters.name}</th>
+		<th>{$sorters.priority}</th>
 		<th>Опции</th>
 	</tr>
 	{foreach from=$collection item='item'}
 	<tr>
 		<td>{$item.id}</td>
 		<td>{lng snippet=$item.name_key}</td>
+		<td>{$item.priority}</td>
 		<td class="center">
 			<div class="tr-hover-visible options">
 				<a href="{a href=project/view/`$item.id`}" class="item" title="Просмотреть"><img src="images/backend/icon-view.png" alt="Просмотреть" /></a>

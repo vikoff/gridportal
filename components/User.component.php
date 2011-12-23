@@ -48,22 +48,31 @@ class User extends GenericObject{
 		
 			$this->validator = new Validator();
 			$this->validator->rules(array(
-				'required' => array('login', 'email', 'password', 'surname', 'name'),
+				'required' => array('login', 'email', 'password', 'surname', 'name', 'dn', 'dn_cn', 'ative', 'level'),
 				'strip' => '*',
 			),
 			array(
 				'login' => array('length' => array('max' => '255')),
 				'email' => array('length' => array('max' => '100'), 'email' => true),
 				'password' => array('length' => array('min' => '5', 'max' => '100'), 'password' => array('hash' => 'sha1')),
-				'surname' => array('length' => array('max' => '255')),
+				'password_confirm' => array('compare' => 'password', 'unsetAfter' => TRUE),
 				'name' => array('length' => array('max' => '255')),
+				'surname' => array('length' => array('max' => '255')),
+				'dn' => array('length' => array('max' => '255')),
+				'dn_cn' => array('length' => array('max' => '255')),
+				'active' => array('length' => array('max' => '1')),
+				'level' => array('length' => array('max' => '5')),
 			));
 			$this->validator->setFieldTitles(array(
 				'login' => 'Логин',
-				'email' => 'email-адрес',
+				'email' => 'Email адрес',
 				'password' => 'пароль',
-				'surname' => 'фамилия',
 				'name' => 'имя',
+				'surname' => 'фамилия',
+				'dn' => 'dn',
+				'dn_cn' => 'dn_cn',
+				'active' => 'Активация',
+				'level' => 'Права',
 			));
 		}
 		
@@ -380,6 +389,19 @@ class User extends GenericObject{
 		return TRUE;
 	}
 	
+	public function saveMyproxyAuthData($data){
+		
+		$this->setFields(array(
+			'myproxy_manual_login' => FALSE,
+			'myproxy_no_password' => FALSE,
+			'myproxy_login' => $data['login'],
+			'myproxy_password' => base64_encode($data['password']),
+			'myproxy_server_id' => $data['server_id'],
+			'myproxy_expire_date' => time() + $data['lifetime'],
+		));
+		$this->_save();
+	}
+	
 	/** ЗАНЯТ ЛИ EMAIL */
 	static public function isEmailInUse($email){
 	
@@ -400,7 +422,7 @@ class User extends GenericObject{
 
 	/** ПОЛУЧИТЬ СПИСОК ВОЗМОЖНЫХ ПРАВ ПОЛЬЗОВАТЕЛЕЙ */
 	static public function getPermsList(){
-		return array(PERMS_UNREG, PERMS_ALIEN, PERMS_REG, PERMS_MODERATOR, PERMS_ADMIN, PERMS_SUPERADMIN, PERMS_ROOT);
+		return array(PERMS_UNREG, PERMS_REG, PERMS_MODERATOR, PERMS_ADMIN, PERMS_SUPERADMIN, PERMS_ROOT);
 	}
 	
 	/** ПОЛУЧИТЬ ТЕКСТОВОЕ НАЗВАНИЕ ПРАВ ПОЛЬЗОВАТЕЛЯ */
@@ -408,8 +430,6 @@ class User extends GenericObject{
 		switch($perm){
 			case PERMS_UNREG:
 				return 'Гость';
-			case PERMS_ALIEN:
-				return 'Пользователь';
 			case PERMS_REG:
 				return 'Пользователь';
 			case PERMS_MODERATOR:
@@ -489,6 +509,19 @@ class User extends GenericObject{
 				'lifetime'  => $this->getField('myproxy_expire_date') - time(),
 			);
 	}
+	
+	public function ban(){
+		
+		$this->setField('active', FALSE);
+		$this->_save();
+	}
+	
+	public function unban(){
+		
+		$this->setField('active', TRUE);
+		$this->_save();
+	}
+	
 }
 
 

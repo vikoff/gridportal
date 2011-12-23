@@ -5,12 +5,13 @@
 	</div>
 {/if}
 
-<div id="profile-tabs" style="margin: 1em 2em;">
+<div id="profile-tabs" style="margin: 1em 2em;" class="tabs">
 	<ul>
 		<li><a href="#personal-data">{lng snippet='profile.private-data'}</a></li>
 		<li><a href="#check-voms">{lng snippet='profile.check-voms'}</a></li>
 		<li><a href="#temporary-cert">{lng snippet='profile.temparal-cert-voms'}</a></li>
 	</ul>
+	<div class="cl"></div>
 	
 	<!-- tab 1 -->
 	<div id="personal-data">
@@ -185,14 +186,19 @@
 				<tr>
 					<td>{lng snippet='server'}</td>
 					<td>
-						<select name="server">
+						<select id="myproxy-server" name="server">
 							<option value="">{lng snippet='profile.myproxy.select-server'}...</option>
 							{foreach from=$myproxyServersList item='item'}
 								<option {if $item.id == $myproxy_server_id}selected="selected"{/if} value="{$item.id}">{$item.name}</option>
 							{/foreach}
+							<option value="custom">ввести сервер вручную</option>
 						</select>
 					</td>
 				</tr>
+				<tbody id="custom-server-block" style="display: none;">
+					<tr><td>хост сервера</td><td><input type="name" name="custom-server" value="" /></td></tr>
+					<tr><td>порт сервера</td><td><input type="name" name="custom-server-port" value="7512" /></td></tr>
+				</tbody>
 				<tr>
 					<td>{lng snippet='profile.myproxy.cert_ttl'}</td>
 					<td>
@@ -214,17 +220,23 @@
 	
 	$(function(){
 		
-		$( "#profile-tabs" ).tabs({
+		/*$( "#profile-tabs" ).tabs({
 			// selected: data.value.substr(1),
-			fx: {opacity: 'toggle', duration: 'slow' }
-		});	
+			//fx: {opacity: 'toggle', duration: 'slow' }
+		});	*/
+		tabs("#profile-tabs");
+		
+		$('#myproxy-server').change(function(){
+			$('#custom-server-block')[$(this).val() == 'custom' ? 'show' : 'hide']()
+		}).change();
 		
 		// var_dump($.address.value(), 'E=function');
 		// alert($("#profile-tabs ul:first a[href='#" + data.value.substr(1) + "']").parent().index());
 		$("#profile-tabs ul:first a").address();
 
 		$.address.externalChange(function(data){
-			$( "#profile-tabs" ).tabs('select', data.value.substr(1));
+			//$( "#profile-tabs" ).tabs('select', data.value.substr(1));
+			tabs("#profile-tabs");
 		});
 		
 		function certManualLogonCheck(){

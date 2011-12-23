@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2011-11-10 20:59:26
+<?php /* Smarty version 2.6.26, created on 2011-12-23 20:19:55
          compiled from User/view.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/view.tpl', 2, false),)), $this); ?>
@@ -10,6 +10,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/v
 	Пользователь <?php echo (isset($this->_tpl_vars['name']) ? $this->_tpl_vars['name'] : ''); ?>
  <?php echo (isset($this->_tpl_vars['surname']) ? $this->_tpl_vars['surname'] : ''); ?>
 
+	<?php if (! (isset($this->_tpl_vars['active']) ? $this->_tpl_vars['active'] : '')): ?><span class="simple-text red">заблокирован</span><?php endif; ?>
 </h2>
 
 <table class="std-grid">
@@ -69,6 +70,23 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'a', 'User/v
 ">Вернуться к списку</a>
 		<a class="button" href="<?php echo SmartyPlugins::function_a(array('href' => "admin/users/delete/".((isset($this->_tpl_vars['instanceId']) ? $this->_tpl_vars['instanceId'] : ''))), $this);?>
 ">Удалить пользователя</a>
+		<?php if ((isset($this->_tpl_vars['active']) ? $this->_tpl_vars['active'] : '')): ?>
+			<form class="inline" action="" method="post" onsubmit="return confirm('Заблокировать пользователя?');">
+				<?php echo (isset($this->_tpl_vars['formcode']) ? $this->_tpl_vars['formcode'] : ''); ?>
+
+				<input type="hidden" name="instance-id" value="<?php echo (isset($this->_tpl_vars['instanceId']) ? $this->_tpl_vars['instanceId'] : ''); ?>
+" />
+				<input class="button" type="submit" name="action[user/ban]" value="Заблокировать" />
+			</form>
+		<?php else: ?>
+			<form class="inline" action="" method="post" onsubmit="return confirm('Разблокировать пользователя?');">
+				<?php echo (isset($this->_tpl_vars['formcode']) ? $this->_tpl_vars['formcode'] : ''); ?>
+
+				<input type="hidden" name="instance-id" value="<?php echo (isset($this->_tpl_vars['instanceId']) ? $this->_tpl_vars['instanceId'] : ''); ?>
+" />
+				<input class="button" type="submit" name="action[user/unban]" value="Разблокировать" />
+			</form>
+		<?php endif; ?>
 	</td>
 </tr>
 </table>
