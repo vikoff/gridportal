@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2011-12-23 22:25:42
+<?php /* Smarty version 2.6.26, created on 2011-12-27 20:04:56
          compiled from Profile/edit.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Profile/edit.tpl', 10, false),)), $this); ?>
@@ -283,7 +283,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 					<td><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.cert_ttl'), $this);?>
 </td>
 					<td>
-						<select name="cert-ttl">
+						<select name="lifetime">
 							<option value="86400">1 <?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.day'), $this);?>
 </option>
 							<option value="604800">1 <?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.week'), $this);?>

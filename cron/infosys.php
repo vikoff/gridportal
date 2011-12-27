@@ -13,8 +13,10 @@ define('TASK_QUEUE_TABLE', 'task_submit_queue');
 // отправка Content-type заголовка
 header('Content-Type: text/plain; charset=utf-8');
 
-require_once('setup.php');
-require_once(FS_ROOT.'includes/infosys/infosys.php');
+require('setup.php');
+require(FS_ROOT.'includes/infosys/infosys.php');
+
+require('get_submits.php');
 
 $db = db::get();
 $jobs = $db->getAllIndexed('
@@ -39,7 +41,7 @@ $query = new BDIIQuery_ARCJobs(array(
 	"basedn" => "Mds-Vo-name=local,o=grid"
 ));
 
-$attrs = array ( 'nordugrid-job-status');
+$attrs = array ('nordugrid-job-status');
 $statuses = $query->query_ARCJobs(array_keys($jobs), $attrs);
 
 echo "RESPONSE ".print_r($statuses, 1)."\n";
@@ -49,10 +51,12 @@ if(empty($statuses))
 
 foreach($statuses as $jobid => $data){
 	
+	// получение статуса
 	$status = $data['nordugrid-job-status'];
 	if(!isset($allStatuses[$status]))
 		$allStatuses[$status] = $db->insert('task_states', array('name' => $status, 'title' => 'task.state.'.strtolower($status)));
 	
+	// изначально извлекаются только те задачи, у которых is_completed=0
 	$isCompleted = 0;
 	switch($status){
 		case 'FINISHED': $isCompleted = 1; break;

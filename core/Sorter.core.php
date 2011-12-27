@@ -145,9 +145,9 @@ class Sorter{
 				$this->_sortableLinks[$field] = ''
 					.'<a href="'.App::getHrefReplaced('sort', $dirSign.$field).'">'.$title.'</a>'
 					.'&nbsp;'
-					.($dir == 'asc' ? '<span style="color: red;">'.$askBtn.'</span>' : '<a style="text-decoration: none;" href="'.App::getHrefReplaced('sort', $field).'">'.$askBtn.'</a>')
+					.($dir == 'asc' ? '<span style="color: #987654;">'.$askBtn.'</span>' : '<a style="text-decoration: none;" href="'.App::getHrefReplaced('sort', $field).'">'.$askBtn.'</a>')
 					// .'&nbsp;'
-					.($dir == 'dsc' ? '<span style="color: red;">'.$dscBtn.'</span>' : '<a style="text-decoration: none;" href="'.App::getHrefReplaced('sort', '-'.$field).'">'.$dscBtn.'</a>')
+					.($dir == 'dsc' ? '<span style="color: #987654;">'.$dscBtn.'</span>' : '<a style="text-decoration: none;" href="'.App::getHrefReplaced('sort', '-'.$field).'">'.$dscBtn.'</a>')
 					;
 			}
 		}

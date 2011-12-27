@@ -57,7 +57,7 @@ class TaskSetController extends Controller{
 		);
 		
 		FrontendViewer::get()
-			->setTitle('Коллекция')
+			->setTitle('Задачи')
 			->setLinkTags($collection->getLinkTags())
 			->setTopMenuActiveItem('tasks')
 			->setContentPhpFile(self::TPL_PATH.'list.php', $variables)
@@ -68,9 +68,12 @@ class TaskSetController extends Controller{
 	public function display_view($params = array()){
 		
 		$instanceId = getVar($params[0], 0, 'int');
-		$submits = TaskSubmitCollection::load(array('set_id' => $instanceId));
 		
 		$data = TaskSet::Load($instanceId)->GetAllFieldsPrepared();
+		if ($data['uid'] != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
+			
+		$submits = TaskSubmitCollection::load(array('set_id' => $instanceId));
 		$variables = array_merge($data, array(
 			'instanceId' => $instanceId,
 			'submits' => $submits->getPaginated(),
@@ -103,7 +106,7 @@ class TaskSetController extends Controller{
 			'instanceId' => 0,
 			'pageTitle'  => $pageTitle,
 			'projectId' => $projectId,
-			'projectName' => $projectInstance->getField('name'),
+			'projectName' => Lng::get($projectInstance->getField('name_key')),
 			'profileList' => TaskProfileCollection::load(array('project_id' => $projectId))->getAll(),
 		));
 		
@@ -119,6 +122,9 @@ class TaskSetController extends Controller{
 		
 		$instanceId = getVar($params[0], 0, 'int');
 		$instance = TaskSet::Load($instanceId);
+		
+		if ($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
 		
 		$pageTitle = 'Редактирование параметров задачи';
 		
@@ -183,6 +189,9 @@ class TaskSetController extends Controller{
 		$instanceId = getVar($params[0], 0, 'int');
 		$instance = TaskSet::Load($instanceId);
 		
+		if ($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
+		
 		$viewer = FrontendViewer::get()
 			->setTitle('Запуск задачи')
 			->setTopMenuActiveItem('tasks');
@@ -220,6 +229,8 @@ class TaskSetController extends Controller{
 		$id = getVar($params[0], 0, 'int');
 		try {
 			$instance = TaskSet::load($id);
+			if ($instance->getField('uid') != USER_AUTH_ID)
+				throw new Exception('Задача не принадлежит вам!');
 			
 			$fullname = $instance->getValidFileName($fname);
 			if (empty($fullname))
@@ -251,6 +262,8 @@ class TaskSetController extends Controller{
 		$id = getVar($params[0], 0, 'int');
 		try {
 			$instance = TaskSet::load($id);
+			if ($instance->getField('uid') != USER_AUTH_ID)
+				throw new Exception('Задача не принадлежит вам!');
 			
 			$fullname = $instance->getValidFileName($fname);
 			if (empty($fullname))
@@ -279,6 +292,8 @@ class TaskSetController extends Controller{
 		
 		$instanceId = getVar($params[0], 0 ,'int');
 		$instance = TaskSet::Load($instanceId);
+		if ($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
 
 		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
 			'instanceId' => $instanceId,
@@ -378,6 +393,8 @@ class TaskSetController extends Controller{
 		
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = new TaskSet($instanceId);
+		if ($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
 		
 		if($instance->save($_POST)){
 			Messenger::get()->addSuccess('Запись сохранена');
@@ -394,6 +411,8 @@ class TaskSetController extends Controller{
 		
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSet::Load($instanceId);
+		if ($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
 		
 		// установить редирект на admin-list
 		$this->setRedirectUrl('task-set/list');
@@ -452,8 +471,8 @@ class TaskSetController extends Controller{
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSet::load($instanceId);
 		
-		if($instance->getField('uid') != USER_AUTH_ID)
-			throw new Exception("Указанная задача не пренадлежит вам");
+		if ($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
 		
 		$fullname = $instance->getValidFileName($fname);
 		if (empty($fullname))
@@ -480,8 +499,8 @@ class TaskSetController extends Controller{
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSet::load($instanceId);
 		
-		if($instance->getField('uid') != USER_AUTH_ID)
-			throw new Exception("Указанная задача не пренадлежит вам");
+		if ($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
 		
 		$fullname = $instance->getValidFileName($fname);
 		if (empty($fullname))
@@ -499,6 +518,9 @@ class TaskSetController extends Controller{
 		
 		$instanceId = getVar($_POST['id'], 0, 'int');
 		$instance = TaskSet::load($instanceId);
+		
+		if ($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
 		
 		// получение авторизационных данных myproxy
 		try {
@@ -621,9 +643,13 @@ class TaskSetController extends Controller{
 	public function ajax_view($params = array()){
 		
 		$instanceId = getVar($params[0], 0, 'int');
+		$data = TaskSet::Load($instanceId)->GetAllFieldsPrepared();
+		if ($data['uid'] != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
+
 		$submits = TaskSubmitCollection::load(array('set_id' => $instanceId));
 		
-		$variables = array_merge(TaskSet::Load($instanceId)->GetAllFieldsPrepared(), array(
+		$variables = array_merge($data, array(
 			'instanceId' => $instanceId,
 			'submits' => $submits->getPaginated(),
 			'submitPagination' => $submits->getPagination(),

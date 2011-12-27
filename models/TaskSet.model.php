@@ -89,6 +89,7 @@ class TaskSet extends GenericObject{
 	
 		// $data['modif_date'] = YDate::loadTimestamp($data['modif_date'])->getStrDateShortTime();
 		$data['create_date_str'] = YDate::loadTimestamp($data['create_date'])->getStrDateShortTime();
+		$data['project_name'] = Lng::get($data['project_name']);
 		return $data;
 	}
 	
@@ -424,7 +425,7 @@ class TaskSet extends GenericObject{
 	public function dbGetRow(){
 		
 		return db::get()->getRow(
-			'SELECT s.*, proj.name AS project_name, prof.name AS profile_name FROM '.self::TABLE.' s
+			'SELECT s.*, proj.name_key AS project_name, prof.name AS profile_name FROM '.self::TABLE.' s
 			LEFT JOIN '.Project::TABLE.' proj ON proj.id=s.project_id
 			LEFT JOIN '.TaskProfile::TABLE.' prof ON prof.id=s.profile_id
 			WHERE s.id='.$this->id
@@ -482,7 +483,7 @@ class TaskSetCollection extends GenericObjectCollection{
 			
 		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
 		
-		$sqlFields = 's.*, proj.name AS project_name, prof.name AS profile_name';
+		$sqlFields = 's.*, proj.name_key AS project_name, prof.name AS profile_name';
 		$sqlFrom = '
 			FROM '.TaskSet::TABLE.' s
 			LEFT JOIN '.Project::TABLE.' proj ON proj.id=s.project_id

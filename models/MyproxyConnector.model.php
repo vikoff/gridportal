@@ -2,6 +2,7 @@
 
 class MyproxyConnector {
 	
+	public $serverId = 0;
 	public $host = null;
 	public $port = null;
 	public $login = null;
@@ -16,7 +17,11 @@ class MyproxyConnector {
 	
 	public $isCustomServer = true;
 	
-	/** СОЗДАНИЕ ЭКЗЕМПЛЯРА КОННЕКТОРА НА ОСНОВЕ ДАННЫХ ФОРМЫ */
+	/**
+	 * СОЗДАНИЕ ЭКЗЕМПЛЯРА КОННЕКТОРА НА ОСНОВЕ ДАННЫХ ФОРМЫ
+	 * @param array $data - массив с ключами 'myproxy-autologin', 'server',
+	 *                      'custom-server', 'custom-server-port', 'login', 'password', 'lifetime'
+	 */
 	public static function createByConnectForm($data){
 		
 		$myproxy = array();
@@ -32,26 +37,34 @@ class MyproxyConnector {
 			
 		} else {
 			$server = getVar($data['server']);
+			$myproxy = array(
+				'login' => getVar($data['login']),
+				'password' => getVar($data['password']),
+				'lifetime' => (int)getVar($data['lifetime']),
+			);
 			if ($server == 'custom') {
-				
-				$isCustomServer = TRUE;
-				$myproxy = array(
-					'url' => getVar($data['custom-server']),
-					'port' => getVar($data['custom-server-port']),
-					'login' => getVar($data['login']),
-					'password' => getVar($data['password']),
-					'lifetime' => (int)getVar($data['lifetime']),
-				);
+				$customServer = strtolower(getVar($data['custom-server']));
+				$customServerPort = getVar($data['custom-server-port']);
+				// если кастомный сервер уже сохранен в БД, используем его
+				try {
+					$myproxyServer = MyproxyServer::loadServer($customServer, $customServerPort)->getAllFields();
+					$myproxy['serverId'] = $myproxyServer['id'];
+					$myproxy['url'] = $myproxyServer['url'];
+					$myproxy['port'] = $myproxyServer['port'];
+				}
+				// если кастомный сервер отсутствует в БД, используем полученные параметры
+				catch (Exception $e) {
+					$isCustomServer = TRUE;
+					$myproxy['serverId'] =  0;
+					$myproxy['url'] = $customServer;
+					$myproxy['port'] = $customServerPort;
+				}
 			} else {
 				
 				$myproxyServer = MyproxyServer::load((int)$server)->getAllFields();
-				$myproxy = array(
-					'url' => $myproxyServer['url'],
-					'port' => $myproxyServer['port'],
-					'login' => getVar($data['user']['name']),
-					'password' => getVar($data['user']['pass']),
-					'lifetime' => (int)getVar($data['lifetime']),
-				);
+				$myproxy['serverId'] = $myproxyServer['id'];
+				$myproxy['url'] = $myproxyServer['url'];
+				$myproxy['port'] = $myproxyServer['port'];
 				
 			}
 		}
@@ -61,6 +74,7 @@ class MyproxyConnector {
 	
 	public function __construct($data, $isCustomServer = FALSE){
 		
+		$this->serverId = $data['serverId'];
 		$this->host = $data['url'];
 		$this->port = $data['port'];
 		$this->login = $data['login'];
@@ -123,6 +137,7 @@ class MyproxyConnector {
 			'server_id' => $server->id,
 			'lifetime' => $this->lifetime,
 		));
+		$this->serverId = $server->id;
 	}
 	
 	public function getHumanReadableMsg($code){

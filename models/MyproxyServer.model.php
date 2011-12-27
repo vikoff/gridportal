@@ -20,6 +20,19 @@ class MyproxyServer extends GenericObject{
 	}
 	
 	/** ТОЧКА ВХОДА В КЛАСС (ЗАГРУЗКА СУЩЕСТВУЮЩЕГО ОБЪЕКТА) */
+	public static function loadServer($server, $port){
+		
+		$db = db::get();
+		$data = $db->getRow('SELECT * FROM '.self::TABLE.' WHERE url='.$db->qe($server).' AND port='.$db->qe($port));
+		
+		if (empty($data))
+			throw new Exception404(self::NOT_FOUND_MESSAGE);
+		
+		
+		return self::forceLoad($data['id'], $data);
+	}
+	
+	/** ТОЧКА ВХОДА В КЛАСС (ЗАГРУЗКА СУЩЕСТВУЮЩЕГО ОБЪЕКТА) */
 	public static function forceLoad($id, $fieldvalues){
 		
 		return new MyproxyServer($id, self::INIT_EXISTS_FORCE, $fieldvalues);

@@ -352,19 +352,7 @@ class User extends GenericObject{
 		$this->_save();
 	}
 	
-	public function checkCert($login, $password, $server_id, $lifetime){
-		
-		//проверка существует ли сервер с переданным id
-		try{
-			$serverData = MyproxyServer::load($server_id)->getAllFieldsPrepared();
-		}catch(Exception $e){
-			$this->setError('Сервер myproxy не найден');
-			return FALSE;
-		}
-		$serverData['login'] = $login;
-		$serverData['password'] = $password;
-		$serverData['lifetime'] = $lifetime;
-		$connector = new MyproxyConnector($serverData);
+	public function checkCert(MyproxyConnector $connector){
 		
 		if (!$connector->connect()){
 			$this->setError($connector->errcode == 104
@@ -379,10 +367,10 @@ class User extends GenericObject{
 		$this->setFields(array(
 			'myproxy_manual_login' => FALSE,
 			'myproxy_no_password' => FALSE,
-			'myproxy_login' => $login,
-			'myproxy_password' => base64_encode($password),
-			'myproxy_server_id' => $server_id,
-			'myproxy_expire_date' => time() + (int)$lifetime,
+			'myproxy_login' => $connector->login,
+			'myproxy_password' => base64_encode($connector->password),
+			'myproxy_server_id' => $connector->serverId,
+			'myproxy_expire_date' => $connector->lifetime,
 		));
 		$this->_save();
 		
@@ -496,7 +484,7 @@ class User extends GenericObject{
 	/* ПОЛУЧИТЬ АВТОРИЗАЦИОННЫЕ ДАННЫЕ ДЛЯ MYPROXY */
 	public function getMyproxyLoginData(){
 		
-			if($this->getField('myproxy_manual_login') || $this->getField('myproxy_expire_date') < time()){
+			if($this->getField('myproxy_manual_login')/* || $this->getField('myproxy_expire_date') < time()*/){
 				$this->resetMyproxyExpireDate();
 				throw new Exception('Требуется логин и пароль myproxy');
 				return FALSE;

@@ -36,11 +36,14 @@ class FrontendViewer extends CommonViewer{
 	
 	public function getLoginBlock(){
 		
-		if(CurUser::get()->isLogged()){
+		if (CurUser::get()->isLogged()) {
 			
 			$user_io = CurUser::get()->getName('if');
 			$user_perms_string = User::getPermName(USER_AUTH_PERMS);
 			include($this->_tplPath.'Profile/logged_block.php');
+		} else {
+			$vars = array('error' => Messenger::get('login')->getAll());
+			return $this->getContentPhpFile('Profile/login_block.php', $vars);
 		}
 	}
 	

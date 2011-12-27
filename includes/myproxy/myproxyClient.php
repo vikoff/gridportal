@@ -147,7 +147,7 @@ function myproxy_logon ($myproxy_server, $myproxy_port, $username, $passphrase, 
     }
     if( (!$username) || (!$passphrase) || (!$outfile) || (!$lifetime)) {
         if($DEBUG) { echo "\n<br>An argument to myrproxy_logon was not properly set."; }
-        return false;
+        return '100 An argument to myrproxy_logon was not properly set';
     }
     if(! $myproxy_server) {
         $myproxy_server = 'localhost';

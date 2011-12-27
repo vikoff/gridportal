@@ -165,7 +165,7 @@ class MyproxyServerController extends Controller{
 	public static function snippet_myproxy_login(){
 		
 		$user = CurUser::get();
-		$manualMyproxyLogin = $user->getField('myproxy_manual_login') || $user->getField('myproxy_expire_date') < time();
+		$manualMyproxyLogin = $user->getField('myproxy_manual_login')/* || $user->getField('myproxy_expire_date') < time() */;
 		
 		$vars = array(
 			'showMyproxyLogin' => $manualMyproxyLogin,

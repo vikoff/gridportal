@@ -13,8 +13,8 @@
 		</td>
 	</tr>
 	<tbody id="custom-server-block" style="display: none;">
-		<tr><td>сервер</td><td><input type="name" name="custom-server" value="" /></td></tr>
-		<tr><td>порт</td><td><input type="name" name="custom-server-port" value="7512" /></td></tr>
+		<tr><td>сервер</td><td><input type="text" name="custom-server" value="" /></td></tr>
+		<tr><td>порт</td><td><input type="text" name="custom-server-port" value="7512" /></td></tr>
 	</tbody>
 	<tr>
 		<td><?= Lng::get('xrls_edit.username'); ?></td>

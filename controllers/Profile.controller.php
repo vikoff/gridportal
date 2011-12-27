@@ -250,12 +250,19 @@ class ProfileController extends Controller{
 		
 		if($user->getField('myproxy_manual_login'))
 			return TRUE;
-			
-		if($user->checkCert(getVar($_POST['login']), getVar($_POST['password']), getVar($_POST['server']), getVar($_POST['cert-ttl']))){
-			Messenger::get()->ns('check-cert')->addSuccess('Авторизационные данные сохранены');
-			return TRUE;
-		}else{
-			Messenger::get()->ns('check-cert')->addError($user->getError());
+		
+		
+		try{
+			$connector = MyproxyConnector::createByConnectForm($_POST);
+			if($user->checkCert($connector)){
+				Messenger::get()->ns('check-cert')->addSuccess('Авторизационные данные сохранены');
+				return TRUE;
+			}else{
+				Messenger::get()->ns('check-cert')->addError($user->getError());
+				return FALSE;
+			}
+		}catch(Exception $e){
+			Messenger::get()->addError(Lng::get('task.warnings'), $e->getMessage());
 			return FALSE;
 		}
 	}

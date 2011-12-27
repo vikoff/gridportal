@@ -202,7 +202,7 @@
 				<tr>
 					<td>{lng snippet='profile.myproxy.cert_ttl'}</td>
 					<td>
-						<select name="cert-ttl">
+						<select name="lifetime">
 							<option value="86400">1 {lng snippet='profile.myproxy.day'}</option>
 							<option value="604800">1 {lng snippet='profile.myproxy.week'}</option>
 							<option value="2592000">1 {lng snippet='profile.myproxy.month'}</option>
