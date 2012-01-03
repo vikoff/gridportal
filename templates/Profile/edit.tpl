@@ -28,7 +28,12 @@
 				<tbody>
 				<tr>
 					<td colspan="2" style="text-align: center;">
-						<h3>{lng snippet='profile.chenge-privat-data'}</h3>
+						<h3 style="vertical-align:bottom;"> <img src="/images/icons/personal_data.gif" 
+						alt="{lng snippet='profile.chenge-privat-data'}" title="{lng snippet='profile.chenge-privat-data'}"
+						align="center" width=32 height=32 onmouseover="this.src='/images/icons/personal_data.a.gif'" 
+						onmouseout="this.src='/images/icons/personal_data.gif'" /> 
+						{lng snippet='profile.chenge-privat-data'}
+						</h3>
 					</td>
 				</tr>
 				<tr>
@@ -94,7 +99,11 @@
 	<div id="check-voms">
 	
 		{$checkVomsMessage}
-		<h3>{lng snippet='profile.check-voms'}</h3>
+		<h3 style="vertical-align:bottom;"> <img src="/images/icons/check_voms.gif"
+		alt="{lng snippet='profile.check-voms'}" title="{lng snippet='profile.check-voms'}"
+		align="center" width=32 height=32 onmouseover="this.src='/images/icons/check_voms.a.gif'" 
+		onmouseout="this.src='/images/icons/check_voms.gif'" /> {lng snippet='profile.check-voms'}
+		</h3>
 		
 		<form action="{$WWW_URI}#/check-voms" method="post">
 			<input type="hidden" name="action" value="profile/check-voms" />
@@ -116,7 +125,7 @@
 					</tr>
 				{/foreach}
 			</table>
-			<input type="submit" value="{lng snippet='profile.check'}" />
+			<input type="submit" id="check_voms" value="{lng snippet='profile.check'}" />
 		</form>
 		
 		{$setDefaultVomsMessage}
@@ -158,7 +167,11 @@
 		
 		{$checkSertMessage}
 		
-		<h3>{lng snippet='project-temporary-cert'}</h3>
+		<h3 style="vertical-align:bottom;"> <img src="/images/icons/temporary_certificate.gif"
+		alt="{lng snippet='project-temporary-cert'}" title="{lng snippet='project-temporary-cert'}"
+		align="center" width=32 height=32 onmouseover="this.src='/images/icons/temporary_certificate.a.gif'" 
+		onmouseout="this.src='/images/icons/temporary_certificate.gif'" /> {lng snippet='project-temporary-cert'}
+		</h3>
 		
 		<form action="{$WWW_URI}#/temporary-cert" method="post">
 			<input type="hidden" name="action" value="profile/check-cert" />
@@ -216,6 +229,16 @@
 	</div>
 </div>
 
+<div id="wait-popup" class="popup-container" style="display:none">
+	<div class="popup">
+		<div class="body-container">		
+			<img src="images/load.gif" alt="{lng snippet='profile.check-voms'}" />
+			<p>{lng snippet='profile.check-voms'}</p>
+		</div>
+	</div>
+</div>
+
+
 <script type="text/javascript">
 	
 	$(function(){
@@ -245,6 +268,34 @@
 		
 		$('#cert-manual-logon-inp').change(certManualLogonCheck);
 		certManualLogonCheck();
-	});
-	
+
+});
+
+</script>
+
+<script type="text/javascript" language="javascript">
+
+$(document).ready(function() {
+
+	jQuery.fn.center = function () {
+		this.css("position","fixed");
+		this.css("top", ( $(window).height() - this.height()) / 2 + "px");
+		this.css("left", ( $(window).width() - this.width()) / 2 + "px");
+		return this;
+	}
+
+
+    $(window).resize(function() {
+        $(".popup-container").css({width: $(this).width() + 'px', height: $(this).height() + 'px'});
+    });
+
+    $("input[id=check_voms]").click(function() {
+		$(window).resize();
+		$(".popup").center();
+		$(".popup .body-container").center();
+		$("#wait-popup").show();
+    });
+
+
+});
 </script>

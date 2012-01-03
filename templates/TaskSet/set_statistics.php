@@ -1,32 +1,37 @@
 
-<div><a href="<?= href('task-set/statistics'); ?> ">Вернуться к списку</a></div>
+<!--div><a href="<?= href('task-set/statistics'); ?> ">Вернуться к списку</a></div-->
+<h2 style="vertical-align:bottom;">
+	<img src="/images/icons/task_statistics.gif" alt="<?= Lng::get('task-view.task_statistics') ?>" title="<?= Lng::get('task-view.task_statistics') ?>" align="center" width=32 height=32 onmouseover="this.src='/images/icons/task_statistics.a.gif'" onmouseout="this.src='/images/icons/task_statistics.gif'" />
+	<?= Lng::get('task-view.task_statistics') ?> <?= $this->name; ?>
+</h2>
 
-<h2>Статистика задачи <?= $this->name; ?></h2>
-
-
-<table class="std-grid narrow">
+<table class="table-tiny">
 <tr>
-	<td class="title">Проект</td>
-	<td class="data"><?= $this->project_name; ?></td>
+	<td>Проект</td>
+	<td><?= $this->project_name; ?></td>
 </tr>
 <tr>
-	<td class="title">Имя задачи</td>
-	<td class="data"><?= $this->name; ?></td>
+	<td>Имя задачи</td>
+	<td><?= $this->name; ?></td>
 </tr>
 <tr>
-	<td class="title">Профиль</td>
-	<td class="data"><?= $this->profile_name; ?></td>
+	<td>Профиль</td>
+	<td><?= $this->profile_name; ?></td>
 </tr>
 <tr>
-	<td class="title">Количество запусков</td>
-	<td class="data"><?= $this->num_submits; ?></td>
+	<td>Количество запусков</td>
+	<td><?= $this->num_submits; ?></td>
 </tr>
 <tr>
-	<td class="title">Дата создания</td>
-	<td class="data"><?= $this->create_date_str; ?></td>
+	<td>Дата создания</td>
+	<td><?= $this->create_date_str; ?></td>
 </tr>
 </table>
 
+
+<div style="margin: 2em 0 1em; text-align: center;">
+	<a href="<?= href('task-set/list'); ?>" class="button">Вернуться к списку</a>
+</div>
 
 <? if ($this->submits): ?>
 
@@ -49,26 +54,31 @@
 			<td class="task<?= $s['id'] ?>-status task-state-<?= (int)$s['status'] ?>"><?= Lng::get($s['status_str']); ?></td>
 			<td><?= $s['start_date_str']; ?></td>
 			<td><?= $s['finish_date_str']; ?></td>
-			<!--td></td-->
+			<!--td>
+<div style="background:rgb(241, 72, 72);height:16px;border:solid 1px #000;border-radius:3px;color:#000;padding-top:1px;">Ошибка</div></td-->
 		</tr>
 	<? endforeach; ?>
 	</table>
 	
 	<?= $this->submitPagination; ?>
+	
+	<div style="margin: 1em 0; text-align: center;">
+		<a href="<?= href('task-set/list'); ?>" class="button">Вернуться к списку</a>
+	</div>
 
 <? else: ?>
 	<p>Нет запущенных задач</p>
 <? endif; ?>
 
+<div class="refresh-indicator">
+	<span></span>
+	&nbsp;
+	<a href="<?= href('task-set/statistics/'.$this->instanceId); ?>" onclick="refresh(0);return false"><img src="/images/refresh.png" alt="<?= Lng::get('TaskSet-view-update'); ?>" title="<?= Lng::get('TaskSet-view-update'); ?>" align="middle" /></a>
+</div>
+
 <script type="text/javascript">
 $(function(){
-	
-	// при каждом обновлении загружается новый экземпляр setTimeout
-	// setTimeout(function(){
-		// $.get(location.href, function(response){
-			// $('#main').html(response);
-		// });
-	// }, 30000);
+	autoUpdate(30, ".refresh-indicator :first");
 });
 
 </script>

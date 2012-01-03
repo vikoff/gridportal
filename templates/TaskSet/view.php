@@ -1,10 +1,13 @@
 
-<div><a href="<?= href('task-set/list'); ?> ">Вернуться к списку</a></div>
+<!--div><a href="<?= href('task-set/list'); ?> ">Вернуться к списку</a></div-->
 
-<h2>Статистика задачи <?= $this->name; ?></h2>
+<h2 style="vertical-align:bottom;">
+	<img src="/images/icons/task_statistics.gif" alt="<?= Lng::get('task-view.task_statistics') ?>" title="<?= Lng::get('task-view.task_statistics') ?>" align="center" width=32 height=32 onmouseover="this.src='/images/icons/task_statistics.a.gif'" onmouseout="this.src='/images/icons/task_statistics.gif'" />
+	<?= Lng::get('task-view.task_statistics') ?> <?= $this->name; ?>
+</h2>
 
 
-<table class="std-grid narrow">
+<table class="table-tiny">
 <tr>
 	<td class="title">Проект</td>
 	<td class="data"><?= $this->project_name; ?></td>
@@ -26,6 +29,12 @@
 	<td class="data"><?= $this->create_date_str; ?></td>
 </tr>
 </table>
+
+<div style="margin: 2em 0 1em; text-align: center;">
+	<a href="<?= href('task-set/customize/'.$this->instanceId); ?>" class="button">Запустить</a>
+	<a href="<?= href('task-set/delete/'.$this->instanceId); ?>" class="button">Удалить</a>
+	<a href="<?= href('task-set/list'); ?>" class="button">Вернуться к списку</a>
+</div>
 
 <?= $this->submitPagination; ?>
 
@@ -81,7 +90,8 @@
 
 <div class="refresh-indicator">
 	<span></span>
-	<a href="<?= href('task-set/view/'.$this->instanceId); ?>" onclick="refresh(0);return false">&nbsp;<img src="/images/refresh.png" alt="Обновить" title="Обновить" align="middle" /></a>
+	&nbsp;
+	<a href="<?= href('task-set/view/'.$this->instanceId); ?>" onclick="refresh(0);return false"><img src="/images/refresh.png" alt="<?= Lng::get('TaskSet-view-update'); ?>" title="<?= Lng::get('TaskSet-view-update'); ?>" align="middle" /></a>
 </div>
 
 <script type="text/javascript">

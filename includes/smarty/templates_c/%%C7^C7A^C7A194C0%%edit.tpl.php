@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2011-12-27 20:04:56
+<?php /* Smarty version 2.6.26, created on 2012-01-03 07:20:40
          compiled from Profile/edit.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Profile/edit.tpl', 10, false),)), $this); ?>
@@ -39,8 +39,15 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 				<tbody>
 				<tr>
 					<td colspan="2" style="text-align: center;">
-						<h3><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.chenge-privat-data'), $this);?>
-</h3>
+						<h3 style="vertical-align:bottom;"> <img src="/images/icons/personal_data.gif" 
+						alt="<?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.chenge-privat-data'), $this);?>
+" title="<?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.chenge-privat-data'), $this);?>
+"
+						align="center" width=32 height=32 onmouseover="this.src='/images/icons/personal_data.a.gif'" 
+						onmouseout="this.src='/images/icons/personal_data.gif'" /> 
+						<?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.chenge-privat-data'), $this);?>
+
+						</h3>
 					</td>
 				</tr>
 				<tr>
@@ -129,8 +136,14 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 	
 		<?php echo (isset($this->_tpl_vars['checkVomsMessage']) ? $this->_tpl_vars['checkVomsMessage'] : ''); ?>
 
-		<h3><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.check-voms'), $this);?>
-</h3>
+		<h3 style="vertical-align:bottom;"> <img src="/images/icons/check_voms.gif"
+		alt="<?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.check-voms'), $this);?>
+" title="<?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.check-voms'), $this);?>
+"
+		align="center" width=32 height=32 onmouseover="this.src='/images/icons/check_voms.a.gif'" 
+		onmouseout="this.src='/images/icons/check_voms.gif'" /> <?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.check-voms'), $this);?>
+
+		</h3>
 		
 		<form action="<?php echo (isset($this->_tpl_vars['WWW_URI']) ? $this->_tpl_vars['WWW_URI'] : ''); ?>
 #/check-voms" method="post">
@@ -163,7 +176,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 					</tr>
 				<?php endforeach; endif; unset($_from); ?>
 			</table>
-			<input type="submit" value="<?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.check'), $this);?>
+			<input type="submit" id="check_voms" value="<?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.check'), $this);?>
 " />
 		</form>
 		
@@ -223,8 +236,14 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 		<?php echo (isset($this->_tpl_vars['checkSertMessage']) ? $this->_tpl_vars['checkSertMessage'] : ''); ?>
 
 		
-		<h3><?php echo SmartyPlugins::function_lng(array('snippet' => 'project-temporary-cert'), $this);?>
-</h3>
+		<h3 style="vertical-align:bottom;"> <img src="/images/icons/temporary_certificate.gif"
+		alt="<?php echo SmartyPlugins::function_lng(array('snippet' => 'project-temporary-cert'), $this);?>
+" title="<?php echo SmartyPlugins::function_lng(array('snippet' => 'project-temporary-cert'), $this);?>
+"
+		align="center" width=32 height=32 onmouseover="this.src='/images/icons/temporary_certificate.a.gif'" 
+		onmouseout="this.src='/images/icons/temporary_certificate.gif'" /> <?php echo SmartyPlugins::function_lng(array('snippet' => 'project-temporary-cert'), $this);?>
+
+		</h3>
 		
 		<form action="<?php echo (isset($this->_tpl_vars['WWW_URI']) ? $this->_tpl_vars['WWW_URI'] : ''); ?>
 #/temporary-cert" method="post">
@@ -302,6 +321,18 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 	</div>
 </div>
 
+<div id="wait-popup" class="popup-container" style="display:none">
+	<div class="popup">
+		<div class="body-container">		
+			<img src="images/load.gif" alt="<?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.check-voms'), $this);?>
+" />
+			<p><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.check-voms'), $this);?>
+</p>
+		</div>
+	</div>
+</div>
+
+
 <script type="text/javascript"><?php echo '
 	
 	$(function(){
@@ -331,7 +362,36 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 		
 		$(\'#cert-manual-logon-inp\').change(certManualLogonCheck);
 		certManualLogonCheck();
-	});
-	
+
+});
+
+'; ?>
+</script>
+
+<script type="text/javascript" language="javascript"><?php echo '
+
+$(document).ready(function() {
+
+	jQuery.fn.center = function () {
+		this.css("position","fixed");
+		this.css("top", ( $(window).height() - this.height()) / 2 + "px");
+		this.css("left", ( $(window).width() - this.width()) / 2 + "px");
+		return this;
+	}
+
+
+    $(window).resize(function() {
+        $(".popup-container").css({width: $(this).width() + \'px\', height: $(this).height() + \'px\'});
+    });
+
+    $("input[id=check_voms]").click(function() {
+		$(window).resize();
+		$(".popup").center();
+		$(".popup .body-container").center();
+		$("#wait-popup").show();
+    });
+
+
+});
 '; ?>
 </script>

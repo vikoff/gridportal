@@ -4,7 +4,7 @@ if(!defined('FS_ROOT'))
 	die("access denided (config file)");
 
 // название сайта
-define('CFG_SITE_NAME', 'ng');
+define('CFG_SITE_NAME', 'Crimea Eco Grid-portal');
 
 // установить уровень сообщений об ошибках (максимальный)
 error_reporting(E_ALL | E_STRICT);

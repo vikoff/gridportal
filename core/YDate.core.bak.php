@@ -18,7 +18,7 @@ class YDate{
 	private $_useMonthFullName = FALSE;
 	
 	static public $months = array(
-		1 => 'ydate.jan',
+		1 => 'янв',
 		2 => 'фев',
 		3 => 'мар',
 		4 => 'апр',
@@ -53,7 +53,7 @@ class YDate{
 	// родительный длинный
 	static public $_monthsGenFull = array(1 => 'января',2 => 'февраля', 3 => 'марта', 4 => 'апреля', 5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'августа', 9 => 'сентября', 10 => 'октября', 11 => 'ноября', 12 => 'декабря');
 	// именительный/родительный короткий
-	static public $_monthsShort = array(1 => 'ydate.jan', 2 => 'ydate.feb', 3 => 'ydate.mar', 4 => 'ydate.apr', 5 => 'ydate.may', 6 => 'ydate.jun', 7 => 'ydate.jul', 8 => 'ydate.aug', 9 => 'ydate.sep', 10 => 'ydate.oct', 11 => 'ydate.nov', 12 => 'ydate.dec');
+	static public $_monthsShort = array(1 => 'янв', 2 => 'фев', 3 => 'мар', 4 => 'апр', 5 => 'мая', 6 => 'июн', 7 => 'июл', 8 => 'авг', 9 => 'сен', 10 => 'окт', 11 => 'ноя', 12 => 'дек');
 	
 	
 	/** ИНИЦИАЛИЗАЦИЯ КЛАССА ПРОИЗВОЛЬНЫМ ЗНАЧЕНИЕМ */
@@ -259,9 +259,7 @@ class YDate{
 		if(is_null($this->_curDate))
 			return !is_null($default) ? $default : '-';
 	
-		$month = ($this->_useMonthFullName
-			? self::$_monthsGenFull[date('n', $this->_curDate)]
-			: self::$_monthsShort[date('n', $this->_curDate)]);
+		$month = ($this->_useMonthFullName ? self::$_monthsGenFull[date('n', $this->_curDate)] : self::$_monthsShort[date('n', $this->_curDate)]);
 		return date('d ', $this->_curDate).$month.date(' Y H:i', $this->_curDate);
 	}
 	

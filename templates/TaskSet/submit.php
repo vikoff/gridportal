@@ -25,7 +25,10 @@ $(document).ready(function() {
 });
 </script>
 
-<h2><?= Lng::get('xrls_edit.taskset'); ?></h2>
+<h2 style="vertical-align:bottom;">
+	<img src="/images/icons/castom.gif" alt="<?= Lng::get('xrls_edit.taskset') ?>" title="<?= Lng::get('xrls_edit.taskset') ?>" align="center" width=32 height=32 onmouseover="this.src='/images/icons/castom.a.gif'" onmouseout="this.src='/images/icons/castom.gif'" />
+	<?= Lng::get('xrls_edit.taskset') ?>
+</h2>
 <div class="c">
 <form action="" method="post">
 	<?= FORMCODE; ?>

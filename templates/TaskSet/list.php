@@ -1,4 +1,7 @@
-
+<h1 style="vertical-align:bottom;">
+	<img src="/images/icons/tasks.gif" alt="<?= Lng::get('task-set.tasks') ?>" title="<?= Lng::get('task-set.tasks') ?>" align="center" width=32 height=32 onmouseover="this.src='/images/icons/tasks.a.gif'" onmouseout="this.src='/images/icons/tasks.gif'" />
+	<?= Lng::get('task-set.tasks') ?>
+</h1>
 <?= $this->pagination; ?>
 
 <? if($this->collection): ?>
@@ -18,7 +21,7 @@
 		<td><?= $item['project_name']; ?></td>
 		<td><?= !empty($item['profile_name']) ? $item['profile_name'] : '-'; ?></td>
 		<td onmouseover="showStatistics(this, <?= $item['num_submits']; ?>, <?= $item['num_finished']; ?>, <?= $item['num_processing']; ?>, <?= $item['num_errors']; ?>, <?= $item['num_undefined']; ?>);" onmouseout="hideStatistics(this);">
-			<span style="font-size: 11px;" />всего: <?= $item['num_submits']; ?></span>
+			<span style="font-size: 11px;" /><?= Lng::get('TaskSet-list-total'); ?> <?= $item['num_submits']; ?></span>
 			<div class="task-progress">
 				<? if ($item['num_errors']){ ?><div class="task-progress-item task-state-6" style="width:<?= $item['num_errors'] / $item['num_submits'] * 100 ?>%"></div><? } ?>
 				<? if ($item['num_finished']){ ?><div class="task-progress-item task-state-4" style="width:<?= $item['num_finished'] / $item['num_submits'] * 100 ?>%"></div><? } ?>
@@ -30,28 +33,35 @@
 		<td><?= $item['create_date_str']; ?></td>
 		
 		<td style="font-size: 11px;">
-			<a href="<?= href('task-set/view/'.$item['id']); ?>">просмотр</a>
-			<a href="<?= href('task-set/customize/'.$item['id']); ?>">запуск</a>
+			<a href="<?= href('task-set/view/'.$item['id']); ?>"><?= Lng::get('TaskSet-list-view'); ?></a>
+			<a href="<?= href('task-set/customize/'.$item['id']); ?>"><?= Lng::get('TaskSet-list-launch'); ?></a>
 		</td>
 	</tr>
 	<? $j++; endforeach; ?>	
 	</table>
 	
 <? else: ?>
-	<p>Сохраненных записей пока нет.</p>
+	<p><?= Lng::get('admin_list-not-save-record'); ?></p>
 <? endif; ?>
 
 <?= $this->pagination; ?>
 
+<div class="refresh-indicator">
+	<span></span>
+	&nbsp;
+	<a href="<?= href('task-set'); ?>" onclick="refresh(0);return false"><img src="/images/refresh.png" alt="<?= Lng::get('TaskSet-view-update'); ?>" title="<?= Lng::get('TaskSet-view-update'); ?>" align="middle" /></a>
+</div>
+
 <script type="text/javascript">
+autoUpdate(30, ".refresh-indicator :first");
 function showStatistics(elm, num_submits, num_finished, num_processing, num_errors, num_undefined){
 	showPopup(elm, ''
 		+'<table class="l" style="width:auto">'
-			+'<tr><td>Всего: </td><td><b>'+num_submits+'</b></td></tr>'
-			+'<tr><td>Завершено: </td><td><b>'+num_finished+'</b></td></tr>'
-			+'<tr><td>В процессе: </td><td><b>'+num_processing+'</b></td></tr>'
-			+'<tr><td>С ошибками: </td><td><b>'+num_errors+'</b></td></tr>'
-			+'<tr><td>Неизвестно: </td><td><b>'+num_undefined+'</b></td></tr>'
+			+'<tr><td><?= Lng::get('TaskSet-list-total'); ?> </td><td><b>'+num_submits+'</b></td></tr>'
+			+'<tr><td><?= Lng::get('TaskSet-list-complite'); ?> </td><td><b>'+num_finished+'</b></td></tr>'
+			+'<tr><td><?= Lng::get('TaskSet-list-in-progres'); ?> </td><td><b>'+num_processing+'</b></td></tr>'
+			+'<tr><td><?= Lng::get('TaskSet-list-with-erors'); ?> </td><td><b>'+num_errors+'</b></td></tr>'
+			+'<tr><td><?= Lng::get('TaskSet-list-unknown'); ?> </td><td><b>'+num_undefined+'</b></td></tr>'
 		+'</table>');
 }
 function hideStatistics(elm){

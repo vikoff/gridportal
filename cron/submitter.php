@@ -3,11 +3,17 @@
 session_start();
 ini_set('display_errors', 1);
 
+// обозначение текущий папки
+define('CUR_PATH', dirname(__FILE__).'/');
+
 // обозначение корня ресурса
 define('FS_ROOT', dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR);
 
 // отправка Content-type заголовка
 header('Content-Type: text/html; charset=utf-8');
+
+// подключение локального setup файла
+require(CUR_PATH.'setup.php');
 
 // подключение файлов CMF
 require_once(FS_ROOT.'setup.php');

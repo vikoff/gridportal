@@ -130,7 +130,6 @@ class Paginator{
 	
 	// УСТАНОВИТЬ КОЛИЧЕСТВО ЭЛЕМЕНТОВ НА СТРАНИЦЕ
 	public function setItemsPerPage($num){
-		
 		// если передан null, принимаем значение сохраненное в сессии, или дефолтное
 		if(is_null($num)){
 			$this->_itemsPerPage = !empty($_SESSION['paginator-items-per-page'])

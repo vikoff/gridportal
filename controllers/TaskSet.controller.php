@@ -8,6 +8,7 @@ class TaskSetController extends Controller{
 	// методы, отображаемые по умолчанию
 	protected $_defaultFrontendDisplay = 'list';
 	protected $_defaultBackendDisplay = 'list';
+	protected $_defaultAjaxDisplay = 'list';
 	
 	// права на выполнение методов контроллера
 	public $permissions = array(
@@ -37,7 +38,9 @@ class TaskSetController extends Controller{
 		'ajax_get_task_files'	=> PERMS_REG,
 		'ajax_delete_task_file'	=> PERMS_REG,
 		'ajax_get_statuses'	=> PERMS_REG,
+		'ajax_'/*list'*/	=> PERMS_REG, /* ужасный костыль, pt #1 */
 		'ajax_view'	=> PERMS_REG,
+		'ajax_statistics'	=> PERMS_REG,
 	);
 	
 	protected $_title = null;
@@ -639,6 +642,21 @@ class TaskSetController extends Controller{
 		echo json_encode($collection);
 	}
 	
+	/** DISPLAY LIST */
+	public function ajax_/*list*/($params = array()){ /* ужасный костыль, pt #2 */
+		
+		$collection = new TaskSetCollection(array('uid' => USER_AUTH_ID));
+		$variables = array(
+			'collection' => $collection->getPaginated(),
+			'pagination' => $collection->getPagination(),
+			'sorters' => $collection->getSortableLinks(),
+		);
+		
+		AjaxViewer::get()
+			->setContentPhpFile(self::TPL_PATH.'list.php', $variables)
+			->render();
+	}
+	
 	/** DISPLAY VIEW */
 	public function ajax_view($params = array()){
 		
@@ -659,6 +677,43 @@ class TaskSetController extends Controller{
 		// echo '<pre>'; print_r(TaskSubmitCollection::load()->getTasksBySet($instanceId)); die;
 		AjaxViewer::get()
 			->setContentPhpFile(self::TPL_PATH.'view.php', $variables)
+			->render();
+	}
+	
+	/** DISPLAY STATISTICS */
+	public function ajax_statistics($params = array()){
+		
+		if ($curSet = getVar($params[0], 0, 'int')) {
+			$this->_ajax_set_statistics($curSet);
+			exit;
+		}
+		
+		$collection = new TaskSetCollection();
+		$variables = array(
+			'collection' => $collection->getPaginated(array('withUsers' => TRUE)),
+			'pagination' => $collection->getPagination(),
+			'sorters' => $collection->getSortableLinks(),
+		);
+		
+		AjaxViewer::get()
+			->setContentPhpFile(self::TPL_PATH.'statistics.php', $variables)
+			->render();
+	}
+	
+	public function _ajax_set_statistics($instanceId){
+		
+		$submits = TaskSubmitCollection::load(array('set_id' => $instanceId));
+		
+		$data = TaskSet::Load($instanceId)->GetAllFieldsPrepared();
+		$variables = array_merge($data, array(
+			'instanceId' => $instanceId,
+			'submits' => $submits->getPaginated(),
+			'submitPagination' => $submits->getPagination(),
+			'submitSorters' => $submits->getSortableLinks(),
+		));
+		
+		AjaxViewer::get()
+			->setContentPhpFile(self::TPL_PATH.'set_statistics.php', $variables)
 			->render();
 	}
 

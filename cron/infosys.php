@@ -4,6 +4,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // обозначение корня ресурса
+define('CUR_PATH', dirname(__FILE__).'/');
 define('FS_ROOT', dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR);
 
 define('TASK_TABLE', 'task_submits');
@@ -13,10 +14,14 @@ define('TASK_QUEUE_TABLE', 'task_submit_queue');
 // отправка Content-type заголовка
 header('Content-Type: text/plain; charset=utf-8');
 
-require('setup.php');
+require(CUR_PATH.'setup.php');
+
+require(FS_ROOT.'setup.php');
 require(FS_ROOT.'includes/infosys/infosys.php');
 
-require('get_submits.php');
+// запуск скрипта получения выполненных задач
+$script = CUR_PATH.'get_submits.php';
+`php $script > /dev/null &`;
 
 $db = db::get();
 $jobs = $db->getAllIndexed('

@@ -57,6 +57,7 @@
 		var fm = new FileManager(
 			'task-profile/get-task-files/<?= $this->instanceId; ?>',
 			'task-profile/delete-task-file/<?= $this->instanceId; ?>',
+			'task-set/file-constructor/<?= $this->instanceId; ?>',
 			$('#task-uploaded-files-container'),
 			$('#task-uploaded-files-comment')
 		);

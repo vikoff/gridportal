@@ -1,5 +1,8 @@
+<h2 style="vertical-align:bottom;">
+	<img src="/images/icons/data.gif" alt="<?= Lng::get('task-set-customize.fails') ?>" title="<?= Lng::get('task-set-customize.fails') ?>" align="center" width=32 height=32 onmouseover="this.src='/images/icons/data.a.gif'" onmouseout="this.src='/images/icons/data.gif'" />
+	<?= Lng::get('task-set-customize.fails') ?>
+</h2>
 
-<h2>Файлы профиля</h2>
 <div class="task-uploaded-files">
 	<div style="font-weight: bold; text-align: center; margin-bottom: 10px;"><?= Lng::get('upload_files.uploadfiles'); ?></div>
 	<form action="" method="post" enctype="multipart/form-data">

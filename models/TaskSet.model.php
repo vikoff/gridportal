@@ -86,7 +86,7 @@ class TaskSet extends GenericObject{
 	
 	/** ПОДГОТОВКА ДАННЫХ К ОТОБРАЖЕНИЮ */
 	public function beforeDisplay($data){
-	
+		
 		// $data['modif_date'] = YDate::loadTimestamp($data['modif_date'])->getStrDateShortTime();
 		$data['create_date_str'] = YDate::loadTimestamp($data['create_date'])->getStrDateShortTime();
 		$data['project_name'] = Lng::get($data['project_name']);
@@ -496,7 +496,7 @@ class TaskSetCollection extends GenericObjectCollection{
 		}
 		
 		$sorter = new Sorter('create_date', 'DESC', $this->_getSortableFieldsTitles());
-		$paginator = new Paginator('sql', array($sqlFields, $sqlFrom.' '.$whereStr.' ORDER BY '.$sorter->getOrderBy()), 50);
+		$paginator = new Paginator('sql', array($sqlFields, $sqlFrom.' '.$whereStr.' ORDER BY '.$sorter->getOrderBy()), '~50');
 		
 		$db = db::get();
 		$data = $db->getAllIndexed($paginator->getSql(), 'id', array());

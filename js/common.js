@@ -33,10 +33,11 @@ function href(href){
 	return WWW_ROOT + CUR_LNG + '/' + href;
 }
 
-function FileManager(getUrl, delUrl, htmlContainer, htmlComment){
+function FileManager(getUrl, delUrl, editUrl, htmlContainer, htmlComment){
 	
 	this.getUrl = href(getUrl);
 	this.delUrl = href(delUrl);
+	this.editUrl = href(editUrl);
 	this.htmlContainer = htmlContainer;
 	this.htmlComment = htmlComment;
 	
@@ -49,20 +50,25 @@ FileManager.prototype = {
 		var self = this;
 		
 		$.get(this.getUrl, function(response){
-			
+			console.log(response);
 			if(response.error){
 				self.htmlContainer.empty().html('<div style="color: red;">' + response.error + '</div>');
 				return;
 			}
 			
 			var tbl = $('<table class="task-uploaded-files-list" />');
-			var delLink;
+			var delLink, editLink;
 			for(var i in response.data){
 			
 				type = '';
 				if(response.data[i] == 'nordujob'){
 					type = 'nordujob файл';
 					self.hasNordujob = true;
+				
+					editLink = $('<a href="'
+						+ self.editUrl + '?file=nordujob '
+						+ '" class="small" target="_blank">редактировать в мастере</a>'
+					);
 				}
 				else if(/\.fds$/.test(response.data[i]))
 					type = 'файл модели';
@@ -76,7 +82,9 @@ FileManager.prototype = {
 					$('<tr />')
 						.append('<td>' + (type ? '<span class="small" style="color: #888;">' + type + '</span>' : '') + '</td>')
 						.append('<td>' + response.data[i] + '</td>')
-						.append($('<td></td>').append(delLink)));
+						.append($('<td></td>').append(delLink))
+						.append($('<td></td>').append(editLink))
+				);
 			}
 			
 			self.htmlContainer.empty().append(tbl);

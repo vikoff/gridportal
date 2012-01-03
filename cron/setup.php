@@ -1,19 +1,5 @@
 <?
 
-
-require_once(FS_ROOT.'core/Func.core.php');
-
-// создание подключения к mysql
-db::create(array(
-	'adapter' => 'mysql',
-	'host' => 'localhost',
-	'user' => 'gridjobs',
-	'pass' => 'freedom2011gridjobs',
-	'database' => 'gridjobs',
-	'encoding' => 'utf8',
-	'fileLog' => FALSE,
-));
-
 function getMyproxyConnector($uid, $taskIds = null){
 	
 	$myProxyAuthData = User::load($uid)->getMyproxyLoginData();
@@ -35,7 +21,7 @@ function logMsg($msg, $type = 'common'){
 	$logFile = dirname(__FILE__).'/log/submitter.log';
 	$text = date('Y-m-d H:i:s').' '.$msg."\n";
 	echo $text;
-	// return;
+//	return;
 	$f = fopen($logFile, 'a') or die('could not open log file');
 	fwrite($f, $text);
 	fclose($f);

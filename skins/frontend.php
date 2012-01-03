@@ -71,7 +71,7 @@
 			<?=$this->_getHtmlContent();?>
 		</div>
 		<div id="footer">
-			<a href="<?= App::href('page/developers'); ?>">Разработчики</a>
+			<a href="<?= App::href('page/developers'); ?>"><?=Lng::get('frontend-developers');?></a>
 			<?=$this->_getClientStatisticsLoader();?>
 		</div>
 		<div id="popup">

@@ -93,7 +93,7 @@ var Multiplier = {
 	/** создание ячейки с одиночным значением */
 	_createSingleValueTd: function(id, index, value){
 		
-		return $('<td id="m-combination-'+id+'-'+index+'" style="text-align: right; width: 200px;" />')
+		return $('<td id="m-combination-'+id+'-'+index+'" style="text-align: right; width: 220px;" />')
 			.append('<input type="text" class="mult" name="items['+id+'][value]['+index+'][single]" value="' + value + '" />')
 	},
 	
@@ -103,7 +103,7 @@ var Multiplier = {
 		if (td)
 			td.empty();
 		else
-			td = $('<td id="m-combination-'+id+'-'+index+'" style="text-align: right; width: 200px;" />');
+			td = $('<td id="m-combination-'+id+'-'+index+'" style="text-align: right; width: 220px;" />');
 			
 		td
 			.append('<span>от: </span>')

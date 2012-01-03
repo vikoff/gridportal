@@ -1,4 +1,7 @@
-
+<h1>
+	<img src="/images/icons/analys.gif" alt="<?= Lng::get('task.analyze') ?>" title="<?= Lng::get('task.analyze') ?>" align="center" width=32 height=32 onmouseover="this.src='/images/icons/analys.a.gif'" onmouseout="this.src='/images/icons/analys.gif'" />
+	<?= Lng::get('task.analyze') ?>
+</h1>
 <? if(count($this->fetchedTasks)): ?>
 	<div class="c">
 		<form action="<?= href('task-submit/analyze'); ?>" method="get" style="margin: 1em 0;">

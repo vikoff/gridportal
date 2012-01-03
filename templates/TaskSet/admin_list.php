@@ -1,6 +1,6 @@
 
 <div class="options-row">
-	<a href="<?= href('admin/content/task-set/new'); ?>">Добавить запись</a>
+	<a href="<?= href('admin/content/task-set/new'); ?>"><?= Lng::get('admin_list-add-record'); ?></a>
 </div>
 
 <?= $this->pagination; ?>
@@ -13,10 +13,10 @@
 		<th><?= $this->sorters['project_id']; ?></th>
 		<th><?= $this->sorters['profile_id']; ?></th>
 		<th><?= $this->sorters['name']; ?></th>
-		<th><?= $this->sorters['ready_to_start']; ?></th>
+		<?/*<th><?= $this->sorters['ready_to_start']; ?></th>*/?>
 		<th><?= $this->sorters['num_submits']; ?></th>
 		<th><?= $this->sorters['create_date']; ?></th>
-		<th>Опции</th>
+		<th><?= Lng::get('admin_list-options');?></th>
 	</tr>
 	<? foreach($this->collection as $item): ?>	
 	<tr>
@@ -25,22 +25,22 @@
 		<td><?= $item['project_id']; ?></td>
 		<td><?= $item['profile_id']; ?></td>
 		<td><?= $item['name']; ?></td>
-		<td><?= $item['ready_to_start']; ?></td>
+		<?/*<td><?= $item['ready_to_start']; ?></td>*/?>
 		<td><?= $item['num_submits']; ?></td>
 		<td><?= $item['create_date']; ?></td>
 			
 		<td class="center">
 			<div class="tr-hover-visible options">
-				<a href="<?= href('task-set/view/'.$item['id']); ?>" title="Просмотреть"><img src="images/backend/icon-view.png" alt="Просмотреть" /></a>
-				<a href="<?= href('admin/content/task-set/edit/'.$item['id']); ?>" title="Редактировать"><img src="images/backend/icon-edit.png" alt="Редактировать" /></a>
-				<a href="<?= href('admin/content/task-set/delete/'.$item['id']); ?>" title="Удалить"><img src="images/backend/icon-delete.png" alt="Удалить" /></a>
+				<a href="<?= href('task-set/view/'.$item['id']); ?>" title="<?= Lng::get('admin_list-view'); ?>"><img src="images/backend/icon-view.png" alt="<?= Lng::get('admin_list-view'); ?>/></a>
+				<a href="<?= href('admin/content/task-set/edit/'.$item['id']); ?>" title="<?= Lng::get('admin_list-edit'); ?>"><img src="images/backend/icon-edit.png" alt="<?= Lng::get('admin_list-edit'); ?>" /></a>
+				<a href="<?= href('admin/content/task-set/delete/'.$item['id']); ?>" title="<?= Lng::get('task.delete'); ?>"><img src="images/backend/icon-delete.png" alt="<?= Lng::get('task.delete'); ?>"/></a>
 			</div>
 		</td>
 	</tr>
 	<? endforeach; ?>	
 	</table>
 <? else: ?>
-	<p>Сохраненных записей пока нет.</p>
+	<p><?= Lng::get('admin_list-not-save-record'); ?></p>
 <? endif; ?>
 
 <?= $this->pagination; ?>
