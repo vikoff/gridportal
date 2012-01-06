@@ -2,7 +2,7 @@
 
 /**
  * ЗАДАЧИ, РЕШАЕМЫЕ КЛАССОМ
- * 1) сгенерировать форму мастера [ self::getConstructorHTML() ]
+ * 1) сгенерировать форму мастера [ self::getConstructorFormData() ]
  * 2) размножить файл для сабмитов
  * 3) вывести статистику (количество вариаций, и т.д.)
  */
@@ -184,7 +184,13 @@ abstract class AbstractFileConstructor {
 		return $value;
 	}
 	
-	/** ПОЛУЧИТЬ МАССИВ ДАННЫХ ДЛЯ ОДНОЙ СТРОКИ ДЛЯ ФОРМЫ-КОНСТРУКТОРА */
+	/**
+	 * ПОЛУЧИТЬ МАССИВ ДАННЫХ ДЛЯ ОДНОЙ СТРОКИ ДЛЯ ФОРМЫ-КОНСТРУКТОРА
+	 * @param string $row - строка из файла
+	 * @param integer $rowIndex - номер текущей строки
+	 * @return array|null - массив с ключами 'row', 'field', 'pre_text', 'value', 'post_text', 'allow_multiple'
+	 *                      или NULL, если строка не должна редактироваться в форме
+	 */
 	abstract protected function _getFormRow($row, $rowIndex);
 }
 

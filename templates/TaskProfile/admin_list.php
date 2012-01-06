@@ -20,9 +20,9 @@
 	<tr>
 		<td><?= $item['id']; ?></td>
 		<td><?= $item['is_user_defined']; ?></td>
-		<td><?= $item['uid']; ?></td>
+		<td><?= $item['user_name']; ?></td>
 		<td><?= $item['name']; ?></td>
-		<td><?= $item['project_id']; ?></td>
+		<td><?= $item['project_name']; ?></td>
 		<td><?= $item['create_date']; ?></td>
 			
 		<td class="center">

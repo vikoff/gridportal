@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2012-01-03 07:20:40
+<?php /* Smarty version 2.6.26, created on 2012-01-06 19:43:51
          compiled from Profile/edit.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Profile/edit.tpl', 10, false),)), $this); ?>
@@ -260,6 +260,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 					<?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.not-register'), $this);?>
 
 				</label>
+				<?php  echo Page::getHelpIcon('profile.projects')  ?>
 			</p>
 			<table id="cert-auto-login-box" align="center" style="margin: 1em auto; <?php if ((isset($this->_tpl_vars['myproxy_manual_login']) ? $this->_tpl_vars['myproxy_manual_login'] : '')): ?>display: none;<?php endif; ?>">
 				<col align="left" />

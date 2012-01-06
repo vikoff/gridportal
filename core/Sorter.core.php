@@ -96,7 +96,7 @@ class Sorter{
 			$this->_orderByStatement = $this->_createOrderByStatement($this->_sortingField);
 		}
 		
-		// echo '<hr>'.$this->_orderByStatement.'<hr>';
+		// echo '<hr>'.$this->_orderByStatement.'<hr>'; die;
 	}
 	
 	public function _createOrderByStatement($_sortField){

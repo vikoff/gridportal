@@ -380,28 +380,18 @@ table.std-grid.narrow{
 	padding: 5px 10px;
 }
 
-.project-list-item {
-	width: 700px;
-	background-color: #EEE;
+.project-list {
+	width: 800px;
+	margin: auto;
 	border: solid 1px #AAA;
-	margin: 0 auto 20px auto;
-	padding: 0;
+	border-collapse: collapse;
 }
 
-.project-list-item-info {
-	float: left;
-	width: 300px;
-	border-right: solid 1px #AAA;
+.project-list td {
+	width: 50%;
+	border: solid 1px #AAA;
 	padding: 5px 10px;
-}
-
-.project-list-item h3 {
-	margin-top: 0;
-}
-
-.project-list-item-descr {
-	float: left;
-	padding: 5px 10px;
+	text-align: center;
 }
 
 .flag {

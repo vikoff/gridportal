@@ -271,7 +271,7 @@ class Lng {
 			$fields .= ', '.$lng.'.text AS '.$lng;
 			$joins  .= ' LEFT JOIN lng_'.$lng.' '.$lng.' ON '.$lng.'.snippet_id = s.id ';
 		}
-		return db::get()->getAll('SELECT s.* '.$fields.' FROM lng_snippets s '.$joins.' ORDER BY s.name');
+		return db::get()->getAll('SELECT s.* '.$fields.' FROM lng_snippets s '.$joins.' WHERE is_external=0 ORDER BY s.name');
 	}
 	
 	public static function getSnippetAllData($idOrName){

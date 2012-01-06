@@ -50,6 +50,9 @@ class TaskProfile extends GenericObject{
 	public function beforeDisplay($data){
 	
 		$data['create_date'] = YDate::loadTimestamp($data['create_date'])->getStrDateShortTime();
+		if (!empty($data['project_name']))
+			$data['project_name'] = Lng::get($data['project_name']);
+			
 		return $data;
 	}
 	
@@ -163,9 +166,9 @@ class TaskProfileCollection extends GenericObjectCollection{
 	 * var array $_sortableFieldsTitles
 	 */
 	protected $_sortableFieldsTitles = array(
-		'id' => 'id',
+		'id' => array('p.id _DIR_', 'id'),
 		'is_user_defined' => 'is_user_defined',
-		'uid' => 'uid',
+		'uid' => array('p.uid _DIR_', 'Пользователь'),
 		'name' => 'Имя профиля',
 		'project_id' => 'Проект',
 		'create_date' => 'create_date',
@@ -188,7 +191,12 @@ class TaskProfileCollection extends GenericObjectCollection{
 	public function getPaginated(){
 		
 		$sorter = new Sorter('id', 'DESC', $this->_sortableFieldsTitles);
-		$paginator = new Paginator('sql', array('*', 'FROM '.TaskProfile::TABLE.' ORDER BY '.$sorter->getOrderBy()), 50);
+		$paginator = new Paginator('sql',
+			array("p.*, proj.name_key AS project_name, CONCAT(u.surname,' ',u.name) as user_name",
+			'FROM '.TaskProfile::TABLE.' p
+			LEFT JOIN '.Project::TABLE.' proj ON proj.id=p.project_id
+			LEFT JOIN '.User::TABLE.' u ON u.id=p.uid
+			ORDER BY '.$sorter->getOrderBy()), 50);
 		
 		$data = db::get()->getAll($paginator->getSql(), array());
 		

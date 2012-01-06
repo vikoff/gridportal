@@ -199,6 +199,12 @@ class Controller{
 	// ВЫПОЛНЕНИЕ AJAX
 	public function performAjax($method, $params){
 		
+		// если метод не указан, то выполняется метод по умолчанию
+		if(!$method){
+			$this->_ajaxDefault($params);
+			return;
+		}
+		
 		$method = App::getAjaxMethodName($method);
 		
 		if($this->checkMethod($method, $params)){
@@ -269,6 +275,23 @@ class Controller{
 			}else{
 				$this->performDisplay($defaultMethodIdentifier, $params);
 			}
+		}else{
+			if($defaultMethodIdentifier === FALSE){
+				$this->error404handler(__CLASS__.'::default_method_for_'.($this->_adminMode ? 'backend' : 'frontend'), __LINE__);
+			}else{
+				trigger_error('Неверное значение _default'.($this->_adminMode ? 'Backend' : 'Frontend').'Display для контроллера '.get_class($this).'. Допускается идентификатор метода, или FALSE', E_USER_ERROR);
+			}
+		}
+		
+	}
+	
+	// ВЫПОЛНЕНИЕ МЕТОДА ПО УМОЛЧАНИЮ
+	protected function _ajaxDefault($params){
+		
+		$defaultMethodIdentifier = $this->_getDisplayDefaultIdentifier();
+		
+		if($defaultMethodIdentifier){
+			$this->performAjax($defaultMethodIdentifier, $params);
 		}else{
 			if($defaultMethodIdentifier === FALSE){
 				$this->error404handler(__CLASS__.'::default_method_for_'.($this->_adminMode ? 'backend' : 'frontend'), __LINE__);

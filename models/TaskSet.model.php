@@ -9,6 +9,7 @@ class TaskSet extends GenericObject{
 	
 	const FILETYPE_NORDUJOB = 'nordujob';
 	const FILETYPE_FDS = 'fds';
+	const FILETYPE_JDL = 'jdl';
 	
 	public $submits = array();
 	
@@ -33,6 +34,7 @@ class TaskSet extends GenericObject{
 		return new TaskSet($id, self::INIT_EXISTS_FORCE, $fieldvalues);
 	}
 	
+	/** ПОЛУЧИТЬ ТИП ФАЙЛА */
 	public static function getFileType($fullname){
 		
 		$basename = basename($fullname);
@@ -43,10 +45,12 @@ class TaskSet extends GenericObject{
 		$ext = Tools::getExt($basename);
 		switch ($ext) {
 			// case 'fds': return self::FILETYPE_FDS;
+			case 'jdl': return self::FILETYPE_JDL;
 			default: null;
 		}
 	}
 	
+	/** ПОЛУЧИТЬ ЭКЗЕМПЛЯР КОНСТРУКТОРА ФАЙЛА В ЗАВИСИМОСТИ ОТ ТИПА ЭТОГО ФАЙЛА */
 	public static function getFileConstructor($type, $fullname){
 		
 		switch($type){
@@ -58,6 +62,11 @@ class TaskSet extends GenericObject{
 			case self::FILETYPE_FDS:
 				require_once(FS_ROOT.'models/fileConstructors/FdsFileConstructor.php');
 				return new FdsFileConstructor($fullname);
+				
+			case self::FILETYPE_JDL:
+				require_once(FS_ROOT.'models/fileConstructors/JdlFileConstructor.php');
+				return new JdlFileConstructor($fullname);
+			
 			
 			default: trigger_error('Неизвестный тип файла "'.$type.'"', E_USER_ERROR);
 		}

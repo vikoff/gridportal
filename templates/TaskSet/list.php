@@ -49,7 +49,7 @@
 <div class="refresh-indicator">
 	<span></span>
 	&nbsp;
-	<a href="<?= href('task-set'); ?>" onclick="refresh(0);return false"><img src="/images/refresh.png" alt="<?= Lng::get('TaskSet-view-update'); ?>" title="<?= Lng::get('TaskSet-view-update'); ?>" align="middle" /></a>
+	<a href="<?= href('task-set'); ?>" onclick="refresh('.refresh-indicator :first'); return false"><img src="/images/refresh.png" alt="<?= Lng::get('TaskSet-view-update'); ?>" title="<?= Lng::get('TaskSet-view-update'); ?>" align="middle" /></a>
 </div>
 
 <script type="text/javascript">

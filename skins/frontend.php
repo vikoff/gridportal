@@ -33,6 +33,7 @@
 		var LNG = {
 			taskSetUpdateStr1: '<?= Lng::get('task-set.update.str1'); ?>',
 			taskSetUpdateSec: '<?= Lng::get('task-set.update.sec'); ?>',
+			taskSetUpdateUpdating: '<?= Lng::get('task-set.update.updating'); ?>',
 		};
 	</script>
 	<script type="text/javascript" src="
@@ -82,12 +83,11 @@
     var reformalOptions = {
         project_id: 48381,
         project_host: "crimeaecogrid.reformal.ru",
-        force_new_window: true,
+        force_new_window: false,
         tab_alignment: "left",
         tab_top: "300",
         tab_bg_color: "#8ceb9d",
         tab_image_url: "http://tab.reformal.ru/0J7RgdGC0LDQstC40YLRjCDQvtGC0LfRi9Cy/FFFFFF/f5dab822e975a4eb45fcae69ce487412"
-//		tab_image_url: "http://tab.reformal.ru/0JLQsNGI0Lgg0L7RgtC30YvQstGLINC4INC%252F0YDQtdC00LvQvtC20LXQvdC40Y8=/FFFFFF/c931f419d308ca654c15aa9f4d2fa692"
     };
     
     (function() {

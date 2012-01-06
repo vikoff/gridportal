@@ -35,24 +35,34 @@ var gAutoUpdateTimerID;
 var gAutoUpdateRemains;
 
 function autoUpdate(interval, indicator){
+	
+	var textBox = indicator ? $(indicator) : $('<span />');
+	
 	gAutoUpdateRemains = interval ? interval * 1000 : 30000;
+	if (gAutoUpdateTimerID) clearInterval(gAutoUpdateTimerID);
 	gAutoUpdateTimerID = setInterval(function(){
 		gAutoUpdateRemains -= 1000;
-		if (indicator)
-			$(indicator).html(LNG.taskSetUpdateStr1 + " <b>" + (gAutoUpdateRemains / 1000) + "</b> " + LNG.taskSetUpdateSec);
+		
 		if (!gAutoUpdateRemains){
+			textBox.html(LNG.taskSetUpdateUpdating);
 			clearInterval(gAutoUpdateTimerID);
 			$.get(location.href, function(response){
 				$('#main').html(response);
+				textBox.html(LNG.taskSetUpdateStr1 + " <b>" + (gAutoUpdateRemains / 1000) + "</b> " + LNG.taskSetUpdateSec);
 			});
+		} else {
+			textBox.html(LNG.taskSetUpdateStr1 + " <b>" + (gAutoUpdateRemains / 1000) + "</b> " + LNG.taskSetUpdateSec);
 		}
 	}, 1000);
 }
 
-function refresh(){
+function refresh(indicator){
+	var textBox = indicator ? $(indicator) : $('<span />');
 	if (gAutoUpdateTimerID) clearInterval(gAutoUpdateTimerID);
+	textBox.html(LNG.taskSetUpdateUpdating);
 	$.get(location.href, function(response){
 		$('#main').html(response);
+		textBox.html(LNG.taskSetUpdateStr1 + " <b>" + (gAutoUpdateRemains / 1000) + "</b> " + LNG.taskSetUpdateSec);
 	});
 }
 

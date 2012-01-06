@@ -8,7 +8,6 @@ class TaskSetController extends Controller{
 	// методы, отображаемые по умолчанию
 	protected $_defaultFrontendDisplay = 'list';
 	protected $_defaultBackendDisplay = 'list';
-	protected $_defaultAjaxDisplay = 'list';
 	
 	// права на выполнение методов контроллера
 	public $permissions = array(
@@ -38,7 +37,7 @@ class TaskSetController extends Controller{
 		'ajax_get_task_files'	=> PERMS_REG,
 		'ajax_delete_task_file'	=> PERMS_REG,
 		'ajax_get_statuses'	=> PERMS_REG,
-		'ajax_'/*list'*/	=> PERMS_REG, /* ужасный костыль, pt #1 */
+		'ajax_list'	=> PERMS_REG, /* ужасный костыль, pt #1 */
 		'ajax_view'	=> PERMS_REG,
 		'ajax_statistics'	=> PERMS_REG,
 	);
@@ -145,11 +144,13 @@ class TaskSetController extends Controller{
 	/** DISPLAY STATISTICS */
 	public function display_statistics($params = array()){
 		
+		// статистика конкретного сета
 		if ($curSet = getVar($params[0], 0, 'int')) {
 			$this->_display_set_statistics($curSet);
 			exit;
 		}
 		
+		// статистика по всем сетам
 		$collection = new TaskSetCollection();
 		$variables = array(
 			'collection' => $collection->getPaginated(array('withUsers' => TRUE)),
@@ -263,30 +264,25 @@ class TaskSetController extends Controller{
 			die ('Файл не найден #0');
 			
 		$id = getVar($params[0], 0, 'int');
-		try {
-			$instance = TaskSet::load($id);
-			if ($instance->getField('uid') != USER_AUTH_ID)
-				throw new Exception('Задача не принадлежит вам!');
-			
-			$fullname = $instance->getValidFileName($fname);
-			if (empty($fullname))
-				throw new Exception('Файл не найден #1');
-			
-			$fileType = TaskSet::getFileType($fullname);
-			if (empty($fileType))
-				throw new Exception('Неизвестный тип файла');
-			
-			$vars = array(
-				'instanceId' => $id,
-				'fname' => $fname,
-				'formData' => TaskSet::getFileConstructor($fileType, $fullname)->getConstructorFormData()
-			);
-			
-			include(FS_ROOT.'templates/'.self::TPL_PATH.'file_constructor.php');
-		}
-		catch(Exception $e){
-			echo 'Ошибка! '.$e->getMessage();
-		}
+		$instance = TaskSet::load($id);
+		if ($instance->getField('uid') != USER_AUTH_ID)
+			throw new Exception('Задача не принадлежит вам!');
+		
+		$fullname = $instance->getValidFileName($fname);
+		if (empty($fullname))
+			throw new Exception('Файл не найден #1');
+		
+		$fileType = TaskSet::getFileType($fullname);
+		if (empty($fileType))
+			throw new Exception('Неизвестный тип файла');
+		
+		$vars = array(
+			'instanceId' => $id,
+			'fname' => $fname,
+			'formData' => TaskSet::getFileConstructor($fileType, $fullname)->getConstructorFormData()
+		);
+		
+		include(FS_ROOT.'templates/'.self::TPL_PATH.'file_constructor.php');
 		
 	}
 	
@@ -643,7 +639,7 @@ class TaskSetController extends Controller{
 	}
 	
 	/** DISPLAY LIST */
-	public function ajax_/*list*/($params = array()){ /* ужасный костыль, pt #2 */
+	public function ajax_list($params = array()){ /* ужасный костыль, pt #2 */
 		
 		$collection = new TaskSetCollection(array('uid' => USER_AUTH_ID));
 		$variables = array(

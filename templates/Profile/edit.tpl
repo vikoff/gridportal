@@ -184,6 +184,7 @@
 					<input id="cert-manual-logon-inp" type="checkbox" name="manual-login" value="1" {if $myproxy_manual_login}checked="checked"{/if} />
 					{lng snippet='profile.myproxy.not-register'}
 				</label>
+				{php} echo Page::getHelpIcon('profile.projects') {/php}
 			</p>
 			<table id="cert-auto-login-box" align="center" style="margin: 1em auto; {if $myproxy_manual_login}display: none;{/if}">
 				<col align="left" />
