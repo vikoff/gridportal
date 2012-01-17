@@ -50,12 +50,13 @@ class Request{
 		$this->_params = $_rArr;					// array
 		
 		// если язык не валиден, перегрузим страницу
-		if(!in_array($this->_language, Lng::$allowedLngs)){
+		if (!IS_CLI && !in_array($this->_language, Lng::$allowedLngs)){
 			App::redirectHref('');
 		}
 		
 		// установить текущий язык
-		Lng::setCurLanguage($this->_language);
+		if (!IS_CLI)
+			Lng::setCurLanguage($this->_language);
 	}
 	
 	// СПЕЦИАЛЬНОЕ ПРЕОБРАЗОВАНИЕ URL

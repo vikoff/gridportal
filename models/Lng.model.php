@@ -35,7 +35,8 @@ class Lng {
 	/** ЗАДАТЬ ТЕКУЩИЙ ЯЗЫК ДО ИНИЦИАЛИЗАЦИИ КЛАССА */
 	public static function setCurLanguage($lng){
 		
-		self::$_assignedCurLng = $lng;
+		if ($lng && in_array($lng, self::$allowedLngs))
+			self::$_assignedCurLng = $lng;
 	}
 	
 	public static function getLngTitle($lng){

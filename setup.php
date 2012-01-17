@@ -5,6 +5,9 @@ if(!defined('FS_ROOT'))
 	
 $GLOBALS['__vikOffTimerStart__'] = microtime(1);
 
+if (!defined('IS_CLI'))
+	define('IS_CLI', PHP_SAPI === 'cli');
+
 
 ########## ПОДКЛЮЧЕНИЕ ЯДРА ##########
 

@@ -5,7 +5,7 @@
 ?>
 <html>
 <head>
-	<title>мега-редактор</title>
+	<title><?= Lng::get('tast-set-edit-file.mega-workflow-editor'); ?></title>
 	<base href="<?= WWW_ROOT; ?>" />
 	<link rel="stylesheet" href="css/common.css" type="text/css" />
 	<link rel="stylesheet" href="css/frontend.css" type="text/css" />
@@ -44,10 +44,10 @@
 		<td>
 			
 			<div style="display: inline-block; position: relative;">
-				<div class="message-saved">Сохранено</div>
+				<div class="message-saved"><?= Lng::get('saved'); ?></div>
 			</div>
-			<input type="submit" class="button" value="Сохранить" />
-			<a href="#" class="button" onclick="if(confirm('Выйти?')){window.parent.$.modal.close();} return false;">Закрыть</a>
+			<input type="submit" class="button" value="<?= Lng::get('saved'); ?>" />
+			<a href="#" class="button" onclick="if(confirm('Выйти?')){window.parent.$.modal.close();} return false;"><?= Lng::get('close'); ?></a>
 		</td>
 	</tr>
 	</table>

@@ -141,10 +141,6 @@ class User extends GenericObject{
 	
 	public function postValidation(&$data){
 		
-		/*if($this->isNewObj && self::isEmailInUse($data['email'])){
-			$this->setError('Данные email-адрес уже используется, возможно Вам следует воспользатся функцией <a href="'.App::href('profile/forget-password').'">восстановления учетной записи</a>');
-			return FALSE;
-		}*/
 		$data['profile'] = serialize(array(
 			'email' => getVar($data['email']),
 		));
@@ -259,6 +255,7 @@ class User extends GenericObject{
 		$db->delete('user_allowed_projects', 'uid='.$this->id);
 		if(!empty($data['projects']) && is_array($data['projects'])){
 			foreach($data['projects'] as $p){
+				if (isset($_POST['voms_projects']) && empty($_POST['voms_projects'][$p])) continue;
 				$pid = (int)$p;
 				if($pid)
 					$db->insert('user_allowed_projects', array('uid' => $this->id, 'project_id' => $pid));
@@ -309,7 +306,17 @@ class User extends GenericObject{
 		
 		// цикл по всем VO
 		foreach($voms as $v){
-		
+			
+			if ($v['id'] == 1){ // если тестовая ВО (id=1) не проверяем
+				$numAcceptedVOMS++;
+				
+				// если раньше не состоял - сохраним
+				if(!isset($oldAcceptedVOMS[$v['id']]))
+					$db->insert('user_accepted_voms', array('uid' => $this->id, 'voms_id' => $v['id']));
+				
+				continue;
+			}
+			
 			$auth = new CertAuth();
 			$auth->addAuthServer($v['url']); // 'grid.org.ua/voms/crimeaeco'
 			

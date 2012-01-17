@@ -8,6 +8,7 @@ define('CUR_PATH', dirname(__FILE__).'/');
 
 // обозначение корня ресурса
 define('FS_ROOT', dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR);
+define('IS_CLI', TRUE);
 
 // отправка Content-type заголовка
 header('Content-Type: text/html; charset=utf-8');
@@ -39,7 +40,12 @@ logMsg("prefered server: ".$preferedServer, 'submitter');
 $connector = null;
 foreach ($taskIds as $id) {
 	
-	$submitInstance = TaskSubmit::load($id);
+	try {
+		$submitInstance = TaskSubmit::load($id);
+	} catch (Exception $e) {
+		logMsg('submit '.$id.' not found', 'submitter');
+		continue;
+	}
 	
 	// загрузка данных myproxy
 	if (empty($connector)) {

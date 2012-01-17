@@ -154,7 +154,8 @@ CREATE TABLE `projects` (
   `id`				INT(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   `name_key`		VARCHAR(50),
   `text_key`		VARCHAR(50),
-  `priority`		INT(10)
+  `priority`		INT(10),
+  `inactive`		SMALLINT
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* ПРОГРАМНОЕ ОБЕСПЕЧЕНИЕ */
@@ -239,6 +240,7 @@ CREATE TABLE `task_submits` (
   `is_submitted`	SMALLINT,  /* 0 - не отправлена; 1 - отправлена в grid; 2 - отправлена и присвоен статус */
   `is_completed`	SMALLINT, /* 0 - в процессе; 1 - успешно завершена; 2 - завершена с ошибкой; 3 - удалена */
   `is_fetched`		BOOLEAN,  /* получена ли задача из grid */
+  `email_notify`	SMALLINT DEFAULT 0,
   `create_date`		INT(10) UNSIGNED, /* дата создания */
   `start_date`		INT(10) UNSIGNED, /* дата запуска */
   `finish_date`		INT(10) UNSIGNED /* дата завершения */
@@ -258,6 +260,17 @@ CREATE TABLE `task_states` (
   `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   `name`			VARCHAR(255)
   `title`			VARCHAR(255)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE `mail` (
+  `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `uid`				int(10) UNSIGNED,
+  `email`			VARCHAR(255),
+  `lng`				VARCHAR(10),
+  `title`			TEXT,
+  `text`			TEXT,
+  `add_date`		int(10) UNSIGNED,
+  `send_date`		int(10) UNSIGNED
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 

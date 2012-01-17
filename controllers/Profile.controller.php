@@ -115,7 +115,8 @@ class ProfileController extends Controller{
 		// echo '<pre>'; print_r($user->getDefaultVoms()) ;die;
 		FrontendViewer::get()
 			->setTitle('Редактирование личных данных')
-			->setContentSmarty(self::TPL_PATH.'edit.tpl', $variables)
+			//->setContentSmarty(self::TPL_PATH.'edit.tpl', $variables)
+			->setContentPhpFile(self::TPL_PATH.'edit.php', $variables)
 			->render();
 	}
 	
@@ -225,9 +226,22 @@ class ProfileController extends Controller{
 	public function action_save_default_voms($params = array()){
 		
 		$user = CurUser::get();
-		$num = $user->setDefaultVoms(getVar($_POST['projects'], array(), 'array'));
+		//$num = $user->setDefaultVoms(getVar($_POST['voms_projects'], array(), 'array'));
 		
-		Messenger::get()->ns('set-default-voms')->addSuccess('Виртуальные организации выбраны.');
+		//Messenger::get()->ns('set-default-voms')->addSuccess('Виртуальные организации выбраны.');
+		
+		if($user->saveProfile($_POST)){
+			Messenger::get()->ns('profile-edit')->addSuccess('Личные данные сохранены');
+			
+			$num = $user->setDefaultVoms(getVar($_POST['voms_projects'], array(), 'array'));
+			Messenger::get()->ns('set-default-voms')->addSuccess('Виртуальные организации выбраны.');
+			
+			return TRUE;
+		}else{
+			Messenger::get()->ns('profile-edit')->addError('Не удалось сохранить данные:<div style="margin-left: 10px; font-size: 13px;">'.$user->getError().'</div>');
+			return FALSE;
+		}
+		
 		return TRUE;
 	}
 	

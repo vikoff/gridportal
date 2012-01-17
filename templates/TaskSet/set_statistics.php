@@ -1,5 +1,6 @@
 
-<!--div><a href="<?= href('task-set/statistics'); ?> ">Вернуться к списку</a></div-->
+<!--div><a href="<?= href('task-set/statistics'); ?> "><?= Lng::get('upload_files.returne-to-list'); ?></a></div-->
+
 <h2 style="vertical-align:bottom;">
 	<img src="/images/icons/task_statistics.gif" alt="<?= Lng::get('task-view.task_statistics') ?>" title="<?= Lng::get('task-view.task_statistics') ?>" align="center" width=32 height=32 onmouseover="this.src='/images/icons/task_statistics.a.gif'" onmouseout="this.src='/images/icons/task_statistics.gif'" />
 	<?= Lng::get('task-view.task_statistics') ?> <?= $this->name; ?>
@@ -7,30 +8,30 @@
 
 <table class="table-tiny">
 <tr>
-	<td>Проект</td>
+	<td><?= Lng::get('edit.project'); ?></td>
 	<td><?= $this->project_name; ?></td>
 </tr>
 <tr>
-	<td>Имя задачи</td>
+	<td><?= Lng::get('tasklist.name'); ?></td>
 	<td><?= $this->name; ?></td>
 </tr>
 <tr>
-	<td>Профиль</td>
+	<td><?= Lng::get('taskset.list.profile'); ?></td>
 	<td><?= $this->profile_name; ?></td>
 </tr>
 <tr>
-	<td>Количество запусков</td>
+	<td><?= Lng::get('taskset.list.num-submits'); ?></td>
 	<td><?= $this->num_submits; ?></td>
 </tr>
 <tr>
-	<td>Дата создания</td>
+	<td><?= Lng::get('taskset.list.create-date'); ?></td>
 	<td><?= $this->create_date_str; ?></td>
 </tr>
 </table>
 
 
 <div style="margin: 2em 0 1em; text-align: center;">
-	<a href="<?= href('task-set/list'); ?>" class="button">Вернуться к списку</a>
+	<a href="<?= href('task-set/list'); ?>" class="button"><?= Lng::get('upload_files.returne-to-list'); ?></a>
 </div>
 
 <? if ($this->submits): ?>
@@ -49,7 +50,7 @@
 	</tr>
 	<? foreach($this->submits as $i => $s): ?>
 		<tr class="<?= $i % 2 ? 'odd' : 'even' ?>">
-			<td class="l"><?= $s['fullname']; ?></td>
+			<td class="l"><?= wordwrap($s['fullname'], 45, ' ', 1); ?></td>
 			<td class="l"><?= $s['jobid']; ?></td>
 			<td class="task<?= $s['id'] ?>-status task-state-<?= (int)$s['status'] ?>"><?= Lng::get($s['status_str']); ?></td>
 			<td><?= $s['start_date_str']; ?></td>
@@ -63,11 +64,11 @@
 	<?= $this->submitPagination; ?>
 	
 	<div style="margin: 1em 0; text-align: center;">
-		<a href="<?= href('task-set/list'); ?>" class="button">Вернуться к списку</a>
+		<a href="<?= href('task-set/list'); ?>" class="button"><?= Lng::get('upload_files.returne-to-list'); ?></a>
 	</div>
 
 <? else: ?>
-	<p>Нет запущенных задач</p>
+	<p><?= Lng::get('tast-set-view.no-running-tasks'); ?></p>
 <? endif; ?>
 
 <div class="refresh-indicator">

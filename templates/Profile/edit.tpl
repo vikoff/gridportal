@@ -63,17 +63,6 @@
 					</td>
 				</tr>
 				<tr>
-					<td class="left">{lng snippet='profile.projects'}</td>
-					<td>
-						{foreach from=$projectList item='p'}
-							<label >
-								<input type="checkbox" name="projects[]" value="{$p.id}" {if $userProjects[$p.id]}checked="checked"{/if} />
-								{$p.name}
-							</label><br />
-						{/foreach}
-					</td>
-				</tr>
-				<tr>
 					<td class="left">{lng snippet='profile.task-type'}<br />{lng snippet='profile.software'}</td>
 					<td>
 						{foreach from=$softwareList item='s'}
@@ -119,7 +108,7 @@
 							{if $userVoms[$v.id]}
 								<span style="font-size: 11px; color: green;">{lng snippet='profile.you-member-vo'}</span>
 							{else}
-								<span style="font-size: 11px; color: red;">{lng snippet='profile.you-not-member-vo'}</span>
+								<span style="font-size: 11px;"><span style="color: red;">{lng snippet='profile.you-not-member-vo'}</span> - <a href="https://{$v.url}?vo={$v.name}&action=register" target="_blank">{lng snippet='profile.register-vo'}</a></span>
 							{/if}
 						</td>
 					</tr>
@@ -136,28 +125,25 @@
 			<input type="hidden" name="action" value="profile/save-default-voms" />
 			{$formcode}
 			{lng snippet='enter-defaul-vo'}
-			
-			<table class="std-grid narrow" style="margin: 1em auto; text-align: left;">
+			<div class="vo-list">
+				{foreach from=$projectList item='p'}ppppppppppp[{$p.id}]ppppppppppp{/foreach}
 				{foreach from=$userProjects item='proj'}
-				<tr>
-					<td>{$proj.name}</td>
-					<td>
-						{if $projectList[$proj.id].voms}
-							<select name="projects[{$proj.id}]">
-								<option value="">{lng snippet='enter-vo'}</option>
-								{foreach from=$projectList[$proj.id].voms item='vtitle' key='vid'}
-									{if $userVoms[$vid]}
-									<option value="{$vid}" {if $defaultVoms[$proj.id] == $vid}selected="selected"{/if}>{$vtitle}</option>
-									{/if}
-								{/foreach}
-							</select>
-						{else}
-							<i>{lng snippet='project-not-contains-vo'}</i>
-						{/if}
-					</td>
-				</tr>
+				<div class="vo-item {if $userProjects[$p.id]}vo-item-selected{/if} {if not $projectList[$proj.id].voms or count($projectList[$proj.id].voms) == 0}disabled{/if}">
+					<input type="checkbox" name="projects[]" value="{$p.id}" {if $userProjects[$p.id]}checked="checked"{/if} />
+					{$proj.name}
+					{if $projectList[$proj.id].voms}
+						<select name="projects[{$proj.id}]">
+							<option value="">{lng snippet='enter-vo'}</option>
+							{foreach from=$projectList[$proj.id].voms item='vtitle' key='vid'}
+								{if $userVoms[$vid]}
+								<option value="{$vid}" {if $defaultVoms[$proj.id] == $vid}selected="selected"{/if}>{$vtitle}</option>
+								{/if}
+							{/foreach}
+						</select>
+					{/if}
+				</div>
 				{/foreach}
-			</table>
+			</div>
 			<input type="submit" value="{lng snippet='save'}" />
 		</form>
 	</div>
@@ -184,7 +170,7 @@
 					<input id="cert-manual-logon-inp" type="checkbox" name="manual-login" value="1" {if $myproxy_manual_login}checked="checked"{/if} />
 					{lng snippet='profile.myproxy.not-register'}
 				</label>
-				{php} echo Page::getHelpIcon('profile.projects') {/php}
+				{php} echo Page::getHelpIcon('profile.projects-help') {/php}
 			</p>
 			<table id="cert-auto-login-box" align="center" style="margin: 1em auto; {if $myproxy_manual_login}display: none;{/if}">
 				<col align="left" />
@@ -205,13 +191,13 @@
 							{foreach from=$myproxyServersList item='item'}
 								<option {if $item.id == $myproxy_server_id}selected="selected"{/if} value="{$item.id}">{$item.name}</option>
 							{/foreach}
-							<option value="custom">ввести сервер вручную</option>
+							<option value="custom">{lng snippet='profile.myproxy.enter-monual-server'}</option>
 						</select>
 					</td>
 				</tr>
 				<tbody id="custom-server-block" style="display: none;">
-					<tr><td>хост сервера</td><td><input type="name" name="custom-server" value="" /></td></tr>
-					<tr><td>порт сервера</td><td><input type="name" name="custom-server-port" value="7512" /></td></tr>
+					<tr><td>{lng snippet='profile.myproxy.server-host'}</td><td><input type="name" name="custom-server" value="" /></td></tr>
+					<tr><td>{lng snippet='profile.myproxy.server-port'}</td><td><input type="name" name="custom-server-port" value="7512" /></td></tr>
 				</tbody>
 				<tr>
 					<td>{lng snippet='profile.myproxy.cert_ttl'}</td>
@@ -296,6 +282,18 @@ $(document).ready(function() {
 		$(".popup .body-container").center();
 		$("#wait-popup").show();
     });
+	
+	$(".vo-item").click(function(e){
+		if ($(e.target).is(".vo-item select, .vo-item select *")) return;
+		if ($(this).hasClass("vo-item-selected")){
+			$(this).removeClass("vo-item-selected");
+			$(this).contents('input[type=checkbox]').removeProp("checked");
+		}
+		else {
+			$(this).addClass("vo-item-selected");
+			$(this).contents('input[type=checkbox]').prop("checked", "checked");
+		}
+	});
 
 
 });

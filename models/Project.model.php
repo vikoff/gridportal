@@ -92,6 +92,7 @@ class Project extends GenericObject{
 			$this->_data['voms'] = $data['voms'];
 		
 		$data['priority'] = (int)getVar($data['priority']);
+		$data['inactive'] = (int)getVar($data['inactive']);
 	}
 	
 	/**
@@ -133,6 +134,7 @@ class Project extends GenericObject{
 		
 		$data = array(
 			'priority' => $data['priority'],
+			'inactive' => $data['inactive'] ? 1 : 0,
 		);
 		
 		// echo '<pre>'; print_r($data); die;

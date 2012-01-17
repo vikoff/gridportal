@@ -35,14 +35,14 @@
 		<td><?= $item['create_date_str']; ?></td>
 		
 		<td style="font-size: 11px;">
-			<a href="<?= href('task-set/statistics/'.$item['id']); ?>">просмотр</a>
+			<a href="<?= href('task-set/statistics/'.$item['id']); ?>"><?= Lng::get('TaskSet-list-view'); ?></a>
 		</td>
 	</tr>
 	<? endforeach; ?>	
 	</table>
 	
 <? else: ?>
-	<p>Сохраненных записей пока нет.</p>
+	<p><?= Lng::get('tast-set-view.no-running-tasks'); ?></p>
 <? endif; ?>
 
 <?= $this->pagination; ?>

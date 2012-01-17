@@ -8,6 +8,7 @@ define('CFG_SITE_NAME', 'Crimea Eco Grid-portal');
 
 // установить уровень сообщений об ошибках (максимальный)
 error_reporting(E_ALL | E_STRICT);
+ini_set('display_errors', 1);
 
 // установить текущий часовой пояс
 date_default_timezone_set('Europe/Kiev');
@@ -76,5 +77,8 @@ define('CHECK_FORM_DUPLICATION', 0);
 
 // производить ли редирект на дефолтные display методы
 define('CFG_REDIRECT_DEFAULT_DISPLAY', 0);
+
+// производить ли редирект на дефолтные display методы
+define('SERVICE_CERTIFICATE', "/var/www/portal/includes/AuthCert/.hostcert.pem");
 
 ?>

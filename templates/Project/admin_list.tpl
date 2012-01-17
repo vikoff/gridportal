@@ -16,7 +16,7 @@
 	{foreach from=$collection item='item'}
 	<tr>
 		<td>{$item.id}</td>
-		<td>{lng snippet=$item.name_key}</td>
+		<td>{lng snippet=$item.name_key} {if $item.inactive}<span class="red small">(неактивный)</span>{/if}</td>
 		<td>{$item.priority}</td>
 		<td class="center">
 			<div class="tr-hover-visible options">

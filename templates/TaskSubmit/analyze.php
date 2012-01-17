@@ -5,23 +5,23 @@
 <? if(count($this->fetchedTasks)): ?>
 	<div class="c">
 		<form action="<?= href('task-submit/analyze'); ?>" method="get" style="margin: 1em 0;">
-			Задача
+			<?= Lng::get('task.analyze-task') ?>
 			<select name="submit">
-				<option value="">Выберите задачу...</option>
+				<option value=""><?= Lng::get('task.analyze-select-the-task') ?></option>
 			<? foreach($this->fetchedTasks as $t): ?>
 				<option value="<?= $t['id']; ?>" <? if($t['id'] == $this->curSubmitId): ?>selected="selected"<? endif; ?>><?= $t['fullname']; ?></option>
 			<? endforeach; ?>
 			</select>
-			<input type="submit" value="Показать" />
+			<input type="submit" value="<?= Lng::get('task.analyze-display') ?>" />
 		</form>
 
 	<? if($this->curSubmitId): ?>
 	
 		<? if(empty($this->fileTree['dirs']) && empty($this->fileTree['files'])): ?>
-			В этой задаче файлы отсутствуют.
+			<?= Lng::get('task.analyze-in-task-files-are-missing') ?>
 		<? else: ?>
 
-			<h2>Файлы задач</h2>
+			<h2><?= Lng::get('task.analyze-files-task') ?></h2>
 			
 			<div class="task-file-manager">
 				
@@ -37,7 +37,7 @@
 						<tr>
 							<td>DIR</td>
 							<td><a href="<?= href('task-submit/analyze?submit='.$this->curSubmitId.'&path='.$this->fileTree['relpath'].$elm); ?>"><?= $elm; ?></a></td>
-							<td><a href="<?= href('task-submit/download-dir/'.$this->curSubmitId.'/archive?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small">скачать в архиве</a></td>
+							<td><a href="<?= href('task-submit/download-dir/'.$this->curSubmitId.'/archive?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small"><?= Lng::get('task.analyze-download-in-archive') ?></a></td>
 						</tr>
 					<? endforeach; ?>
 
@@ -45,7 +45,7 @@
 						<tr>
 							<td>FILE</td>
 							<td><?= $elm; ?></td>
-							<td><a target="_blank" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small">скачать</a></td>
+							<td><a target="_blank" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small"><?= Lng::get('task.analyze-download') ?></a></td>
 						</tr>
 					<? endforeach; ?>
 				</table>
@@ -55,7 +55,7 @@
 
 	<? else: ?>
 	
-		Выберите задачу для просмотра.
+		<?= Lng::get('task.analyze-select-a-task-to-view') ?>
 		
 	<? endif; ?>
 	
@@ -63,7 +63,7 @@
 	
 <? else: ?>
 	
-	У вас нет задач для просмотра.
+	<?= Lng::get('task.analyze-you-no-have-task-for-view') ?>
 	
 <? endif; ?>
 

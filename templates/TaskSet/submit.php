@@ -36,11 +36,14 @@ $(document).ready(function() {
 	
 	<?= $this->myproxyLoginForm; ?>
 	
-	<table style="margin: 1em auto;">
+	<table style="margin: 1em auto; text-align: left;">
 	<tr>
-		<td>Предпочитаемый сервер<br />(оставить пустым, если не надо)</td>
+		<td><?= Lng::get('xrls_edit.preferred-server') ?><br /><?= Lng::get('xrls_edit.take-empty-if-not-requred') ?></td>
 		<td><input type="text" name="prefer-server" value="" /></td>
 	</tr>
+	<tr>
+		<td>Оповещать по email</td>
+		<td><input type="checkbox" name="email-notify" value="1" /></td>
 	</table>
 	
 	<div class="paragraph">

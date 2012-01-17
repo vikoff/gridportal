@@ -43,6 +43,13 @@
 	</div>
 	
 	<div class="paragraph">
+		<label class="title">
+			<input type="checkbox" name="inactive" value="1" <?= $this->inactive ? 'checked="checked"' : ''; ?> />
+			Неактивный проект
+		</label>
+	</div>
+	
+	<div class="paragraph">
 		<fieldset title="Виртуальные организации">
 			<legend style="font-weight: bold;">Виртуальные организации</legend>
 			<? foreach ($this->vomsList as $v): ?>

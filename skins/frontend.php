@@ -36,12 +36,12 @@
 			taskSetUpdateUpdating: '<?= Lng::get('task-set.update.updating'); ?>',
 		};
 	</script>
+	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery.address-1.4.min.js"></script>
 	<script type="text/javascript" src="
-		js/jquery-1.6.2.min.js,
 		js/jquery-ui-1.8.16.custom.min.js,
 		js/jquery.ctrlentersend.min.js,
 		js/jquery.browser.min.js,
-		js/jquery.address-1.4.min.js,
 		js/common.js,
 		js/frontend.js,
 		js/jquery.simplemodal.js"></script>
@@ -79,11 +79,12 @@
 			
 		</div>
 	</div>
+
 <script type="text/javascript">
     var reformalOptions = {
         project_id: 48381,
         project_host: "crimeaecogrid.reformal.ru",
-        force_new_window: false,
+        force_new_window: true,
         tab_alignment: "left",
         tab_top: "300",
         tab_bg_color: "#8ceb9d",
@@ -91,12 +92,13 @@
     };
     
     (function() {
-        //if ('https:' == document.location.protocol) return;
+//        if ('https:' == document.location.protocol) return;
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = 'http://media.reformal.ru/widgets/v1/reformal.js';
         document.getElementsByTagName('head')[0].appendChild(script);
     })();
 </script>
+
 </body>
 </html>

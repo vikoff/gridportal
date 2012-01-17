@@ -326,7 +326,7 @@ class TaskSet extends GenericObject{
 		}
 	}
 	
-	public function submit(MyproxyConnector $connector, $preferServer = ''){
+	public function submit(MyproxyConnector $connector, $preferServer = '', $emailNotify = FALSE){
 		
 		$basedir = $this->getFilesDir().'src/';
 		$multipliers = array();
@@ -347,7 +347,7 @@ class TaskSet extends GenericObject{
 			$submitter->addMultiplier($mult['file'], $mult['row'], $mult['values'], $mult['valuesStr']);
 		
 		// создание первого экземпляра субмита
-		$this->firstSubmit = $this->_createSubmitInstance( $submitter->getNextCombination() );
+		$this->firstSubmit = $this->_createSubmitInstance( $submitter->getNextCombination(), $emailNotify );
 		$this->submits[] = $this->firstSubmit;
 		
 		// запуск первого субмита
@@ -359,7 +359,7 @@ class TaskSet extends GenericObject{
 			
 			// создание остальных субмитов
 			while ($combination = $submitter->getNextCombination()) {
-				$submit = $this->_createSubmitInstance($combination);
+				$submit = $this->_createSubmitInstance($combination, $emailNotify);
 				$db->insert(self::TABLE_QUEUE, array(
 					'trigger_task_id'   => $this->firstSubmit->id,
 					'dependent_task_id' => $submit->id,
@@ -381,7 +381,7 @@ class TaskSet extends GenericObject{
 		}
 	}
 	
-	private function _createSubmitInstance($combination){
+	private function _createSubmitInstance($combination, $emailNotify = FALSE){
 		
 		// echo '<pre>'; print_r($combination); die;
 		
@@ -394,6 +394,7 @@ class TaskSet extends GenericObject{
 			'is_submitted' => 0,
 			'is_completed' => FALSE,
 			'is_fetched' => FALSE,
+			'email_notify' => $emailNotify ? 1 : 0,
 		));
 		
 		// копирование файлов
@@ -456,7 +457,7 @@ class TaskSetCollection extends GenericObjectCollection{
 		
 		return array(
 			'id'          => array('s.id _DIR_', 'id'),
-			'uid'         => array('s.uid _DIR_', 'Пользователь'),
+			'uid'         => array('s.uid _DIR_', Lng::get('user')),
 			'project_id'  => array('s.project_id _DIR_', Lng::get('taskset.list.project')),
 			'profile_id'  => array('s.profile_id _DIR_', Lng::get('taskset.list.profile')),
 			'name'        => array('s.name _DIR_', Lng::get('taskset.list.name')),

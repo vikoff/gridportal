@@ -22,14 +22,12 @@
 
 <div class="paragraph c">
 
-	<a href="<?= href('task-set/submit/'.$this->instanceId); ?>" class="button">Перейти к запуску</a>
-	<a href="<?= href('task-set/view/'.$this->instanceId) ?>" class="button">Вернуться к задаче</a>
-	<a href="<?= href('task-set/list') ?>" class="button">Вернуться к списку</a>
+	<a href="<?= href('task-set/submit/'.$this->instanceId); ?>" class="button"><?= Lng::get('upload_files.go-to-start'); ?></a>
+	<a href="<?= href('task-set/view/'.$this->instanceId) ?>" class="button"><?= Lng::get('upload_files.returne-to-task'); ?></a>
+	<a href="<?= href('task-set/list') ?>" class="button"><?= Lng::get('upload_files.returne-to-list'); ?></a>
 </div>
 
 <script type="text/javascript">
-$(function() {
-	
 	var FileManager = {
 		
 		editUrl: 'task-set/edit-file/<?= $this->instanceId; ?>',
@@ -47,6 +45,11 @@ $(function() {
 			
 			$.get(this.getUrl, function(response){
 				
+				if (!response) {
+					trace('Ошибка получения данных');
+					return;
+				}
+				
 				if(response.error){
 					self.htmlContainer.empty().html('<div style="color: red;">' + response.error + '</div>');
 					return;
@@ -58,11 +61,11 @@ $(function() {
 				
 					type = '';
 					if(response.data[i].name == 'nordujob'){
-						type = 'nordujob файл';
+						type = '<?= Lng::get('task-set.nordujob-file'); ?>';
 						self.hasNordujob = true;
 					}
 					else if(/\.fds$/.test(response.data[i].name))
-						type = 'файл модели';
+						type = '<?= Lng::get('task-set.model-file'); ?>';
 					
 					editLink = (function(file){
 						var url = href(self.editUrl + '?file=' + encodeURIComponent(file));
@@ -95,9 +98,9 @@ $(function() {
 				self.htmlContainer.empty().append(tbl);
 				
 				if(self.hasNordujob){
-					self.htmlComment.html('<span class="small green">Файл nordujob загружен</span>');
+					self.htmlComment.html('<span class="small green"><?= Lng::get('task-set.nordujob-file-loaded'); ?></span>');
 				}else{
-					self.htmlComment.html('<span class="small red">Файл nordujob не загружен</span>');
+					self.htmlComment.html('<span class="small red"><?= Lng::get('task-set.nordujob-file-not-loaded'); ?></span>');
 				}
 					
 			}, 'json');
@@ -111,7 +114,7 @@ $(function() {
 		
 		removeFile: function(name){
 			
-			if(!confirm('Удалить файл "' + name + '"?'))
+			if(!confirm('<?= Lng::get('task-set.delete-file'); ?> "' + name + '"?'))
 				return;
 			
 			var self = this;
@@ -131,6 +134,8 @@ $(function() {
 			$.modal($('<div />').append(iframe));
 		},
 	};
+$(function() {
+	
 	
 	FileManager.getFiles();
 	

@@ -28,9 +28,10 @@ body {
 }
 
 #logo {
-	width: 600px;
+	width: 768px;
 	height: 205px;
-	background: url(/images/logo8.jpg) top left no-repeat;
+	background: url(/images/logo8.png) top left no-repeat;
+	background-position: 2px 0;
 }
 
 #rightHeader {
@@ -392,6 +393,7 @@ table.std-grid.narrow{
 	border: solid 1px #AAA;
 	padding: 5px 10px;
 	text-align: center;
+	vertical-align: top;
 }
 
 .flag {
@@ -461,3 +463,26 @@ table.std-grid.narrow{
 .table-tiny th a {
 	color: #000;
 }
+
+.vo-list {
+	margin: 10px auto;
+}
+
+.vo-item {
+	margin: 4px auto;
+	padding: 0;
+	width: 400px;
+	height: 22px;
+	text-align: left;
+	cursor: pointer;
+}
+
+.vo-item select {
+	display: none;
+	float: right;
+}
+
+.vo-item-selected select {
+	display: inline-block;
+}
+

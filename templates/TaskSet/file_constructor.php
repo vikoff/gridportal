@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>мега-мастер</title>
+	<title><?= Lng::get('tast-set-edit-file.mega-workflow-editor'); ?></title>
 	<base href="<?= WWW_ROOT; ?>" />
 	<link rel="stylesheet" href="css/common.css" type="text/css" />
 	<link rel="stylesheet" href="css/frontend.css" type="text/css" />
@@ -77,7 +77,7 @@ var Multiplier = {
 			.append('<td>Вариант ' + (index + 1) + ':</td>')
 			.append(valTd)
 			.append($('<td style="text-align: right;" />')
-				.append('<a href="#" id="m-interval-'+id+'-'+index+'" onclick="Multiplier.interval('+id+', '+index+'); return false;" title="задать интервал значений">интервал</a>')
+				.append('<a href="#" id="m-interval-'+id+'-'+index+'" onclick="Multiplier.interval('+id+', '+index+'); return false;" title="задать интервал значений"><?= Lng::get('tast-set-file-constructor-interval'); ?></a>')
 				.append('<a href="#" id="m-rminterval-'+id+'-'+index+'" onclick="Multiplier.removeInterval('+id+', '+index+'); return false;" title="убрать интервал, задать одиночное значение" style="display: none;"><strike>интервал</strike></a>'))
 			.append($('<td style="text-align: right;" />')
 				.append(index == 0 ? '<span />' : '<input type="button" onclick="Multiplier.remove('+id+', '+index+')" value="-" title="Убрать значение" />'))
@@ -183,14 +183,14 @@ $(function(){
 						</td>
 						<td style="vertical-align: bottom;">
 							<? if ($row['allow_multiple']): ?>
-								<input onclick="Multiplier.add(<?= $row['row']; ?>, '');" type="button" value="+" title="Добавить еще одно значение" />
+								<input onclick="Multiplier.add(<?= $row['row']; ?>, '');" type="button" value="+" title="<?= Lng::get('tast-set-file-constructor-no-add-new-value'); ?>" />
 							<? endif; ?>
 						</td>
 					</tr>
 					<? endforeach; ?>
 				</table>
 			<? else: ?>
-				Нет данных для редактирования
+				<?= Lng::get('tast-set-file-constructor-no-data-to-edit'); ?>
 			<? endif; ?>
 			
 		</td>
@@ -200,8 +200,8 @@ $(function(){
 	</tr>
 	<tr style="height: 50px; border; solid 1px black; text-align: center;">
 		<td>
-			<input type="submit" class="button" value="Сохранить" />
-			<a href="#" class="button" onclick="if(confirm('Выйти?')){window.parent.$.modal.close();} return false;">Закрыть</a>
+			<input type="submit" class="button" value="<?= Lng::get('save'); ?>" />
+			<a href="#" class="button" onclick="if(confirm('Выйти?')){window.parent.$.modal.close();} return false;"><?= Lng::get('сlose'); ?></a>
 		</td>
 	</tr>
 	</table>

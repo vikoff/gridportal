@@ -6,6 +6,7 @@ ini_set('display_errors', 1);
 // обозначение корня ресурса
 define('CUR_PATH', dirname(__FILE__).'/');
 define('FS_ROOT', dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR);
+define('IS_CLI', TRUE);
 
 define('TASK_TABLE', 'task_submits');
 define('TASK_QUEUE_TABLE', 'task_submit_queue');

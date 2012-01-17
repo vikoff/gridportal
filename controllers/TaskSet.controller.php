@@ -528,8 +528,8 @@ class TaskSetController extends Controller{
 			Messenger::get()->addError(Lng::get('task.warnings'), $e->getMessage());
 			return FALSE;
 		}
-			
-		if($report = $instance->submit($connector, getVar($_POST['prefer-server']))){
+		
+		if($report = $instance->submit($connector, getVar($_POST['prefer-server']), !empty($_POST['email-notify']))){
 		
 			App::stopDisplay();
 			

@@ -1,5 +1,5 @@
 
-<h2><?= $this->pageTitle; ?></h2>
+<h2><?= Lng::get('edit.create-new'); ?></h2>
 
 <form id="edit-form" action="" method="post">
 	<?= FORMCODE ?>

@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2012-01-06 19:43:51
+<?php /* Smarty version 2.6.26, created on 2012-01-15 20:13:55
          compiled from Profile/edit.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Profile/edit.tpl', 10, false),)), $this); ?>
@@ -87,22 +87,6 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 					</td>
 				</tr>
 				<tr>
-					<td class="left"><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.projects'), $this);?>
-</td>
-					<td>
-						<?php $_from = (isset($this->_tpl_vars['projectList']) ? $this->_tpl_vars['projectList'] : ''); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }if (count($_from)):
-    foreach ($_from as $this->_tpl_vars['p']):
-?>
-							<label >
-								<input type="checkbox" name="projects[]" value="<?php echo (isset($this->_tpl_vars['p']['id']) ? $this->_tpl_vars['p']['id'] : ''); ?>
-" <?php if ((isset($this->_tpl_vars['userProjects'][(isset($this->_tpl_vars['p']['id']) ? $this->_tpl_vars['p']['id'] : '')]) ? $this->_tpl_vars['userProjects'][(isset($this->_tpl_vars['p']['id']) ? $this->_tpl_vars['p']['id'] : '')] : '')): ?>checked="checked"<?php endif; ?> />
-								<?php echo (isset($this->_tpl_vars['p']['name']) ? $this->_tpl_vars['p']['name'] : ''); ?>
-
-							</label><br />
-						<?php endforeach; endif; unset($_from); ?>
-					</td>
-				</tr>
-				<tr>
 					<td class="left"><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.task-type'), $this);?>
 <br /><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.software'), $this);?>
 </td>
@@ -169,8 +153,11 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 								<span style="font-size: 11px; color: green;"><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.you-member-vo'), $this);?>
 </span>
 							<?php else: ?>
-								<span style="font-size: 11px; color: red;"><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.you-not-member-vo'), $this);?>
-</span>
+								<span style="font-size: 11px;"><span style="color: red;"><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.you-not-member-vo'), $this);?>
+</span> - <a href="https://<?php echo (isset($this->_tpl_vars['v']['url']) ? $this->_tpl_vars['v']['url'] : ''); ?>
+?vo=<?php echo (isset($this->_tpl_vars['v']['name']) ? $this->_tpl_vars['v']['name'] : ''); ?>
+&action=register" target="_blank"><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.register-vo'), $this);?>
+</a></span>
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -193,38 +180,38 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 
 			<?php echo SmartyPlugins::function_lng(array('snippet' => 'enter-defaul-vo'), $this);?>
 
-			
-			<table class="std-grid narrow" style="margin: 1em auto; text-align: left;">
+			<div class="vo-list">
+				<?php $_from = (isset($this->_tpl_vars['projectList']) ? $this->_tpl_vars['projectList'] : ''); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }if (count($_from)):
+    foreach ($_from as $this->_tpl_vars['p']):
+?>ppppppppppp[<?php echo (isset($this->_tpl_vars['p']['id']) ? $this->_tpl_vars['p']['id'] : ''); ?>
+]ppppppppppp<?php endforeach; endif; unset($_from); ?>
 				<?php $_from = (isset($this->_tpl_vars['userProjects']) ? $this->_tpl_vars['userProjects'] : ''); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }if (count($_from)):
     foreach ($_from as $this->_tpl_vars['proj']):
 ?>
-				<tr>
-					<td><?php echo (isset($this->_tpl_vars['proj']['name']) ? $this->_tpl_vars['proj']['name'] : ''); ?>
-</td>
-					<td>
-						<?php if ((isset($this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms']) ? $this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms'] : '')): ?>
-							<select name="projects[<?php echo (isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : ''); ?>
+				<div class="vo-item <?php if ((isset($this->_tpl_vars['userProjects'][(isset($this->_tpl_vars['p']['id']) ? $this->_tpl_vars['p']['id'] : '')]) ? $this->_tpl_vars['userProjects'][(isset($this->_tpl_vars['p']['id']) ? $this->_tpl_vars['p']['id'] : '')] : '')): ?>vo-item-selected<?php endif; ?> <?php if (! (isset($this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms']) ? $this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms'] : '') || count ( (isset($this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms']) ? $this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms'] : '') ) == 0): ?>disabled<?php endif; ?>">
+					<input type="checkbox" name="projects[]" value="<?php echo (isset($this->_tpl_vars['p']['id']) ? $this->_tpl_vars['p']['id'] : ''); ?>
+" <?php if ((isset($this->_tpl_vars['userProjects'][(isset($this->_tpl_vars['p']['id']) ? $this->_tpl_vars['p']['id'] : '')]) ? $this->_tpl_vars['userProjects'][(isset($this->_tpl_vars['p']['id']) ? $this->_tpl_vars['p']['id'] : '')] : '')): ?>checked="checked"<?php endif; ?> />
+					<?php echo (isset($this->_tpl_vars['proj']['name']) ? $this->_tpl_vars['proj']['name'] : ''); ?>
+
+					<?php if ((isset($this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms']) ? $this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms'] : '')): ?>
+						<select name="projects[<?php echo (isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : ''); ?>
 ]">
-								<option value=""><?php echo SmartyPlugins::function_lng(array('snippet' => 'enter-vo'), $this);?>
+							<option value=""><?php echo SmartyPlugins::function_lng(array('snippet' => 'enter-vo'), $this);?>
 </option>
-								<?php $_from = (isset($this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms']) ? $this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms'] : ''); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }if (count($_from)):
+							<?php $_from = (isset($this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms']) ? $this->_tpl_vars['projectList'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]['voms'] : ''); if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }if (count($_from)):
     foreach ($_from as $this->_tpl_vars['vid'] => $this->_tpl_vars['vtitle']):
 ?>
-									<?php if ((isset($this->_tpl_vars['userVoms'][$this->_tpl_vars['vid']]) ? $this->_tpl_vars['userVoms'][$this->_tpl_vars['vid']] : '')): ?>
-									<option value="<?php echo (isset($this->_tpl_vars['vid']) ? $this->_tpl_vars['vid'] : ''); ?>
+								<?php if ((isset($this->_tpl_vars['userVoms'][$this->_tpl_vars['vid']]) ? $this->_tpl_vars['userVoms'][$this->_tpl_vars['vid']] : '')): ?>
+								<option value="<?php echo (isset($this->_tpl_vars['vid']) ? $this->_tpl_vars['vid'] : ''); ?>
 " <?php if ((isset($this->_tpl_vars['defaultVoms'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')]) ? $this->_tpl_vars['defaultVoms'][(isset($this->_tpl_vars['proj']['id']) ? $this->_tpl_vars['proj']['id'] : '')] : '') == (isset($this->_tpl_vars['vid']) ? $this->_tpl_vars['vid'] : '')): ?>selected="selected"<?php endif; ?>><?php echo (isset($this->_tpl_vars['vtitle']) ? $this->_tpl_vars['vtitle'] : ''); ?>
 </option>
-									<?php endif; ?>
-								<?php endforeach; endif; unset($_from); ?>
-							</select>
-						<?php else: ?>
-							<i><?php echo SmartyPlugins::function_lng(array('snippet' => 'project-not-contains-vo'), $this);?>
-</i>
-						<?php endif; ?>
-					</td>
-				</tr>
+								<?php endif; ?>
+							<?php endforeach; endif; unset($_from); ?>
+						</select>
+					<?php endif; ?>
+				</div>
 				<?php endforeach; endif; unset($_from); ?>
-			</table>
+			</div>
 			<input type="submit" value="<?php echo SmartyPlugins::function_lng(array('snippet' => 'save'), $this);?>
 " />
 		</form>
@@ -260,7 +247,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 					<?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.not-register'), $this);?>
 
 				</label>
-				<?php  echo Page::getHelpIcon('profile.projects')  ?>
+				<?php  echo Page::getHelpIcon('profile.projects-help')  ?>
 			</p>
 			<table id="cert-auto-login-box" align="center" style="margin: 1em auto; <?php if ((isset($this->_tpl_vars['myproxy_manual_login']) ? $this->_tpl_vars['myproxy_manual_login'] : '')): ?>display: none;<?php endif; ?>">
 				<col align="left" />
@@ -291,13 +278,16 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'lng', 'Prof
 "><?php echo (isset($this->_tpl_vars['item']['name']) ? $this->_tpl_vars['item']['name'] : ''); ?>
 </option>
 							<?php endforeach; endif; unset($_from); ?>
-							<option value="custom">ввести сервер вручную</option>
+							<option value="custom"><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.enter-monual-server'), $this);?>
+</option>
 						</select>
 					</td>
 				</tr>
 				<tbody id="custom-server-block" style="display: none;">
-					<tr><td>хост сервера</td><td><input type="name" name="custom-server" value="" /></td></tr>
-					<tr><td>порт сервера</td><td><input type="name" name="custom-server-port" value="7512" /></td></tr>
+					<tr><td><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.server-host'), $this);?>
+</td><td><input type="name" name="custom-server" value="" /></td></tr>
+					<tr><td><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.server-port'), $this);?>
+</td><td><input type="name" name="custom-server-port" value="7512" /></td></tr>
 				</tbody>
 				<tr>
 					<td><?php echo SmartyPlugins::function_lng(array('snippet' => 'profile.myproxy.cert_ttl'), $this);?>
@@ -391,6 +381,18 @@ $(document).ready(function() {
 		$(".popup .body-container").center();
 		$("#wait-popup").show();
     });
+	
+	$(".vo-item").click(function(e){
+		if ($(e.target).is(".vo-item select, .vo-item select *")) return;
+		if ($(this).hasClass("vo-item-selected")){
+			$(this).removeClass("vo-item-selected");
+			$(this).contents(\'input[type=checkbox]\').removeProp("checked");
+		}
+		else {
+			$(this).addClass("vo-item-selected");
+			$(this).contents(\'input[type=checkbox]\').prop("checked", "checked");
+		}
+	});
 
 
 });

@@ -22,6 +22,8 @@ class Error{
 	
 	private $_textString;
 	
+	public $isCli = FALSE;
+	
 	public $mode;
 	public $time;
 	public $url;
@@ -125,6 +127,8 @@ class Error{
 	// КОНСТРУКТОР (СОЗДАЕТ ЭКЗЕМПЛЯР ОШИБКИ)
 	public function __construct($errlevel, $errstr, $errfile, $errline, $errcontext, $backtrace, $mode = self::DISPLAY_MODE){
 		
+		$this->isCli = PHP_SAPI === 'cli';
+		
 		$this->_errlevel = $errlevel;
 		$this->_errstr = $errstr;
 		$this->_errfile = $errfile;
@@ -143,7 +147,7 @@ class Error{
 	public function handlerAction(){
 		
 		$this->time = time();
-		$this->url = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+		$this->url = $this->isCli ? '' : 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 			
 		if(self::$_config['keepFileLog'])
 			$this->log2file();
@@ -154,8 +158,12 @@ class Error{
 		if(self::$_config['keepEmailLog'])
 			$this->log2email();
 		
-		if(self::$_config['display'] && (self::$_config['minPermsForDisplay'] == 0 || User::hasPerm(self::$_config['minPermsForDisplay'])))
-			$this->printHTML();
+		if(self::$_config['display'] && (self::$_config['minPermsForDisplay'] == 0 || User::hasPerm(self::$_config['minPermsForDisplay']))) {
+			if ($this->isCli)
+				echo $this->getText();
+			else
+				$this->printHTML();
+		}
 		
 		if($this->_errlevel & (E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR)){
 			include(FS_ROOT.self::TPL_PATH.'usermessage.php');
@@ -168,7 +176,9 @@ class Error{
 		
 		if(is_null($this->_textString)){
 			
-			$this->_textString = self::$_errorLevels[$this->_errlevel].': '.$this->_errstr.' in '.$this->_errfile.' on line '.$this->_errline.".\n";
+			$this->_textString = ''
+				.self::$_errorLevels[$this->_errlevel].': '.$this->_errstr.' in '.$this->_errfile.' on line '.$this->_errline.".\n"
+				."STACK TRACE\n";
 
 			foreach((array)$this->_backtrace as $index => $data){
 				$this->_textString .= 

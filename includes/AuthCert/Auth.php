@@ -77,7 +77,6 @@ class CertAuth implements iAuth {
 
 	// check VOMS membership
 	private function checkVOMS () {
-		global $service_certificate;
 		if ( empty($this->vomses) ) {
 			$this->status = 0;
 			return 0;
@@ -86,7 +85,7 @@ class CertAuth implements iAuth {
 			$gridmapusers = 0;
 			try {
 				$soap_client = new SoapClient($voms_url."?wsdl", array(
-					"local_cert" => $service_certificate
+					"local_cert" => SERVICE_CERTIFICATE
 				));
 				//var_dump($soap_client->__getFunctions());
 				$gridmapusers = $soap_client->getGridmapUsers();

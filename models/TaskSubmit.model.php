@@ -212,6 +212,10 @@ class TaskSubmit extends GenericObject{
 		
 			$this->log(Lng::get('Task.model.rusk-run-success'));
 			
+			// отправка email оповещения
+			if ($this->getField('email_notify'))
+				Mail::create()->send('submit_success', array('uid' => $this->getField('uid')));
+			
 			$jobid = preg_match('/(gsiftp:\/\/\S+\d+)/', $response, $matches) ? $matches[1] : null;
 			if(!empty($jobid)){
 				$this->setField('jobid', $jobid);
@@ -445,6 +449,7 @@ class TaskSubmit extends GenericObject{
 		}
 		
 		$archive = substr($realpath, 0, -1).'.zip';
+		//$archive = substr($realpath, strrpos($realpath, '/'), -1).'.zip';
 		
 		// echo ('/usr/bin/zip -r -9 '.escapeshellarg(basename($archive)).' '.escapeshellarg($realpath)); die;
 		exec('/usr/bin/zip -r -9 '.escapeshellarg($archive).' '.escapeshellarg($realpath));

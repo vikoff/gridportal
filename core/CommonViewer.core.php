@@ -329,7 +329,7 @@ class CommonViewer{
 		
 		extract($variables);
 		
-		foreach($variables as $k => $v)
+		foreach ($variables as $k => $v)
 			$this->$k = $v;
 			
 		ob_start();
