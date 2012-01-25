@@ -290,12 +290,12 @@ class Paginator{
 			if($this->_curPage > 1){
 				$prevHref = $curUrl.$urlPrefix.self::$_pageParamName.'='.($this->_curPage - 1);
 				$this->_linkTags['prev'] = $prevHref;
-				$this->_buttons['prev'] = '<a class="prev" href="'.$prevHref.'">Назад</a>';
+				$this->_buttons['prev'] = '<a class="prev" href="'.$prevHref.'">'.Lng::get('backward').'</a>';
 			}
 			if($this->_curPage < $this->_totalNumPages){
 				$nextHref = $curUrl.$urlPrefix.self::$_pageParamName.'='.($this->_curPage + 1);
 				$this->_linkTags['next'] = $nextHref;
-				$this->_buttons['next'] = '<a class="next" href="'.$nextHref.'">вперед</a>';
+				$this->_buttons['next'] = '<a class="next" href="'.$nextHref.'">'.Lng::get('forward').'</a>';
 			}
 				
 			

@@ -19,6 +19,7 @@
 		css/frontend.css,
 		css/simplemodal.css,
 		css/redmond/jquery-ui-1.8.16.custom.css" type="text/css" />
+    <link href="css/style_usab.css" rel="stylesheet">
 	
 	<link rel="icon" type="image/png" href="images/favicon.ico" />
 	
@@ -72,7 +73,8 @@
 			<?=$this->_getHtmlContent();?>
 		</div>
 		<div id="footer">
-			<a href="<?= App::href('page/developers'); ?>"><?=Lng::get('frontend-developers');?></a>
+			<a href="<?= App::href('page/developers'); ?>"><?=Lng::get('frontend-developers');?></a>&nbsp;&nbsp;&nbsp;
+			<a href="<?= App::href('page/help'); ?>"><?=Lng::get('frontend-instructions');?></a>
 			<?=$this->_getClientStatisticsLoader();?>
 		</div>
 		<div id="popup">

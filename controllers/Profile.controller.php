@@ -207,7 +207,7 @@ class ProfileController extends Controller{
 		
 		$user = CurUser::get();
 		if($user->saveProfile($_POST)){
-			Messenger::get()->ns('profile-edit')->addSuccess('Личные данные сохранены');
+			Messenger::get()->ns('profile-edit')->addSuccess(Lng::get('profile-personal-data-is-stored'));
 			return TRUE;
 		}else{
 			Messenger::get()->ns('profile-edit')->addError('Не удалось сохранить данные:<div style="margin-left: 10px; font-size: 13px;">'.$user->getError().'</div>');
@@ -219,7 +219,13 @@ class ProfileController extends Controller{
 		
 		$user = CurUser::get();
 		$num = $user->checkVoms(getVar($_POST['voms'], array(), 'array'));
-		Messenger::get()->ns('check-voms')->addSuccess('Вы состоите в '.$num.' виртуальных организаций из выбранных.');
+		// Messenger::get()->ns('check-voms')->addSuccess('Вы состоите в '.$num.' виртуальных организаций из выбранных.');
+		Messenger::get()->ns('check-voms')->addSuccess(Lng::get('profile.you-are-in', array($num)));
+		
+		
+		// тройной плейсхолдер в Lng::get()
+		// Messenger::get()->ns('check-voms')->addSuccess(Lng::get('profile.you-are-in', array($num, $foo, $bar)));
+
 		return TRUE;
 	}
 	
@@ -231,10 +237,10 @@ class ProfileController extends Controller{
 		//Messenger::get()->ns('set-default-voms')->addSuccess('Виртуальные организации выбраны.');
 		
 		if($user->saveProfile($_POST)){
-			Messenger::get()->ns('profile-edit')->addSuccess('Личные данные сохранены');
+			Messenger::get()->ns('profile-edit')->addSuccess(Lng::get('profile-personal-data-is-stored'));
 			
 			$num = $user->setDefaultVoms(getVar($_POST['voms_projects'], array(), 'array'));
-			Messenger::get()->ns('set-default-voms')->addSuccess('Виртуальные организации выбраны.');
+			Messenger::get()->ns('set-default-voms')->addSuccess(Lng::get('profile.virtual-organizations-are-selected'));
 			
 			return TRUE;
 		}else{

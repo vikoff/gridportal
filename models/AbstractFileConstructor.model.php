@@ -29,8 +29,9 @@ abstract class AbstractFileConstructor {
 		
 		$formRows = array();
 		foreach(file($this->filename) as $index => $row)
-			if ($formRow = $this->_getFormRow($row, $index))
+			if ($formRow = $this->_getFormRow($row, $index)) {
 				$formRows[] = $formRow;
+			}
 		
 		return $formRows;
 	}
@@ -188,10 +189,32 @@ abstract class AbstractFileConstructor {
 	 * ПОЛУЧИТЬ МАССИВ ДАННЫХ ДЛЯ ОДНОЙ СТРОКИ ДЛЯ ФОРМЫ-КОНСТРУКТОРА
 	 * @param string $row - строка из файла
 	 * @param integer $rowIndex - номер текущей строки
-	 * @return array|null - массив с ключами 'row', 'field', 'pre_text', 'value', 'post_text', 'allow_multiple'
+	 * @return array|null - массив с ключами 
+	 *                      'row'            - номер строки,
+	 *                      'field'          - имя поля,
+	 *                      'pre_text'       - текст, предшествующий строке значения,
+	 *                      'value'          - строка значения,
+	 *                      'post_text'      - текст, идущий после строки значения,
+	 *                      'allow_multiple' - флаг, можно ли использовать множители
 	 *                      или NULL, если строка не должна редактироваться в форме
 	 */
 	abstract protected function _getFormRow($row, $rowIndex);
+	
+	/**
+	 * ПОЛУЧИТЬ ЗНАЧЕНИЕ ПАРАМЕТРА ДЛЯ ФОРМЫ (отлов множителей)
+	 * из значения, полученного из файла.
+	 * Если значение из файла - обычный текст, функция вернет его же,
+	 * если значение - плейсхолдер, функция распарсит его и вернет массив
+	 * @param string $strFileValue - строковое значение, прочитанное из файла
+	 * @return string|array - строка или массив для формы
+	 */
+	protected function _getFormValueFromFileValue($strFileValue){
+			
+		return preg_match('/^\{\*(.+)\*\}$/', $strFileValue, $matches)
+			? $this->parseStrMultiplier($matches[1])
+			: $strFileValue;
+	}
+	
 }
 
 ?>

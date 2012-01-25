@@ -11,7 +11,7 @@
 
 <div id="login-screen">
 	
-	<div class="explain">Пожалуйста, авторизуйтесь.</div>
+	<div class="explain"><?=Lng::get('please-enter-login');?></div>
 	
 	<?=$errorMessage;?>
 	
@@ -19,13 +19,13 @@
 		<?=FORMCODE;?>
 		
 		<table>
-		<tr><td>Логин</td><td><input type="text" name="email" value="" style="width: 100%;" /></td></tr>
-		<tr><td>Пароль</td><td><input type="password" name="pass" value="" style="width: 100%;" /></td></tr>
+		<tr><td><?=Lng::get('login');?></td><td><input type="text" name="email" value="" style="width: 100%;" /></td></tr>
+		<tr><td><?=Lng::get('password');?></td><td><input type="password" name="pass" value="" style="width: 100%;" /></td></tr>
 		<tr>
 			<td></td>
 			<td>
 				<input type="checkbox" name="remember" id="rememberme-checkbox" value="1" />
-				<label for="rememberme-checkbox">Запомнить меня</label>
+				<label for="rememberme-checkbox"><?=Lng::get('remember-me');?></label>
 				<div style="float: right;"><input type="submit" class="submit" name="action[profile/login]" value="Войти"></div>
 			</td>
 		</tr>

@@ -16,6 +16,19 @@ class NordujobFileConstructor extends AbstractFileConstructor {
 		parent::saveConstructorFormData($formData, $setInstance);
 	}
 	
+	/**
+	 * ПОЛУЧИТЬ МАССИВ ДАННЫХ ДЛЯ ОДНОЙ СТРОКИ ДЛЯ ФОРМЫ-КОНСТРУКТОРА
+	 * @param string $row - строка из файла
+	 * @param integer $rowIndex - номер текущей строки
+	 * @return array|null - массив с ключами 
+	 *                      'row'            - номер строки,
+	 *                      'field'          - имя поля,
+	 *                      'pre_text'       - текст, предшествующий строке значения,
+	 *                      'value'          - строка значения,
+	 *                      'post_text'      - текст, идущий после строки значения,
+	 *                      'allow_multiple' - флаг, можно ли использовать множители
+	 *                      или NULL, если строка не должна редактироваться в форме
+	 */
 	protected function _getFormRow($row, $rowIndex){
 		
 		$row = trim($row);
@@ -28,11 +41,7 @@ class NordujobFileConstructor extends AbstractFileConstructor {
 			//            (----pre-----)(value)(-post--)
 			// echo '<pre>'; print_r($matches); echo '</pre>';
 			$field = $matches[2];
-			$value = trim($matches[3]);
-			
-			// отлавливаем множители
-			if (preg_match('/^\{\*(.+)\*\}$/', $value, $submatches))
-				$value = $this->parseStrMultiplier($submatches[1]);
+			$value = $this->_getFormValueFromFileValue(trim($matches[3]));
 			
 			return array(
 				'row' => $rowIndex,

@@ -547,13 +547,13 @@ class TaskSubmitCollection extends GenericObjectCollection{
 			'jobid' => 'JobID',
 			'set_id' => 'Набор',
 			'index' => 'Порядковый номер',
-			'status' => 'Статус',
+			'status' => Lng::get('task-submit.status'),
 			'is_submitted' => 'Отправлена',
 			'is_completed' => 'Завершена',
 			'is_fetched' => 'Получена',
 			'create_date' => 'Дата создания',
-			'start_date' => 'Дата запуска',
-			'finish_date' => 'Дата завершения',
+			'start_date' => Lng::get('task-submit.date-start'),
+			'finish_date' => Lng::get('task-submit.date-end'),
 		);
 	}
 	

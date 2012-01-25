@@ -1,0 +1,67 @@
+html,body,ul,li
+{
+    padding: 0;
+    margin: 0;
+}
+.list-stic
+{
+    display: inline-block;
+
+    width: 1000px;
+
+    margin: auto;
+}
+.list-stic li
+{
+    display: inline-block;
+
+    width: 240px;
+    height: 160px;
+}
+.list-stic:first-child > li
+{
+    margin: 0 3px;
+}
+.list-stic li a
+{
+    display: inline-block;
+
+    width: 100%;
+    height: 100%;
+
+    font: 25px "Trebuchet MS", sans-serif;
+    color: #ff20cd;
+
+    position: relative;
+
+    border-radius: 10px;
+}
+.list-stic span
+{
+    position: absolute;
+
+    display: inline-block;
+
+    top:40%;
+    left:25%;
+}
+.href1
+{
+    background: url(../images/usability/start.png) no-repeat;
+}
+.href2
+{
+    background: url(../images/usability/projects.png) no-repeat;
+}
+.href3
+{
+    background: url(../images/usability/tasks.png) no-repeat;
+}
+.href4
+{
+    background: url(../images/usability/results.png) no-repeat;
+}
+.href5
+{
+    background: url(../images/usability/statistiks.png) no-repeat;
+}

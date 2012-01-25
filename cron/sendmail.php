@@ -24,9 +24,9 @@ require_once(FS_ROOT.'includes/PHPMailer_5.2.1/class.phpmailer.php');
 
 function send($address, $title, $body){
 	
-	$fromHost = 'thei.org.ua';
+	$fromHost = 'localhost';
 	$fromAddress = 'vlad@thei.org.ua';
-	$fromName = 'Vadim Khramov';
+	$fromName = 'CrimeaEcoGrid-portal';
 	$fromPassword = 'freedomcom';
 	
 	$mail = new PHPMailer();
@@ -46,7 +46,7 @@ function send($address, $title, $body){
 	$mail->Subject    = $title;
 	$mail->AltBody    = strip_tags($body);
 	$mail->MsgHTML($body);
-	$mail->AddAddress($address, "John Doe");
+	$mail->AddAddress($address, "e-mail notice");
 
 	return $mail->Send();
 }
@@ -103,7 +103,7 @@ foreach ($mailToSend as $email => $data) {
 	}
 	
 	echo "mail to $email\n$text\n\n";
-	// send($email, 'title', $text);
+        send($email, 'title', $text);
 }
 
 ?>

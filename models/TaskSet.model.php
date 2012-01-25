@@ -44,7 +44,7 @@ class TaskSet extends GenericObject{
 		
 		$ext = Tools::getExt($basename);
 		switch ($ext) {
-			// case 'fds': return self::FILETYPE_FDS;
+			case 'fds': return self::FILETYPE_FDS;
 			case 'jdl': return self::FILETYPE_JDL;
 			default: null;
 		}
