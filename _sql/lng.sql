@@ -1,7 +1,7 @@
 -- phpMyAdmin SQL Dump
 -- version 2.10.3
 -- http://www.phpmyadmin.net
--- 
+--
 -- Хост: localhost
 -- Время создания: Июн 30 2011 г., 20:38
 -- Версия сервера: 5.1.50
@@ -9,15 +9,15 @@
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
--- 
+--
 -- База данных: `ngrid`
--- 
+--
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Структура таблицы `lng_en`
--- 
+--
 
 DROP TABLE IF EXISTS `lng_en`;
 CREATE TABLE `lng_en` (
@@ -26,11 +26,11 @@ CREATE TABLE `lng_en` (
   UNIQUE KEY `snippet_id` (`snippet_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- 
+--
 -- Дамп данных таблицы `lng_en`
--- 
+--
 
-INSERT INTO `lng_en` (`snippet_id`, `text`) VALUES 
+INSERT INTO `lng_en` (`snippet_id`, `text`) VALUES
 (1, 'Main'),
 (2, 'Projects'),
 (3, 'Tasks'),
@@ -44,9 +44,9 @@ INSERT INTO `lng_en` (`snippet_id`, `text`) VALUES
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Структура таблицы `lng_ru`
--- 
+--
 
 DROP TABLE IF EXISTS `lng_ru`;
 CREATE TABLE `lng_ru` (
@@ -55,11 +55,11 @@ CREATE TABLE `lng_ru` (
   UNIQUE KEY `snippet_id` (`snippet_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- 
+--
 -- Дамп данных таблицы `lng_ru`
--- 
+--
 
-INSERT INTO `lng_ru` (`snippet_id`, `text`) VALUES 
+INSERT INTO `lng_ru` (`snippet_id`, `text`) VALUES
 (1, 'Главная'),
 (2, 'Проекты'),
 (3, 'Задачи'),
@@ -73,9 +73,9 @@ INSERT INTO `lng_ru` (`snippet_id`, `text`) VALUES
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Структура таблицы `lng_snippets`
--- 
+--
 
 DROP TABLE IF EXISTS `lng_snippets`;
 CREATE TABLE `lng_snippets` (
@@ -86,11 +86,11 @@ CREATE TABLE `lng_snippets` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=15 ;
 
--- 
+--
 -- Дамп данных таблицы `lng_snippets`
--- 
+--
 
-INSERT INTO `lng_snippets` (`id`, `name`, `description`) VALUES 
+INSERT INTO `lng_snippets` (`id`, `name`, `description`) VALUES
 (1, 'top-menu.main', 'Пункты главного меню'),
 (2, 'top-menu.projects', 'Пункты главного меню'),
 (3, 'top-menu.tasks', 'Пункты главного меню'),
@@ -104,9 +104,9 @@ INSERT INTO `lng_snippets` (`id`, `name`, `description`) VALUES
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Структура таблицы `lng_ua`
--- 
+--
 
 DROP TABLE IF EXISTS `lng_ua`;
 CREATE TABLE `lng_ua` (
@@ -115,11 +115,11 @@ CREATE TABLE `lng_ua` (
   UNIQUE KEY `snippet_id` (`snippet_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- 
+--
 -- Дамп данных таблицы `lng_ua`
--- 
+--
 
-INSERT INTO `lng_ua` (`snippet_id`, `text`) VALUES 
+INSERT INTO `lng_ua` (`snippet_id`, `text`) VALUES
 (1, NULL),
 (2, NULL),
 (3, NULL),

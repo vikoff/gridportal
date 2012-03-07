@@ -8,11 +8,9 @@ class FdsFileConstructor extends AbstractFileConstructor {
 	 * @param string $row - строка из файла
 	 * @param integer $rowIndex - номер текущей строки
 	 * @return array|null - массив с ключами 
-	 *                      'row'            - номер строки,
+	 *                      'index'          - индекс параметра в общем массиве параметров,
 	 *                      'field'          - имя поля,
-	 *                      'pre_text'       - текст, предшествующий строке значения,
 	 *                      'value'          - строка значения,
-	 *                      'post_text'      - текст, идущий после строки значения,
 	 *                      'allow_multiple' - флаг, можно ли использовать множители
 	 *                      или NULL, если строка не должна редактироваться в форме
 	 */
@@ -26,6 +24,7 @@ class FdsFileConstructor extends AbstractFileConstructor {
 		$postText      = null;
 		$allowMultiple = null;
 		
+		/*
 		// TIME T_END
 		if (preg_match('/(&TIME T_END=)(.*)(\/)/', $row, $matches)) {
 			// echo '<pre>'; print_r($matches); die;
@@ -45,6 +44,23 @@ class FdsFileConstructor extends AbstractFileConstructor {
 			$value         = $matches[2];
 			$postText      = $matches[3];
 		}
+		*/
+		/*$str = $row;
+		$res = array();
+		preg_match("/&([A-z0-9_]+)\s+(.*)\//", $str, $res);//(([A-z0-9_]+)=\'?([A-z0-9_]+)\'?,\s)
+		//print_r($res);
+		
+		if (isset($res[1])) $ret[$i]['name'] = $res[1];
+		if (isset($res[2])){
+			$str = $res[2];
+			//preg_match_all("/(?:(?:([\w_]+)=(?:([^,]*)))+)(?:,\s*)?/", $str, $res);
+			preg_match_all("/(?:(?:([^,\s]+)=(?:([^,]*)))+)(?:,\s*)?/", $str, $res);
+			//print_r($res);
+			for ($j = 0; $j < count($res[1]); $j++){
+				//$res[1][$j] = preg_replace("/[\W]/", "_", $res[1][$j]);
+				$ret[$i]['args'][$res[1][$j]] = $res[2][$j];
+			}
+		}*/
 		
 		// отлов множителей
 		$value = $this->_getFormValueFromFileValue($value);
@@ -73,6 +89,60 @@ class FdsFileConstructor extends AbstractFileConstructor {
 		} else {
 			return null;
 		}
+	}
+	
+	public function getConstructorFormData(){
+		
+		$modelData = file_get_contents($this->filename);
+		$model = array();
+		$modelData = preg_replace("/,\s*\n\s*/", ", ", $modelData);
+		preg_match_all('/&.+\/.*\n/', $modelData, $model);
+
+		$ret = array();
+		for ($i = 0; $i < count($model[0]); $i++){
+			
+			$str = $model[0][$i];
+			$res = array();
+			preg_match("/&([A-z0-9_]+)\s+(.*)\//", $str, $res);
+			$name = $res[1];
+			$args = $res[2];
+			
+			if (isset($res[1])){
+				$ret[$i]['name'] = $name;
+			
+				if (isset($args)){
+					$res = array();
+					preg_match_all("/(?:(?:([^,\s]+)=(?:([^,]*)))+)(?:,\s*)?/", $args, $res);
+					$argsArray = $res[1];
+					$argsValues = $res[2];
+					for ($j = 0; $j < count($argsArray); $j++){
+						$value = $this->_getFormValueFromFileValue($argsValues[$j]);
+						$ret[$i]['args'][$argsArray[$j]] = array(
+							'value' => $value,
+							'allow_multiple' => is_array($value) || is_numeric(trim($value)),
+						);
+					}
+				}
+			}
+		}
+		
+		return $ret;
+	}
+	
+		
+	/** СОХРАНИТЬ ДАННЫЕ ИЗ ФОРМЫ-КОНСТРУКТОРА В ФАЙЛ */
+	public function saveConstructorFormData($formData, $setInstance = null){
+		
+		$modelData = file_get_contents($this->filename);
+		$model = array();
+		$modelData = preg_replace("/,\s*\n\s*/", ", ", $modelData);
+		preg_match_all('/&.+\/.*\n/', $modelData, $model);
+		echo '<pre>'; print_r($_POST);
+		/*
+		$contentArr = file($this->filename);
+		foreach($formData as $rowIndex => $data)
+			$contentArr[$rowIndex] = $data['pre_text'].$this->parseFormMultiplier($data['value']).$data['post_text']."\n";
+		file_put_contents($this->filename, implode('', $contentArr));*/
 	}
 }
 

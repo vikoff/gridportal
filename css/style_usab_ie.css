@@ -1,0 +1,13 @@
+.list-stic span
+{
+    background: #0063c7;
+    filter: alpha(Opacity=70);
+
+
+    width: 97.5%;
+}
+.statist-img span
+{
+    left: 1px;
+    width: 98.5%;
+}

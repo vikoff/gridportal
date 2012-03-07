@@ -279,11 +279,11 @@ class TaskSetController extends Controller{
 		$vars = array(
 			'instanceId' => $id,
 			'fname' => $fname,
-			'formData' => TaskSet::getFileConstructor($fileType, $fullname)->getConstructorFormData()
+			'formData' => TaskSet::getFileConstructor($fileType, $fullname)->getConstructorFormData(),
+			'formFile' => TaskSet::getFormPath($fileType),
 		);
 		
-		include(FS_ROOT.'templates/'.self::TPL_PATH.'file_constructor.php');
-		
+		echo FrontendViewer::get()->getContentPhpFile(self::TPL_PATH.'file_constructor.php', $vars);
 	}
 	
 	/** DISPLAY DELETE (ADMIN) */

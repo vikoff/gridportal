@@ -23,7 +23,7 @@
 		<td><?= $item['project_name']; ?></td>
 		<td><?= !empty($item['profile_name']) ? $item['profile_name'] : '-'; ?></td>
 		<td onmouseover="showStatistics(this, <?= $item['num_submits']; ?>, <?= $item['num_finished']; ?>, <?= $item['num_processing']; ?>, <?= $item['num_errors']; ?>, <?= $item['num_undefined']; ?>);" onmouseout="hideStatistics(this);">
-			<span style="font-size: 11px;" /><?= Lng::get('TaskSet-list-total'); ?> <?= $item['num_submits']; ?></span>
+			<span style="font-size: 11px;"><?= Lng::get('TaskSet-list-total'); ?> <?= $item['num_submits']; ?></span>
 			<div class="task-progress">
 				<? if ($item['num_errors']){ ?><div class="task-progress-item task-state-6" style="width:<?= $item['num_errors'] / $item['num_submits'] * 100 ?>%"></div><? } ?>
 				<? if ($item['num_finished']){ ?><div class="task-progress-item task-state-4" style="width:<?= $item['num_finished'] / $item['num_submits'] * 100 ?>%"></div><? } ?>

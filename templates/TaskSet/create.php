@@ -22,7 +22,7 @@
 			<select name="profile_id">
 				<option value="">-</option>
 				<? foreach($this->profileList as $p): ?>
-					<option value="<?= $p['id']; ?>"><?= $p['name']; ?></option>
+					<option value="<?= $p['id']; ?>"<?= $p['name'] == 'base' ? ' selected' : ''; ?>><?= $p['name']; ?></option>
 				<? endforeach; ?>
 			</select>
 		</td>

@@ -37,7 +37,7 @@
 	text-align: center;
 }
 #simplemodal-container a.modalCloseImg {
-	background:url(simplemodal/x.png) no-repeat;
+	background:url(/css/simplemodal/x.png) no-repeat;
 	width:25px;
 	height:29px;
 	display:inline;

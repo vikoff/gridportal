@@ -15,7 +15,7 @@ body {
 	background: #eee;
 	min-width: 800px;
 	max-width: 1200px;
-	margin: 0 auto auto auto;
+	margin: 0 auto 20px auto;
 	border-bottom-left-radius: 14px;
 	border-bottom-right-radius: 14px;
 	box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);

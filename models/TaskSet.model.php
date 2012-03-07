@@ -72,6 +72,31 @@ class TaskSet extends GenericObject{
 		}
 	}
 	
+	/** ПОЛУЧИТЬ ЭКЗЕМПЛЯР КОНСТРУКТОРА ФАЙЛА В ЗАВИСИМОСТИ ОТ ТИПА ЭТОГО ФАЙЛА */
+	public static function getFormPath($type){
+		
+		$file = '';
+		
+		switch($type){
+			
+			case self::FILETYPE_NORDUJOB:
+				$file = 'nordujob.php';
+				break;
+				
+			case self::FILETYPE_FDS:
+				$file = 'fds.php';
+				break;
+				
+			case self::FILETYPE_JDL:
+				$file = 'jdl.php';
+				break;
+			
+			default: trigger_error('Неизвестный тип файла "'.$type.'"', E_USER_ERROR);
+		}
+		
+		return FS_ROOT.'templates/'.TaskSetController::TPL_PATH.'constructorForms/'.$file;
+	}
+	
 	/** СЛУЖЕБНЫЙ МЕТОД (получение констант из родителя) */
 	public function getConst($name){
 		return constant(__CLASS__.'::'.$name);

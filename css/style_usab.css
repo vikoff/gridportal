@@ -15,13 +15,14 @@ html,body,ul,li
 {
     display: inline-block;
 
-    width: 240px;
-    height: 160px;
+    width: 234px;
+    height: 156px;
 }
 .list-stic:first-child > li
 {
-    margin: 0 3px;
+    margin: 0;
 }
+
 .list-stic li a
 {
     display: inline-block;
@@ -30,7 +31,7 @@ html,body,ul,li
     height: 100%;
 
     font: 25px "Trebuchet MS", sans-serif;
-    color: #ff20cd;
+    color: #fff;
 
     position: relative;
 
@@ -42,26 +43,43 @@ html,body,ul,li
 
     display: inline-block;
 
+    text-align: center;
+    font-weight: bold;
+
     top:40%;
-    left:25%;
+    left: 0;
+    background: rgba(0,100,200,0.7);
+
+    width: 98%;
+    height: 30px;
+}
+.list-stic li:last-child span
+{
+    left: 1px;
+    width: 98.5%;
+}
+.with-shadow span
+{
+    left: 6px;
+    width: 97.5%;
 }
 .href1
 {
-    background: url(../images/usability/start.png) no-repeat;
+    background: url(../images/usability/split-start.png) no-repeat;
 }
 .href2
 {
-    background: url(../images/usability/projects.png) no-repeat;
+    background: url(../images/usability/split-start.png) -234px 0px no-repeat;
 }
 .href3
 {
-    background: url(../images/usability/tasks.png) no-repeat;
+    background: url(../images/usability/split-start.png) -468px 0px  no-repeat;
 }
 .href4
 {
-    background: url(../images/usability/results.png) no-repeat;
+    background: url(../images/usability/split-start.png) -702px 0px  no-repeat;
 }
 .href5
 {
-    background: url(../images/usability/statistiks.png) no-repeat;
+    background: url(../images/usability/split-start.png) -936px 0px  no-repeat;
 }

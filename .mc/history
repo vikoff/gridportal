@@ -1,0 +1,14 @@
+
+[Dir Hist New Right Panel]
+0=/var
+
+[cmdline]
+0=cat .bash_history 
+
+[Dir Hist New Left Panel]
+0=/var/www/portal
+1=/var/www
+2=/var
+3=/
+4=/home
+5=/home/apache
