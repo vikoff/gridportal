@@ -114,8 +114,8 @@ abstract class AbstractFileConstructor {
 	
 	/**
 	 * РАСПАРСИТЬ СТРОКУ МНОЖИТЕЛЯ В МАССИВ
-	 * @param string $str - строка, вида {1,2,3;5:1}
-	 * @return array - массив, вида array(1, 2, array('from' => 3, 'to' => 5, 'step' => 1))
+	 * @param string $str - строка, вида "1,2,3;5:1,6"
+	 * @return array - массив, вида array(1, 2, array('from' => 3, 'to' => 5, 'step' => 1), 6)
 	 */
 	public function parseStrMultiplier($str){
 		
@@ -135,11 +135,17 @@ abstract class AbstractFileConstructor {
 		return $values;
 	}
 	
-	/** РАСПАРСИТЬ ЭЛЕМЕНТ ФОРМЫ-КОНСТРУКТОРА В СТРОКУ */
+	/**
+	 * РАСПАРСИТЬ ЭЛЕМЕНТ ФОРМЫ-КОНСТРУКТОРА В СТРОКУ (парсит множители)
+	 * Получает $value из формы констркутора и возвращает строку,
+	 * пригодную для сохранения в файл. 
+	 */
 	public function parseFormMultiplier($value){
 		
 		if (is_array($value)) {
 			$combinations = array();
+			$hasIntervals = false;
+			
 			foreach ($value as $val) {
 				
 				// одиночное значение
@@ -153,16 +159,22 @@ abstract class AbstractFileConstructor {
 					$from =  $this->normalizeFormValue(getVar($val['from']));
 					$to =  $this->normalizeFormValue(getVar($val['to']));
 					$step =  $this->normalizeFormValue(getVar($val['step']));
-					$curVal = $from.';'.$to.':'.$step;
 					
 					if (!strlen($from) || !strlen($to))
 						continue;
+					
+					$curVal = $from.';'.$to.':'.$step;
+					$hasIntervals = true;
 				}
 				
 				// сохраняем комбинацию
 				$combinations[] = $curVal;
 			}
-			return '{*'.implode(',', $combinations).'*}';
+			
+			return !$hasIntervals && count($combinations) == 1
+				? $combinations[0]
+				: '{*'.implode(',', $combinations).'*}';
+				
 		} else {
 			return $value;
 		}

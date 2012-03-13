@@ -495,6 +495,31 @@ class TaskSubmit extends GenericObject{
 		exit;
 	}
 	
+	/** ПОЛУЧИТЬ ДАННЫЕ ДЛЯ ВИЗУАЛИЗАЦИИ */
+	public function getVisualizationData($relname, $type){
+		
+		$rootDir = $this->getFilesDir().'results/';
+		$fullname = realpath($rootDir.$relname);
+		
+		if(strpos($fullname, $rootDir) !== 0){
+			echo $path.'<br />';
+			echo $fullname ; die;
+			FrontendViewer::get()->error404();
+		}
+		
+		if (!file_exists($fullname))
+			die('file not found');
+		
+		
+		$file = file_get_contents($fullname);
+		$output = array('hello' => 'world');
+		
+		// парсинг здесь...
+		
+		
+		return $output;
+	}
+	
 	/**
 	 * @TODO: раньше uid хранился только в таблице task_sets, а сейчас я денормализовал
 	 * и добавил колонку uid в task_sets. Надо переделать все вхождения на новый вариант

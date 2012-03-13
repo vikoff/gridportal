@@ -101,6 +101,7 @@ class FdsFileConstructor extends AbstractFileConstructor {
 		$ret = array();
 		for ($i = 0; $i < count($model[0]); $i++){
 			
+			// строка, содержащая один параметр и его аргументы
 			$str = $model[0][$i];
 			$res = array();
 			preg_match("/&([A-z0-9_]+)\s+(.*)\//", $str, $res);
@@ -111,13 +112,44 @@ class FdsFileConstructor extends AbstractFileConstructor {
 				$ret[$i]['name'] = $name;
 			
 				if (isset($args)){
+					//echo $args.'<br />';
+					// continue;
+					//preg_match_all("/(?:(?:([^,\s]+)=(?:([^,]*)))+)(?:,\s*)?/", $args, $res);
+					//preg_match_all("/(?:(?:(.+)=(?:(.+)),\s+)+)(?:,\s+)?/", $args, $res);
 					$res = array();
-					preg_match_all("/(?:(?:([^,\s]+)=(?:([^,]*)))+)(?:,\s*)?/", $args, $res);
-					$argsArray = $res[1];
-					$argsValues = $res[2];
-					for ($j = 0; $j < count($argsArray); $j++){
-						$value = $this->_getFormValueFromFileValue($argsValues[$j]);
-						$ret[$i]['args'][$argsArray[$j]] = array(
+					$tmpStr = '';
+					$collecting = false;
+					foreach (explode(', ', $args) as $attr) {
+						// нечетное число кавычек
+						$isOdd = substr_count($attr, "'") % 2;
+						if ($collecting) {
+							if ($isOdd) {
+								$collecting = false;
+								$res[] = $tmpStr.', '.$attr;
+								$tmpStr = '';
+							} else {
+								$tmpStr .= ', '.$attr;
+							}
+						} else {
+							if ($isOdd) {
+								$collecting = true;
+								$tmpStr = $attr;
+							} else {
+								$res[] = $attr;
+							}
+						}
+					}
+					// echo '<pre>'; print_r($res); echo '</pre><hr>'; continue;
+					$argsArray = $res;
+					foreach ($argsArray as $val){
+						$tmp = explode('=', $val);
+						if (!isset($tmp[1])) continue;
+						$arg = $tmp[0];
+						$value = $tmp[1];
+						// echo $value.'<br />';
+						$value = $this->_getFormValueFromFileValue($value);
+						// echo $value.'<hr>';
+						$ret[$i]['args'][$arg] = array(
 							'value' => $value,
 							'allow_multiple' => is_array($value) || is_numeric(trim($value)),
 						);
@@ -126,6 +158,7 @@ class FdsFileConstructor extends AbstractFileConstructor {
 			}
 		}
 		
+		// exit;
 		return $ret;
 	}
 	
@@ -134,6 +167,8 @@ class FdsFileConstructor extends AbstractFileConstructor {
 	public function saveConstructorFormData($formData, $setInstance = null){
 		
 		$modelData = file_get_contents($this->filename);
+		$fileWrap = array();
+		preg_match("/(.*)\&HEAD.*\&TAIL\s\/(.*)/s", $modelData, $fileWrap);
 		$model = array();
 		$modelData = preg_replace("/,\s*\n\s*/", ", ", $modelData);
 		preg_match_all('/&.+\/.*\n/', $modelData, $model);
@@ -143,12 +178,14 @@ class FdsFileConstructor extends AbstractFileConstructor {
 			
 			$str = $model[0][$i];
 			$res = array();
-			preg_match("/&([A-z0-9_]+)\s+(.*)\//", $str, $res);
+			preg_match("/&([A-z0-9_]+)\s+(.*)\/\s(.*)/", $str, $res);
 			$name = $res[1];
 			$args = $res[2];
+			$comment = $res[3];
 			
 			if (isset($res[1])){
 				$ret[$i]['name'] = $name;
+				$ret[$i]['comment'] = $comment;
 			
 				if (isset($args)){
 					$res = array();
@@ -166,48 +203,54 @@ class FdsFileConstructor extends AbstractFileConstructor {
 			}
 		}
 		
-		echo '<pre>';
+		// echo '<pre>';
 		//print_r($_POST);
 		//print_r($ret);
 		
 		foreach ($_POST['keys'] as $i => $a){
 			foreach ($a as $k => $v){
-				$items = $_POST['items'][intval($v)]['value'];
+				// print_r($_POST['items'][intval($v)]['value']);
+				// echo '<br />';
+				// print_r($this->parseFormMultiplier($_POST['items'][intval($v)]['value']));
+				// echo '<hr />';
+				// continue;
+				
+				$ret[intval($i)]['args'][$k]['value'] = $this->parseFormMultiplier($_POST['items'][intval($v)]['value']);
+				/*$items = $_POST['items'][intval($v)]['value'];
 				if (is_array($items)){
 					$res = array();
 					foreach ($items as $item){
 						if (isset($item['single'])) $res[] = $item['single'];
-						else $res[] = $item['from'] . '-' . $item['to'] . ':' . $item['step'];
+						else $res[] = $item['from'] . ';' . $item['to'] . ':' . $item['step'];
 					}
-					$res = implode(',', $res);
+					$res = '{*' . implode(',', $res) . '*}';
 				}
 				else {
 					$res = $items;
 				}
-				$ret[intval($v)]['args'][$k]['value'] = $res;
+				$ret[intval($i)]['args'][$k]['value'] = $res;*/
 			}
 		}
 		
+		// exit;
 		//print_r($_POST);
 		//print_r($ret);
 		
-		$content = "";
+		$content = $fileWrap[1];
 		foreach ($ret as $item){
 			$args = array();
-			foreach ($item['args'] as $argn => $argv){
-				$args[] = $argn . '=' . $argv;
+			if (isset($item['args'])){
+				foreach ($item['args'] as $argn => $argv){
+					$args[] = $argn . '=' . $argv['value'];
+				}
 			}
-			$content .= '&' . $item['name'] . ' ' . implode(', ', $args) . "/\n";
+			$content .= '&' . $item['name'] . ' ' . implode(', ', $args) . '/ ' . $item['comment'] . "\n";
 		}
+		$content .= $fileWrap[2];
 		
-		print_r($content);
-		//file_put_contents($this->filename, $ret);
+		//print($content);
+		file_put_contents($this->filename, $content);
 		
-		/*
-		$contentArr = file($this->filename);
-		foreach($formData as $rowIndex => $data)
-			$contentArr[$rowIndex] = $data['pre_text'].$this->parseFormMultiplier($data['value']).$data['post_text']."\n";
-		file_put_contents($this->filename, implode('', $contentArr));*/
 	}
 }
 

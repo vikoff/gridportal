@@ -46,11 +46,22 @@
 							<td>FILE</td>
 							<td><?= $elm; ?></td>
 							<td><a target="_blank" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small"><?= Lng::get('task.analyze-download') ?></a></td>
+							<td><a href="<?= href('task-submit/visualize/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm); ?>" class="visualize">визуализация</a></td>
 						</tr>
 					<? endforeach; ?>
 				</table>
 			</div>
-
+			
+			<script type="text/javascript">
+				$(function(){
+					$('a.visualize').click(function(){
+						url = this.href;
+						var iframe = $('<iframe src="' + url + '" style="width: 800px; height: 500px;" />');
+						$.modal($('<div />').append(iframe));
+						return false;
+					});
+				});
+			</script>
 		<? endif; ?>
 
 	<? else: ?>

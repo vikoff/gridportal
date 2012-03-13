@@ -17,6 +17,7 @@ class TaskSubmitController extends Controller{
 		'display_stop'			=> PERMS_REG,
 		'display_delete'		=> PERMS_REG,
 		'display_analyze'		=> PERMS_REG,
+		'display_visualize'		=> PERMS_REG,
 		'display_download_dir'	=> PERMS_REG,
 		'display_download_file'	=> PERMS_REG,
 		
@@ -167,13 +168,29 @@ class TaskSubmitController extends Controller{
 	public function display_download_dir($params = array()){
 		
 		$instanceId = getVar($params[0], 0 ,'int');
-		$instance = TaskSubmit::load($instanceId)->downloadDir(getVar($_GET['path']));
+		TaskSubmit::load($instanceId)->downloadDir(getVar($_GET['path']));
 	}
 	
 	public function display_download_file($params = array()){
 		
 		$instanceId = getVar($params[0], 0 ,'int');
-		$instance = TaskSubmit::load($instanceId)->downloadFile(getVar($_GET['path']));
+		TaskSubmit::load($instanceId)->downloadFile(getVar($_GET['path']));
+	}
+	
+	public function display_visualize($params = array()){
+		
+		$instanceId = getVar($params[0], 0 ,'int');
+		$instance = TaskSubmit::load($instanceId);
+		$viewer = FrontendViewer::get();
+		$type = 'table';
+		
+		$data = $instance->getVisualizationData(getVar($_GET['path']), $type);
+		
+		$variables = array(
+			'visualization' => $viewer->getContentPhpFile(self::TPL_PATH.'visualization/'.$type.'.php', $data),
+		);
+		
+		echo $viewer->getContentPhpFile(self::TPL_PATH.'visualization.php', $variables);
 	}
 	
 	
