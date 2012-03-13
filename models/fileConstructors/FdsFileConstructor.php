@@ -137,7 +137,72 @@ class FdsFileConstructor extends AbstractFileConstructor {
 		$model = array();
 		$modelData = preg_replace("/,\s*\n\s*/", ", ", $modelData);
 		preg_match_all('/&.+\/.*\n/', $modelData, $model);
-		echo '<pre>'; print_r($_POST);
+		
+		$ret = array();
+		for ($i = 0; $i < count($model[0]); $i++){
+			
+			$str = $model[0][$i];
+			$res = array();
+			preg_match("/&([A-z0-9_]+)\s+(.*)\//", $str, $res);
+			$name = $res[1];
+			$args = $res[2];
+			
+			if (isset($res[1])){
+				$ret[$i]['name'] = $name;
+			
+				if (isset($args)){
+					$res = array();
+					preg_match_all("/(?:(?:([^,\s]+)=(?:([^,]*)))+)(?:,\s*)?/", $args, $res);
+					$argsArray = $res[1];
+					$argsValues = $res[2];
+					for ($j = 0; $j < count($argsArray); $j++){
+						$value = $this->_getFormValueFromFileValue($argsValues[$j]);
+						$ret[$i]['args'][$argsArray[$j]] = array(
+							'value' => $value,
+							'allow_multiple' => is_array($value) || is_numeric(trim($value)),
+						);
+					}
+				}
+			}
+		}
+		
+		echo '<pre>';
+		//print_r($_POST);
+		//print_r($ret);
+		
+		foreach ($_POST['keys'] as $i => $a){
+			foreach ($a as $k => $v){
+				$items = $_POST['items'][intval($v)]['value'];
+				if (is_array($items)){
+					$res = array();
+					foreach ($items as $item){
+						if (isset($item['single'])) $res[] = $item['single'];
+						else $res[] = $item['from'] . '-' . $item['to'] . ':' . $item['step'];
+					}
+					$res = implode(',', $res);
+				}
+				else {
+					$res = $items;
+				}
+				$ret[intval($v)]['args'][$k]['value'] = $res;
+			}
+		}
+		
+		//print_r($_POST);
+		//print_r($ret);
+		
+		$content = "";
+		foreach ($ret as $item){
+			$args = array();
+			foreach ($item['args'] as $argn => $argv){
+				$args[] = $argn . '=' . $argv;
+			}
+			$content .= '&' . $item['name'] . ' ' . implode(', ', $args) . "/\n";
+		}
+		
+		print_r($content);
+		//file_put_contents($this->filename, $ret);
+		
 		/*
 		$contentArr = file($this->filename);
 		foreach($formData as $rowIndex => $data)
