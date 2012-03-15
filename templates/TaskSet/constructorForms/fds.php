@@ -15,12 +15,16 @@ $keyIndex = -1;
 
 	<? if (!isset($item['args']) || !is_array($item['args'])) continue; ?>
 	
-	<tr><th colspan="3"><?= $item['name']; ?></th></tr>
+	<tr>
+		<th colspan="3">
+			<?= Lng::get('fds.' . $item['name']) == 'fds.' . $item['name'] ? $item['name'] : Lng::get('fds.' . $item['name']); ?>
+		</th>
+	</tr>
 
 	<? foreach ($item['args'] as $name => $row): ?>
 		<? $keyIndex++; ?>
 		<tr style="vertical-align: top !important;">
-		<td><?= $name; ?></td>
+		<td><?= Lng::get('fds.' . $name) == 'fds.' . $name ? $name : Lng::get('fds.' . $name); ?></td>
 		<td>
 			<input type="hidden" name="keys[<?= $index; ?>][<?= $name ?>]" value="<?= $keyIndex; ?>" />
 			

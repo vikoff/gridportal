@@ -2,6 +2,39 @@
 
 class FdsFileConstructor extends AbstractFileConstructor {
 
+	protected $paramRules = array(
+		'*' => array(
+			'allowed' => true,
+			'args' => array(
+				'*' => array(
+					'allowed' => true
+				)
+			)
+		),
+		'HEAD' => array(
+			'allowed' => false
+		),
+		'TAIL' => array(
+			'allowed' => false
+		),
+		'MATL' => array(
+			'args' => array(
+				'ID' => array(
+					'allowed' => false
+				)
+			)
+		),
+		/*
+		'PARAM' => array(				// PARAM - имя параметра (* - любой)
+			'allowed' => true,			// разрешение на отображение (true/false)
+			'args' => array(
+				'ARG' => array(			// ARG - имя аттрибута (* - любой)
+					'allowed' => false	// разрешение на отображение (true/false)
+				)
+			)
+		)
+		*/
+	);
 	
 	/**
 	 * ПОЛУЧИТЬ МАССИВ ДАННЫХ ДЛЯ ОДНОЙ СТРОКИ ДЛЯ ФОРМЫ-КОНСТРУКТОРА
@@ -23,44 +56,6 @@ class FdsFileConstructor extends AbstractFileConstructor {
 		$value         = null;
 		$postText      = null;
 		$allowMultiple = null;
-		
-		/*
-		// TIME T_END
-		if (preg_match('/(&TIME T_END=)(.*)(\/)/', $row, $matches)) {
-			// echo '<pre>'; print_r($matches); die;
-			$field         = 'TIME T_END';
-			// $field         = Lng::get('file-constructors.fds.T_END');
-			$preText       = $matches[1];
-			$value         = $matches[2];
-			$postText      = $matches[3];
-		}
-		
-		// MISC TMPA
-		elseif (preg_match('/(&MISC TMPA=)(.*)(\/)/', $row, $matches)) {
-			// echo '<pre>'; print_r($matches); die;
-			$field         = 'MISC TMPA';
-			// $field         = Lng::get('file-constructors.fds.T_END');
-			$preText       = $matches[1];
-			$value         = $matches[2];
-			$postText      = $matches[3];
-		}
-		*/
-		/*$str = $row;
-		$res = array();
-		preg_match("/&([A-z0-9_]+)\s+(.*)\//", $str, $res);//(([A-z0-9_]+)=\'?([A-z0-9_]+)\'?,\s)
-		//print_r($res);
-		
-		if (isset($res[1])) $ret[$i]['name'] = $res[1];
-		if (isset($res[2])){
-			$str = $res[2];
-			//preg_match_all("/(?:(?:([\w_]+)=(?:([^,]*)))+)(?:,\s*)?/", $str, $res);
-			preg_match_all("/(?:(?:([^,\s]+)=(?:([^,]*)))+)(?:,\s*)?/", $str, $res);
-			//print_r($res);
-			for ($j = 0; $j < count($res[1]); $j++){
-				//$res[1][$j] = preg_replace("/[\W]/", "_", $res[1][$j]);
-				$ret[$i]['args'][$res[1][$j]] = $res[2][$j];
-			}
-		}*/
 		
 		// отлов множителей
 		$value = $this->_getFormValueFromFileValue($value);
@@ -109,13 +104,10 @@ class FdsFileConstructor extends AbstractFileConstructor {
 			$args = $res[2];
 			
 			if (isset($res[1])){
+				if (!$this->isAllowedParam($name)) continue;
 				$ret[$i]['name'] = $name;
 			
 				if (isset($args)){
-					//echo $args.'<br />';
-					// continue;
-					//preg_match_all("/(?:(?:([^,\s]+)=(?:([^,]*)))+)(?:,\s*)?/", $args, $res);
-					//preg_match_all("/(?:(?:(.+)=(?:(.+)),\s+)+)(?:,\s+)?/", $args, $res);
 					$res = array();
 					$tmpStr = '';
 					$collecting = false;
@@ -139,16 +131,14 @@ class FdsFileConstructor extends AbstractFileConstructor {
 							}
 						}
 					}
-					// echo '<pre>'; print_r($res); echo '</pre><hr>'; continue;
 					$argsArray = $res;
 					foreach ($argsArray as $val){
 						$tmp = explode('=', $val);
 						if (!isset($tmp[1])) continue;
 						$arg = $tmp[0];
 						$value = $tmp[1];
-						// echo $value.'<br />';
+						if (!$this->isAllowedParamArg($name, $arg)) continue;
 						$value = $this->_getFormValueFromFileValue($value);
-						// echo $value.'<hr>';
 						$ret[$i]['args'][$arg] = array(
 							'value' => $value,
 							'allow_multiple' => is_array($value) || is_numeric(trim($value)),
@@ -167,8 +157,9 @@ class FdsFileConstructor extends AbstractFileConstructor {
 	public function saveConstructorFormData($formData, $setInstance = null){
 		
 		$modelData = file_get_contents($this->filename);
+		$modelData = str_replace("\r", "", $modelData);
 		$fileWrap = array();
-		preg_match("/(.*)\&HEAD.*\&TAIL\s\/(.*)/s", $modelData, $fileWrap);
+		preg_match("/(.*)&HEAD.*&TAIL\s\/\n(.*)/s", $modelData, $fileWrap);
 		$model = array();
 		$modelData = preg_replace("/,\s*\n\s*/", ", ", $modelData);
 		preg_match_all('/&.+\/.*\n/', $modelData, $model);
@@ -189,12 +180,36 @@ class FdsFileConstructor extends AbstractFileConstructor {
 			
 				if (isset($args)){
 					$res = array();
-					preg_match_all("/(?:(?:([^,\s]+)=(?:([^,]*)))+)(?:,\s*)?/", $args, $res);
-					$argsArray = $res[1];
-					$argsValues = $res[2];
-					for ($j = 0; $j < count($argsArray); $j++){
-						$value = $this->_getFormValueFromFileValue($argsValues[$j]);
-						$ret[$i]['args'][$argsArray[$j]] = array(
+					$tmpStr = '';
+					$collecting = false;
+					foreach (explode(', ', $args) as $attr) {
+						// нечетное число кавычек
+						$isOdd = substr_count($attr, "'") % 2;
+						if ($collecting) {
+							if ($isOdd) {
+								$collecting = false;
+								$res[] = $tmpStr.', '.$attr;
+								$tmpStr = '';
+							} else {
+								$tmpStr .= ', '.$attr;
+							}
+						} else {
+							if ($isOdd) {
+								$collecting = true;
+								$tmpStr = $attr;
+							} else {
+								$res[] = $attr;
+							}
+						}
+					}
+					$argsArray = $res;
+					foreach ($argsArray as $val){
+						$tmp = explode('=', $val);
+						if (!isset($tmp[1])) continue;
+						$arg = $tmp[0];
+						$value = $tmp[1];
+						$value = $this->_getFormValueFromFileValue($value);
+						$ret[$i]['args'][$arg] = array(
 							'value' => $value,
 							'allow_multiple' => is_array($value) || is_numeric(trim($value)),
 						);
@@ -203,40 +218,14 @@ class FdsFileConstructor extends AbstractFileConstructor {
 			}
 		}
 		
-		// echo '<pre>';
-		//print_r($_POST);
-		//print_r($ret);
-		
 		foreach ($_POST['keys'] as $i => $a){
 			foreach ($a as $k => $v){
-				// print_r($_POST['items'][intval($v)]['value']);
-				// echo '<br />';
-				// print_r($this->parseFormMultiplier($_POST['items'][intval($v)]['value']));
-				// echo '<hr />';
-				// continue;
-				
 				$ret[intval($i)]['args'][$k]['value'] = $this->parseFormMultiplier($_POST['items'][intval($v)]['value']);
-				/*$items = $_POST['items'][intval($v)]['value'];
-				if (is_array($items)){
-					$res = array();
-					foreach ($items as $item){
-						if (isset($item['single'])) $res[] = $item['single'];
-						else $res[] = $item['from'] . ';' . $item['to'] . ':' . $item['step'];
-					}
-					$res = '{*' . implode(',', $res) . '*}';
-				}
-				else {
-					$res = $items;
-				}
-				$ret[intval($i)]['args'][$k]['value'] = $res;*/
 			}
 		}
 		
-		// exit;
-		//print_r($_POST);
-		//print_r($ret);
-		
-		$content = $fileWrap[1];
+		$content = "";
+		if (isset($fileWrap[1])) $content .= $fileWrap[1];
 		foreach ($ret as $item){
 			$args = array();
 			if (isset($item['args'])){
@@ -244,14 +233,26 @@ class FdsFileConstructor extends AbstractFileConstructor {
 					$args[] = $argn . '=' . $argv['value'];
 				}
 			}
-			$content .= '&' . $item['name'] . ' ' . implode(', ', $args) . '/ ' . $item['comment'] . "\n";
+			if (empty($item['comment'])) $content .= '&' . $item['name'] . ' ' . implode(', ', $args) . '/' . "\n";
+			else $content .= '&' . $item['name'] . ' ' . implode(', ', $args) . '/ ' . $item['comment'] . "\n";
 		}
-		$content .= $fileWrap[2];
+		if (isset($fileWrap[2])) $content .= $fileWrap[2];
 		
-		//print($content);
 		file_put_contents($this->filename, $content);
 		
 	}
+	
+	protected function isAllowedParam($param){
+		if (isset($this->paramRules[$param]['allowed'])) return (bool)$this->paramRules[$param]['allowed'];
+		else return !empty($this->paramRules['*']['allowed']);
+	}
+	
+	protected function isAllowedParamArg($param, $arg){
+		if (isset($this->paramRules[$param]['args'][$arg]['allowed'])) return (bool)$this->paramRules[$param]['args'][$arg]['allowed'];
+		elseif (isset($this->paramRules['*']['args'][$arg]['allowed'])) return (bool)$this->paramRules[$param]['args'][$arg]['allowed'];
+		else return !empty($this->paramRules['*']['args']['*']['allowed']);
+	}
+	
 }
 
 ?>
