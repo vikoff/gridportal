@@ -4,10 +4,10 @@ class FdsFileConstructor extends AbstractFileConstructor {
 
 	protected $paramRules = array(
 		'*' => array(
-			'allowed' => true,
+			'allowed' => true,			// разрешаем отображение всех (*) параметров по умолчанию
 			'args' => array(
 				'*' => array(
-					'allowed' => true
+					'allowed' => true	// разрешаем отображение всех (*) аттрибутов по умолчанию
 				)
 			)
 		),
@@ -21,6 +21,14 @@ class FdsFileConstructor extends AbstractFileConstructor {
 			'args' => array(
 				'ID' => array(
 					'allowed' => false
+				)
+			)
+		),
+		'MESH' => array(
+			'allowed' => true,			// разрешаем отображение параметра MESH
+			'args' => array(
+				'IJK' => array(
+					'allowed' => false	// запрещаем отображение аттрибута IJK параметра MESH
 				)
 			)
 		),
