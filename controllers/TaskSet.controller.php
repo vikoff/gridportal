@@ -51,7 +51,7 @@ class TaskSetController extends Controller{
 	/** DISPLAY LIST */
 	public function display_list($params = array()){
 		
-		$collection = new TaskSetCollection(array('uid' => USER_AUTH_ID));
+		$collection = new TaskSetCollection(array('uid' => USER_AUTH_ID, 'search' => getVar($_GET['search'])));
 		$variables = array(
 			'collection' => $collection->getPaginated(),
 			'pagination' => $collection->getPagination(),
@@ -641,7 +641,7 @@ class TaskSetController extends Controller{
 	/** DISPLAY LIST */
 	public function ajax_list($params = array()){ /* ужасный костыль, pt #2 */
 		
-		$collection = new TaskSetCollection(array('uid' => USER_AUTH_ID));
+		$collection = new TaskSetCollection(array('uid' => USER_AUTH_ID, 'search' => getVar($_GET['search'])));
 		$variables = array(
 			'collection' => $collection->getPaginated(),
 			'pagination' => $collection->getPagination(),

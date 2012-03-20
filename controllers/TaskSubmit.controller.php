@@ -184,10 +184,10 @@ class TaskSubmitController extends Controller{
 		$viewer = FrontendViewer::get();
 		$type = 'table';
 		
-		$data = $instance->getVisualizationData(getVar($_GET['path']), $type);
+		$html = $instance->getVisualization(getVar($_GET['path']), $type);
 		
 		$variables = array(
-			'visualization' => $viewer->getContentPhpFile(self::TPL_PATH.'visualization/'.$type.'.php', $data),
+			'visualization' => $html,
 		);
 		
 		echo $viewer->getContentPhpFile(self::TPL_PATH.'visualization.php', $variables);

@@ -47,11 +47,7 @@ $(document).ready(function() {
 	</table>
 	
 	<div class="paragraph">
-		<? if ($this->numSubmits > 1): ?>
-			Будет запущено <?= $this->numSubmits; ?> задач.
-		<? else: ?>
-			Будет запущена одна задача.
-		<? endif; ?>
+		<?= Lng::getDeclinated('task-set.will-run-tasks', $this->numSubmits, array($this->numSubmits)); ?>
 	</div>
 	<div class="paragraph">
 		<input class="button" type="submit" name="action[task-set/submit]" value="<?= Lng::get('xrls_edit.start-task'); ?>" />

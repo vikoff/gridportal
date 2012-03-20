@@ -512,12 +512,20 @@ class TaskSetCollection extends GenericObjectCollection{
 	/** ПОЛУЧИТЬ СПИСОК С ПОСТРАНИЧНОЙ РАЗБИВКОЙ */
 	public function getPaginated($options = array()){
 		
+		$db = db::get();
+		
 		$whereArr = array();
 		if(!empty($this->filters['uid']))
 			$whereArr[] = 's.uid='.$this->filters['uid'];
 			
+		if(!empty($this->filters['search'])) {
+			$parts = preg_split('/\s+/', $this->filters['search']);
+			foreach ($parts as $p)
+				$whereArr[] = "CONCAT_WS(' ', LOWER(s.name), LOWER(proj.text_key), LOWER(prof.name)) LIKE '%".$db->escape(strtolower($p))."%'";
+		}
+			
 		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
-		
+				
 		$sqlFields = 's.*, proj.name_key AS project_name, prof.name AS profile_name';
 		$sqlFrom = '
 			FROM '.TaskSet::TABLE.' s
@@ -533,7 +541,6 @@ class TaskSetCollection extends GenericObjectCollection{
 		$sorter = new Sorter('create_date', 'DESC', $this->_getSortableFieldsTitles());
 		$paginator = new Paginator('sql', array($sqlFields, $sqlFrom.' '.$whereStr.' ORDER BY '.$sorter->getOrderBy()), '~50');
 		
-		$db = db::get();
 		$data = $db->getAllIndexed($paginator->getSql(), 'id', array());
 		
 		// echo '<pre>'; print_r($data); die;

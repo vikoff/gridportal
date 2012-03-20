@@ -30,13 +30,20 @@
 						<tr>
 							<td>UP</td>
 							<td><a href="<?= href('task-submit/analyze?submit='.$this->curSubmitId.'&path='.$this->fileTree['relpath'].'..'); ?>">..</a></td>
+							<td>SIZE</td>
 							<td></td>
 						</tr>
 					<? endif; ?>
 					<? foreach($this->fileTree['dirs'] as $elm): ?>
+					<? 
+						$res = array();
+						exec('du -s -b ' . $this->fileTree['curpath'] . $elm, $res);
+						$size = isset($res[0]) ? intval($res[0]) : 0;
+					?>
 						<tr>
 							<td>DIR</td>
 							<td><a href="<?= href('task-submit/analyze?submit='.$this->curSubmitId.'&path='.$this->fileTree['relpath'].$elm); ?>"><?= $elm; ?></a></td>
+							<td><?= formatHumanReadableSize($size) ?></td>
 							<td><a href="<?= href('task-submit/download-dir/'.$this->curSubmitId.'/archive?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small"><?= Lng::get('task.analyze-download-in-archive') ?></a></td>
 						</tr>
 					<? endforeach; ?>
@@ -45,8 +52,9 @@
 						<tr>
 							<td>FILE</td>
 							<td><?= $elm; ?></td>
-							<td><a target="_blank" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small"><?= Lng::get('task.analyze-download') ?></a></td>
-							<td><a href="<?= href('task-submit/visualize/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm); ?>" class="visualize">визуализация</a></td>
+							<td><?= formatHumanReadableSize(filesize($this->fileTree['curpath'] . $elm)) ?></td>
+							<td><a target="_blank" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small"><?= Lng::get('task.analyze-download') ?></a>
+							<a href="<?= href('task-submit/visualize/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm); ?>" class="visualize">визуализация</a></td>
 						</tr>
 					<? endforeach; ?>
 				</table>

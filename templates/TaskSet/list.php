@@ -2,6 +2,14 @@
 	<img src="/images/icons/tasks.gif" alt="<?= Lng::get('task-set.tasks') ?>" title="<?= Lng::get('task-set.tasks') ?>" align="center" width=32 height=32 onmouseover="this.src='/images/icons/tasks.a.gif'" onmouseout="this.src='/images/icons/tasks.gif'" />
 	<?= Lng::get('task-set.tasks') ?>
 </h1>
+
+<div style="width:250px;">
+	<form action="">
+		<input type="text" name="search" value="<?= getVar($_GET['search']) ?>" placeholder="<?= Lng::get('task-set.search-by-tasks') ?>" />
+		<input type="submit" value="<?= Lng::get('task-set.search') ?>" />
+	</form>
+</div>
+
 <?= $this->pagination; ?>
 
 <? if($this->collection): ?>
@@ -41,7 +49,7 @@
 	</table>
 	
 <? else: ?>
-	<p><?= Lng::get('admin_list-not-save-record'); ?></p>
+	<p><?= Lng::get('task-set.not-found'); ?></p>
 <? endif; ?>
 
 <?= $this->pagination; ?>
@@ -49,7 +57,7 @@
 <div class="refresh-indicator">
 	<span></span>
 	&nbsp;
-	<a href="<?= href('task-set'); ?>" onclick="refresh('.refresh-indicator :first'); return false"><img src="/images/refresh.png" alt="<?= Lng::get('TaskSet-view-update'); ?>" title="<?= Lng::get('TaskSet-view-update'); ?>" align="middle" /></a>
+	<a href="<?= href('task-set' . (getVar($_GET['search']) ? getVar($_GET['search']) : '')); ?>" onclick="refresh('.refresh-indicator :first'); return false"><img src="/images/refresh.png" alt="<?= Lng::get('TaskSet-view-update'); ?>" title="<?= Lng::get('TaskSet-view-update'); ?>" align="middle" /></a>
 </div>
 
 <script type="text/javascript">

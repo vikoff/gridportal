@@ -495,8 +495,12 @@ class TaskSubmit extends GenericObject{
 		exit;
 	}
 	
-	/** ПОЛУЧИТЬ ДАННЫЕ ДЛЯ ВИЗУАЛИЗАЦИИ */
-	public function getVisualizationData($relname, $type){
+	/**
+	 * ПОЛУЧИТЬ ДАННЫЕ ДЛЯ ВИЗУАЛИЗАЦИИ
+	 * @param string $relname - имя файла для визуализации
+	 * @param string $type - тип визуализации
+	 */
+	public function getVisualization($relname, $type){
 		
 		$rootDir = $this->getFilesDir().'results/';
 		$fullname = realpath($rootDir.$relname);
@@ -507,17 +511,12 @@ class TaskSubmit extends GenericObject{
 			FrontendViewer::get()->error404();
 		}
 		
+		
 		if (!file_exists($fullname))
 			die('file not found');
 		
-		
-		$file = file_get_contents($fullname);
-		$output = array('hello' => 'world');
-		
-		// парсинг здесь...
-		
-		
-		return $output;
+		$vis = new TaskVisualization($fullname);
+		return $vis->getHtml();
 	}
 	
 	/**

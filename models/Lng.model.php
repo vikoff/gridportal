@@ -171,6 +171,33 @@ class Lng {
 		
 	}
 	
+	/**
+	 * ПОЛУЧИТЬ ФРАГМЕНТ ТЕКСТА ПО ЗАДАННОМУ КЛЮЧУ С УЧЕТОМ СКЛОНЕНИЯ ИЛИ ЭКЗЕМПЛЯР КЛАССА LNG
+	 * в случае если число - 1, ключ не меняется,
+	 * если число заканчивается на 1* (напр. 21) - в конце ключа добавляется 1,
+	 * если число заканчивается на 2, 3 или 4 - в конце добавляется 2,
+	 * если число заканчивается на 5-9 или 0 - в конце добавляется 3
+	 * * - исключение числа с 11 по 14, в этом случае в конце добавляется 3
+	 * 
+	 * исп.: <?= Lng::getDeclinated('task-set.will-run-tasks', $this->numSubmits, array($this->numSubmits)); ?>
+	 * 								 ключ					   число					число (еще раз)	
+	 */
+	public static function getDeclinated($key, $number, $placeholders = array()){
+		
+		if(is_null(self::$_instance))
+			self::$_instance = new Lng();
+		
+		if ($number != 1){
+			$cases = array(2, 0, 1, 1, 1, 2);
+			$variant = (($number % 100 > 4 && $number % 100 < 20) ? 2 : $cases[($number % 10 < 5) ? $number % 10 : 5]) + 1;
+		}
+		else
+			$variant = '';
+		
+		return self::$_instance->getSnippet($key.$variant, $placeholders);
+		
+	}
+	
 	/** КОНСТРУКТОР */
 	private function __construct(){
 		

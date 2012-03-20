@@ -1,0 +1,154 @@
+
+<html>
+	<head>
+		<title>Мега-редактор</title>
+		<base href="https://thei.org.ua/" />
+		<link rel="stylesheet" href="css/common.css" type="text/css" />
+		<link rel="stylesheet" href="css/frontend.css" type="text/css" />
+		<style>
+			.file-editor {
+				width: 100%;
+				max-width: 600px;
+				height: 100%;
+				margin: 0 auto;
+				padding: 0;
+				background: #fcfdff;
+				font-family: Tahoma;
+				font-size: 11px;
+			}
+			.file-editor-caption {
+				font-size: 16px;
+				font-weight: bold;
+				padding: 10px;
+			}
+			.file-editor-main {
+				width: 100%;
+			}
+			.file-editor-main div {
+				width: 100%;
+				margin-bottom: 10px;
+			}
+			.file-editor-main div:hover {
+				background: #ebf4ff;
+			}
+			.file-editor-main table {
+				margin-bottom: 4px;
+			}
+			.file-editor-main table:hover {
+				background: #daeafe;
+			}
+			.file-editor-main th, .file-editor-main td {
+				font-family: Tahoma;
+				font-size: 12px;
+				vertical-align: top;
+				padding: 2px 5px;
+			}
+			.file-editor-main th {
+				padding-left: 20px;
+				font-weight: bold;
+				text-align: left;
+				background: #a8cefe;
+			}
+			.file-editor-main td {
+				padding: 1px 10px;
+			}
+			.file-editor-param-title {
+				width: 40%;
+			}
+			.file-editor-main input {
+				font-size: 12px;
+				width: 100%;
+				border: solid #a8cefe 1px;
+			}
+		</style>
+	</head>
+	<body class="file-editor file-editor-fds">
+		<table>
+			<tr>
+				<td class="file-editor-caption">JetFan.fds</td>
+			</tr>
+			<tr>
+				<td class="file-editor-main">
+					<div>
+						<table>	
+							<tr>
+								<th colspan="3">TIME</th>
+							</tr>
+						</table>
+						<table>	
+							<tr>
+								<td class="file-editor-param-title" rowspan=2>T_END</td>
+								<td><input name="keys[1][T_END]" value="0" /></td>
+							</tr>
+							<tr>
+								<td><input name="keys[2][T_END]" value="0" /></td>
+							</tr>
+						</table>
+						<table>	
+							<tr>
+								<td class="file-editor-param-title" rowspan=2>T_END</td>
+								<td><input name="keys[1][T_END]" value="0" /></td>
+							</tr>
+							<tr>
+								<td><input name="keys[2][T_END]" value="0" /></td>
+							</tr>
+						</table>
+						<table>	
+							<tr>
+								<td class="file-editor-param-title" rowspan=2>T_END</td>
+								<td><input name="keys[1][T_END]" value="0" /></td>
+							</tr>
+							<tr>
+								<td><input name="keys[2][T_END]" value="0" /></td>
+							</tr>
+						</table>
+					</div>
+					<div>
+						<table>	
+							<tr>
+								<th colspan="3">DUMP</th>
+							</tr>
+							<tr style="vertical-align: top !important;">
+								<td class="file-editor-param-title">RENDER_FILE</td>
+								<td>
+									<input type="hidden" name="keys[2][RENDER_FILE]" value="1" />
+									<input type="text" name="items[1][value]" value="'JetFan.ge1'" />
+								</td>
+								<td style="vertical-align: bottom;"></td>
+							</tr>
+						</table>
+					</div>
+					<div>
+						<table>	
+							<tr>
+								<th colspan="3">Сетка</th>
+							</tr>
+							<tr style="vertical-align: top !important;">
+								<td class="file-editor-param-title">ID</td>
+								<td>
+									<input type="hidden" name="keys[3][ID]" value="2" />
+									<input type="text" name="items[2][value]" value="'MESH'" />
+								</td>
+								<td style="vertical-align: bottom;"></td>
+							</tr>
+							<tr style="vertical-align: top !important;">
+								<td class="file-editor-param-title">XB</td>
+								<td>
+									<input type="hidden" name="keys[3][XB]" value="3" />
+									<input type="text" name="items[3][value]" value="0.00,10.00,0.00,10.00,0.00,3.00" />
+								</td>
+								<td style="vertical-align: bottom;"></td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+			<tr style="height: 50px; border; solid 1px black; text-align: center;">
+				<td>
+					<input type="submit" class="button" value="сохранить" />
+					<a href="#" class="button">Закрыть</a>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
