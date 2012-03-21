@@ -2,6 +2,35 @@
 	<img src="/images/icons/statistics.gif" alt="<?= Lng::get('top-menu.results') ?>" title="<?= Lng::get('top-menu.results') ?>" align="center" width=32 height=32 onmouseover="this.src='/images/icons/statistics.a.gif'" onmouseout="this.src='/images/icons/statistics.gif'" />
 	<?= Lng::get('top-menu.results') ?>
 </h1>
+
+<div style="text-align:right">
+	<form name="filter" action="">
+		<input type="text" name="search" value="<?= getVar($_GET['search']) ?>" placeholder="<?= Lng::get('task-set.search-by-statistics') ?>" />
+		<input type="submit" value="<?= Lng::get('task-set.search') ?>" />
+		<br />
+		Пользователь:
+		<input type="text" name="filter[username]" value="<?= getVar($_GET['filter']['username']) ?>" />
+		<br />
+		Имя задачи:
+		<input type="text" name="filter[taskname]" value="<?= getVar($_GET['filter']['taskname']) ?>" />
+		<br />
+		Профиль:
+		<input type="text" name="filter[profile]" value="<?= getVar($_GET['filter']['profile']) ?>" />
+		<br />
+		Кол-во запусков:
+		от <input type="text" name="filter[num_submits][from]" value="<?= getVar($_GET['filter']['num_submits']['from']) ?>" size=5 />
+		до <input type="text" name="filter[num_submits][to]" value="<?= getVar($_GET['filter']['num_submits']['to']) ?>" size=5 />
+		<br />
+		Дата создания:
+		<input type="hidden" name="filter[date][from]" value="<?= getVar($_GET['filter']['date']['from']) ?>" />
+		<input type="hidden" name="filter[date][to]" value="<?= getVar($_GET['filter']['date']['to']) ?>" />
+		от <input type="text" name="filter[dateVisual][from]" value="" size=10 />
+		до <input type="text" name="filter[dateVisual][to]" value="" size=10 />
+		<br />
+		<input type="submit" value="<?= Lng::get('task-set.filter') ?>" />
+	</form>
+</div>
+
 <?= $this->pagination; ?>
 
 <? if($this->collection): ?>
@@ -68,4 +97,19 @@ function showStatistics(elm, num_submits, num_finished, num_processing, num_erro
 function hideStatistics(elm){
 	hidePopup(elm);
 }
+$(document.forms[0]["filter[dateVisual][from]"]).datepicker({
+	altField: $(document.forms["filter"]["filter[date][from]"]),
+	altFormat: '@',
+	dateFormat: 'dd.mm.yy',
+	defaultDate: $.datepicker.parseDate("@", document.forms["filter"]["filter[dateVisual][from]"].value)
+});
+$(document.forms[0]["filter[dateVisual][from]"]).datepicker("setDate", $.datepicker.parseDate("@", document.forms["filter"]["filter[date][from]"].value));
+
+$(document.forms[0]["filter[dateVisual][to]"]).datepicker({
+	altField: $(document.forms["filter"]["filter[date][to]"]),
+	altFormat: '@',
+	dateFormat: 'dd.mm.yy',
+	defaultDate: $.datepicker.parseDate("@", document.forms["filter"]["filter[dateVisual][to]"].value)
+});
+$(document.forms[0]["filter[dateVisual][to]"]).datepicker("setDate", $.datepicker.parseDate("@", document.forms["filter"]["filter[date][to]"].value));
 </script>

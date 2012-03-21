@@ -521,7 +521,41 @@ class TaskSetCollection extends GenericObjectCollection{
 		if(!empty($this->filters['search'])) {
 			$parts = preg_split('/\s+/', $this->filters['search']);
 			foreach ($parts as $p)
-				$whereArr[] = "CONCAT_WS(' ', LOWER(s.name), LOWER(proj.text_key), LOWER(prof.name)) LIKE '%".$db->escape(strtolower($p))."%'";
+				$whereArr[] = "CONCAT_WS(' ', LOWER(s.name), LOWER(proj.text_key), LOWER(prof.name) " .
+				(!empty($options['withUsers']) ? ", LOWER(u.name), LOWER(u.surname)" : "") .
+				") LIKE '%".$db->escape(strtolower($p))."%'";
+		}
+		
+		// filters
+		
+		if (!empty($_GET['filter']['num_submits']) && is_array($_GET['filter']['num_submits'])){
+			if (intval(getVar($_GET['filter']['num_submits']['from']))){
+				$whereArr[] = "s.num_submits >= " . intval(getVar($_GET['filter']['num_submits']['from']));
+			}
+			if (intval(getVar($_GET['filter']['num_submits']['to']))){
+				$whereArr[] = "s.num_submits <= " . intval(getVar($_GET['filter']['num_submits']['to']));
+			}
+		}
+		
+		if (!empty($_GET['filter']['date']) && is_array($_GET['filter']['date'])){
+			if (intval(getVar($_GET['filter']['date']['from']))){
+				$whereArr[] = "s.create_date >= " . (getVar($_GET['filter']['date']['from']) / 1000);
+			}
+			if (intval(getVar($_GET['filter']['date']['to']))){
+				$whereArr[] = "s.create_date <= " . (getVar($_GET['filter']['date']['to']) / 1000);
+			}
+		}
+		
+		if (!empty($options['withUsers']) && !empty($_GET['filter']['username'])){
+			$whereArr[] = "LOWER(CONCAT(u.surname,' ',u.name)) LIKE LOWER('%" . getVar($_GET['filter']['username']) . "%')";
+		}
+		
+		if (!empty($_GET['filter']['taskname'])){
+			$whereArr[] = "LOWER(s.name) LIKE LOWER('%" . getVar($_GET['filter']['taskname']) . "%')";
+		}
+		
+		if (!empty($_GET['filter']['profile'])){
+			$whereArr[] = "LOWER(prof.name) LIKE LOWER('%" . getVar($_GET['filter']['profile']) . "%')";
 		}
 			
 		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';

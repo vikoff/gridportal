@@ -18,7 +18,7 @@
 		css/common.css,
 		css/frontend.css,
 		css/simplemodal.css,
-		css/redmond/jquery-ui-1.8.16.custom.css" type="text/css" />
+		css/redmond/jquery-ui-1.8.18.custom.css" type="text/css" />
     <link href="css/style_usab.css" rel="stylesheet">
 	<!--[if lte IE 8]> <link href="css/style_usab_ie.css" rel="stylesheet"> <![endif]-->
 	
@@ -38,10 +38,10 @@
 			taskSetUpdateUpdating: '<?= Lng::get('task-set.update.updating'); ?>',
 		};
 	</script>
-	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
+	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.8.18.custom.min.js"></script>
 	<script type="text/javascript" src="js/jquery.address-1.4.min.js"></script>
 	<script type="text/javascript" src="
-		js/jquery-ui-1.8.16.custom.min.js,
 		js/jquery.ctrlentersend.min.js,
 		js/jquery.browser.min.js,
 		js/common.js,

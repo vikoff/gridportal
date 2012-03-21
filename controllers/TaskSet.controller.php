@@ -151,7 +151,7 @@ class TaskSetController extends Controller{
 		}
 		
 		// статистика по всем сетам
-		$collection = new TaskSetCollection();
+		$collection = new TaskSetCollection(array('search' => getVar($_GET['search'])));
 		$variables = array(
 			'collection' => $collection->getPaginated(array('withUsers' => TRUE)),
 			'pagination' => $collection->getPagination(),
