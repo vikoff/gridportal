@@ -20,7 +20,7 @@ class TaskVisualization {
 		$ext = Tools::getExt($this->fullname);
 		if ($ext == 'csv')
 			return self::TYPE_CSV_CHART;
-		elseif ($ext == 'jpg')
+		elseif ($ext == 'jpg' || $ext == 'jpeg' || $ext == 'gif' || $ext == 'png')
 			return self::TYPE_IMAGE;
 		else
 			return self::TYPE_TABLE;
