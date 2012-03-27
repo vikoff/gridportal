@@ -214,9 +214,12 @@ class TaskSetController extends Controller{
 					foreach($mults as $mult)
 						$numSubmits *= count($mult['values']);
 		
+		$userProfile = CurUser::get()->getFieldPrepared('profile');
+		
 		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
 			'myproxyLoginForm' => MyproxyServerController::snippet_myproxy_login(),
 			'numSubmits' => $numSubmits,
+			'taskFetchNotify' => !empty($userProfile['task_fetch_notify']),
 		));
 		
 		$viewer

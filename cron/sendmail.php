@@ -24,6 +24,8 @@ require_once(FS_ROOT.'includes/PHPMailer_5.2.1/class.phpmailer.php');
 
 function send($address, $title, $body){
 	
+	// print_r(func_get_args()); die; // DEBUG
+	
 	$fromHost = 'localhost';
 	$fromAddress = 'vlad@thei.org.ua';
 	$fromName = 'CrimeaEcoGrid-portal';
@@ -44,44 +46,32 @@ function send($address, $title, $body){
 	$mail->SetFrom($fromAddress, $fromName);
 
 	$mail->Subject    = $title;
-	$mail->AltBody    = strip_tags($body);
+	$mail->AltBody    = strip_tags(nl2br($body));
 	$mail->MsgHTML($body);
 	$mail->AddAddress($address, "e-mail notice");
 
-	return $mail->Send();
+	$db = db::get();
+	if ($mail->Send()) {
+		echo "mail sent to $address\n";
+		$db->update('mail', array('status' => 1, 'send_date' => time()), 'status=0 AND email='.$db->qe($address));
+		return TRUE;
+	} else {
+		echo "mail sent ERROR to $address\n";
+		$db->update('mail', array('status' => -1, 'send_date' => time()), 'status=0 AND email='.$db->qe($address));
+		return FALSE;
+	}
 }
 
 $db = db::get();
 
 $users = array();
 $mailToSend = array();
-$mailData = $db->getAll('SELECT * FROM mail WHERE send_date IS NULL');
-
-// получение id всех пользователей
-foreach ($mailData as $m)
-	if ($m['uid'] && !isset($users[ $m['uid'] ]))
-		$users[ $m['uid'] ] = null;
-
-// получение email-адресов всех пользователей		
-if (!empty($users)) {
-	foreach ($db->getColIndexed('SELECT id, profile FROM users WHERE id IN('.implode(',', array_keys($users)).')') as $uid => $sData){
-		if (!empty($sData)) {
-			$data = unserialize($sData);
-			if (!empty($data['email']))
-				$users[$uid] = $data['email'];
-		}
-	}
-}
+$mailData = $db->getAll('SELECT * FROM mail WHERE status=0');
 
 // сбор почты
 foreach ($mailData as $m) {
 	
-	$email = !empty($m['email'])
-		? $m['email']
-		: $users[ $m['uid'] ];
-	
-	if (empty($email))
-		continue;
+	$email = $m['email'];
 	
 	if (!isset($mailToSend[$email]))
 		$mailToSend[$email] = array();
@@ -92,18 +82,23 @@ foreach ($mailData as $m) {
 	);
 }
 
-// echo '<pre>'; print_r($mailToSend);
+// echo '<pre>'; print_r($mailToSend); die;
 
 foreach ($mailToSend as $email => $data) {
 	
+	$title = '';
 	$text = '';
-	foreach ($data as $msg) {
-		$text .= "\n<h3>".$msg['title']."</h3>\n";
-		$text .= $msg['text'];
+	if (count ($data == 1)) {
+		$title = $data[0]['title'];
+		$text = $data[0]['text'];
+	} else {
+		$title = 'Изменение статуса нескольких задач';
+		foreach ($data as $msg) {
+			$text .= $msg['text'].'<br />';
+		}
 	}
-	
-	echo "mail to $email\n$text\n\n";
-        send($email, 'title', $text);
+	echo "mail to $email\n$title\n\n";
+	send($email, $title, $text);
 }
 
 ?>

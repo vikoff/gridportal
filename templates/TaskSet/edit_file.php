@@ -1,63 +1,56 @@
-<?
-
-// echo '<pre>'; print_r($vars); die;
-
-?>
+<!DOCTYPE html>
 <html>
 <head>
 	<title><?= Lng::get('tast-set-edit-file.mega-workflow-editor'); ?></title>
 	<base href="<?= WWW_ROOT; ?>" />
-	<link rel="stylesheet" href="css/common.css" type="text/css" />
-	<link rel="stylesheet" href="css/frontend.css" type="text/css" />
+	<link rel="stylesheet" href="css/fileeditor.css" type="text/css" />
 	<script type="text/javascript" src="js/jquery-1.6.2.min.js"></script>
-	<style type="text/css">
-		.message-saved{
-			display: none;
-			position: absolute;
-			padding: 5px 10px;
-			color: green;
-			border: solid 1px green;
-			font-weight: bold;
-			top: -20px;
-			left: -130px;
-		}
-	</style>
 </head>
-<body style="width: 100%; height: 100%; margin: 0; padding: 0;">
-
-<form action="" method="post">
-	<?= FORMCODE; ?>
-	<input type="hidden" name="action" value="task-set/save-file" />
-	<input type="hidden" name="id" value="<?= $this->instanceId; ?>" />
-	<input type="hidden" name="file" value="<?= $this->fname; ?>" />
-	
-	<table style="width: 100%; height: 100%;">
-	<tr>
-		<td>
-			<textarea name="content" style="width: 100%; height: 100%; padding: 10px;" spellcheck="false"><?= htmlspecialchars($this->content); ?></textarea>
-		</td>
-	</tr>
-	<tr style="height: 30px; border; solid 1px black; text-align: center;">
-		<td style="font-weight: bold;"><?= $this->fname; ?></td>
-	</tr>
-	<tr style="height: 50px; border; solid 1px black; text-align: center;">
-		<td>
-			
-			<div style="display: inline-block; position: relative;">
-				<div class="message-saved"><?= Lng::get('saved'); ?></div>
+<body class="file-editor text-file">
+	<form name="editor" action="" method="post">
+		<?= FORMCODE; ?>
+		<input type="hidden" name="action" value="task-set/save-file" />
+		<input type="hidden" name="id" value="<?= $this->instanceId; ?>" />
+		<input type="hidden" name="file" value="<?= $this->fname; ?>" />
+		
+		<div id="main">
+			<div id="caption">
+				<?= $this->fname; ?>
+				<div id="toolbar">
+					<span class="file-editor-save" title="<?= Lng::get('save'); ?>"></span>&nbsp;
+					<span class="file-editor-help" title="<?= Lng::get('help'); ?>"></span>
+				</div>
 			</div>
-			<input type="submit" class="button" value="<?= Lng::get('saved'); ?>" />
-			<a href="#" class="button" onclick="if(confirm('Выйти?')){window.parent.$.modal.close();} return false;"><?= Lng::get('close'); ?></a>
-		</td>
-	</tr>
-	</table>
-</form>
-<script type="text/javascript">
-	<? if ($this->saved_success): ?>
-		$('.message-saved').show();
-		setTimeout(function(){ $('.message-saved').fadeOut(1000); }, 1000);
-	<? endif; ?>
-</script>
-
+			<div id="content">
+				<textarea id="main-editor" name="content" spellcheck="false"><?= htmlspecialchars($this->content); ?></textarea>
+			</div>
+			<div id="bottom">
+				<div id="bottom-left">
+					
+				</div>
+				<div id="bottom-right">
+					<!--Тип файла: файл модели FDS&nbsp;&nbsp;&nbsp;
+					Размер файла: 1.8 Мб&nbsp;&nbsp;&nbsp;
+					Вариантов: 16&nbsp;&nbsp;&nbsp;
+					Общий размер: 28.8 Мб-->
+				</div>
+				<div class="cl"></div>
+			</div>
+			<div id="help">
+				<div id="help-content">Some help will be here</div>
+			</div>
+		</div>
+	</form>
+	<script type="text/javascript">
+		<? if ($this->saved_success): ?>
+			$('#bottom-left').text('<?= Lng::get('saved'); ?>');
+		<? endif; ?>
+		$('.file-editor-save').click(function(){
+			document.forms['editor'].submit();
+		});
+		$('.file-editor-help').click(function(){
+			$('#help').slideToggle();
+		});
+	</script>
 </body>
 </html>

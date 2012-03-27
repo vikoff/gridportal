@@ -229,6 +229,7 @@ class User extends GenericObject{
 			'email'       => array('email' => true),
 			'phone'       => array('length' => array('max' => '255')),
 			'messager'    => array('length' => array('max' => '255')),
+			'task_fetch_notify' => array('checkbox' => array('on' => 1, 'off' => 0)),
 		));
 		$validator->setFieldTitles(array(
 			'email'       => 'email',

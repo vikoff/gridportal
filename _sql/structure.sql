@@ -270,7 +270,8 @@ CREATE TABLE `mail` (
   `title`			TEXT,
   `text`			TEXT,
   `add_date`		int(10) UNSIGNED,
-  `send_date`		int(10) UNSIGNED
+  `send_date`		int(10) UNSIGNED,
+  `status`			SMALLINT DEFAULT 0, /* 0 - ожидает отправки; 1 - отправлено; -1 - ошибка отправки */
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 

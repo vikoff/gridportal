@@ -43,7 +43,7 @@ $(document).ready(function() {
 	</tr>
 	<tr>
 		<td>Оповещать по email</td>
-		<td><input type="checkbox" name="email-notify" value="1" /></td>
+		<td><input type="checkbox" name="email-notify" value="1" <?= $this->taskFetchNotify ? 'checked="checked"' : ''; ?> /></td>
 	</table>
 	
 	<div class="paragraph">

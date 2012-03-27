@@ -78,6 +78,18 @@
 					</td>
 				</tr>
 				<tr>
+					<td colspan="2" style="text-align: center;">
+						<b><?= Lng::get('profile.notifies') ?></b>
+					</td>
+				</tr>
+				<tr>
+					<td class="left"><?= Lng::get('profile.notify-the-tasks') ?></td>
+					<td>
+						<? //$checked = !isset($this->profile['task_fetch_notify']) || !empty($this->profile['task_fetch_notify']); ?>
+						<? $checked = !empty($this->profile['task_fetch_notify']); ?>
+						<input type="checkbox" name="task_fetch_notify" value="1" <?= $checked ? 'checked="checked"' : ''; ?> /></td>
+				</tr>
+				<tr>
 					<td align="center" colspan="2">
 						<input type="submit" value="<?= Lng::get('save') ?>">
 					</td>
