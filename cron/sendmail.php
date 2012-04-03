@@ -42,7 +42,8 @@ function send($address, $title, $body){
 	$mail->Port       = 25;                    // set the SMTP port for the GMAIL server
 	$mail->Username   = $fromAddress; 			// SMTP account username
 	$mail->Password   = $fromPassword;        // SMTP account password
-
+	$mail->CharSet = "UTF-8";
+	
 	$mail->SetFrom($fromAddress, $fromName);
 
 	$mail->Subject    = $title;
@@ -78,12 +79,15 @@ foreach ($mailData as $m) {
 	
 	$mailToSend[$email][] = array(
 		'title' => $m['title'],
-		'text' => $m['text'],
+		'text' => trim($m['text']),
 	);
 }
 
 // echo '<pre>'; print_r($mailToSend); die;
 
+if (empty($mailToSend))
+	die("no mail to send\n");
+	
 foreach ($mailToSend as $email => $data) {
 	
 	$title = '';

@@ -23,12 +23,13 @@ $script = CUR_PATH.'get_submits.php';
 
 $db = db::get();
 $jobs = $db->getAllIndexed('
-	SELECT id, jobid, uid, is_submitted, email_notify, status, is_completed FROM task_submits
+	SELECT ts.*, u.lng FROM task_submits ts
+	JOIN users u ON u.id=ts.uid
 	WHERE 
 		jobid IS NOT NULL AND LENGTH(jobid) > 0 AND
 		is_submitted > 0 AND
 		is_completed = 0
-	ORDER BY id
+	ORDER BY ts.id
 ', 'jobid');
 
 echo "TASKS ".print_r($jobs, 1)."\n";
@@ -79,10 +80,11 @@ foreach($statuses as $jobid => $data){
 	if ($isCompleted) {
 		$fields['finish_date'] = time();
 		if ($jobs[$jobid]['email_notify']) {
-			Mail::create()->send('fetch_success', array(
-				'uid' => $jobs[$jobid]['uid'],
+			Mail::create()->send($jobs[$jobid]['uid'], 'fetch_success', array(
 				'jobid' => $jobid,
 				'task_status' => $allStatuses[$status]['title'],
+				'task_href' => 'https://thei.org.ua/'.$jobs[$jobid]['lng'].'/task-set/view/'.$jobs[$jobid]['set_id'],
+				// 'task_href' => 'https://thei.org.ua/'.$jobs[$jobid]['lng'].'/task-submit/analyze?submit='.$jobs[$jobid]['id'],
 			));
 		}
 	}

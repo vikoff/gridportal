@@ -1,11 +1,11 @@
 <?php
 
 return array(
-	
-	'title' => 'Задача выполнена The task is made',
-	'text' => 'Задача выполнена со статусом The task completed with status'.$task_status.'.
+	'title' => 'Задача успешно выполнена',
+	'text' => '
+		Задача '.$this->jobid.' выполнена со статусом '.Lng::get()->getLngSnippet($this->lng, $this->task_status).'.
+		Ссылка на задачу: <a href="'.$this->task_href.'."></a>
 	',
 );
-
 
 ?>

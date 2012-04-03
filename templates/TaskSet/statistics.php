@@ -3,33 +3,79 @@
 	<?= Lng::get('top-menu.results') ?>
 </h1>
 
-<div style="text-align:right">
+<div style="text-align:right; ">
 	<form name="filter" action="">
-		<input type="text" name="search" value="<?= getVar($_GET['search']) ?>" placeholder="<?= Lng::get('task-set.search-by-statistics') ?>" />
-		<input type="submit" value="<?= Lng::get('task-set.search') ?>" />
-		<br />
-		Пользователь:
-		<input type="text" name="filter[username]" value="<?= getVar($_GET['filter']['username']) ?>" />
-		<br />
-		Имя задачи:
-		<input type="text" name="filter[taskname]" value="<?= getVar($_GET['filter']['taskname']) ?>" />
-		<br />
-		Профиль:
-		<input type="text" name="filter[profile]" value="<?= getVar($_GET['filter']['profile']) ?>" />
-		<br />
-		Кол-во запусков:
-		от <input type="text" name="filter[num_submits][from]" value="<?= getVar($_GET['filter']['num_submits']['from']) ?>" size=5 />
-		до <input type="text" name="filter[num_submits][to]" value="<?= getVar($_GET['filter']['num_submits']['to']) ?>" size=5 />
-		<br />
-		Дата создания:
-		<input type="hidden" name="filter[date][from]" value="<?= getVar($_GET['filter']['date']['from']) ?>" />
-		<input type="hidden" name="filter[date][to]" value="<?= getVar($_GET['filter']['date']['to']) ?>" />
-		от <input type="text" name="filter[dateVisual][from]" value="" size=10 />
-		до <input type="text" name="filter[dateVisual][to]" value="" size=10 />
-		<br />
-		<input type="submit" value="<?= Lng::get('task-set.filter') ?>" />
+		<div id="searchbox-short">
+			<input type="text" name="search" value="<?= getVar($_GET['search']) ?>" placeholder="<?= Lng::get('task-set.search-by-statistics') ?>" />
+			<input type="submit" value="<?= Lng::get('task-set.search') ?>" />
+			<div style="margin-right: 80px;"><a href="#" onclick="$('#searchbox-short,#searchbox-full').slideToggle(); return false;"><?= Lng::get('top-menu.advanced-search') ?></a></div>
+		</div>
+		<div style="display: none;" id="searchbox-full">
+		<div style="margin-right: 0px;"><a href="#" onclick="$('#searchbox-short,#searchbox-full').slideToggle(); return false;"><?= Lng::get('top-menu.short-search') ?></a></div>
+			<table class="table-tiny" style="margin: 0;" align="right">
+			<tr>	
+				<td>Пользователь:</td>
+				<td><input type="text" name="filter[username]" value="<?= getVar($_GET['filter']['username']) ?>" /></td>
+			</tr>
+			<tr>
+				<td>Имя задачи:</td>
+				<td><input type="text" name="filter[taskname]" value="<?= getVar($_GET['filter']['taskname']) ?>" /></td>
+			</tr>
+			<tr>
+				<td>Профиль:</td>
+				<td><input type="text" name="filter[profile]" value="<?= getVar($_GET['filter']['profile']) ?>" /></td>
+			</tr>
+			<tr>
+				<td>Кол-во запусков:</td>
+				<td>
+					от <input type="text" name="filter[num_submits][from]" value="<?= getVar($_GET['filter']['num_submits']['from']) ?>" size=5 />
+					до <input type="text" name="filter[num_submits][to]" value="<?= getVar($_GET['filter']['num_submits']['to']) ?>" size=5 />
+				</td>
+			</tr>
+			<tr>
+				<td>Дата создания:</td>
+				<td>
+					<input type="hidden" name="filter[date][from]" value="<?= getVar($_GET['filter']['date']['from']) ?>" />
+					<input type="hidden" name="filter[date][to]" value="<?= getVar($_GET['filter']['date']['to']) ?>" />
+					от <input type="text" name="filter[dateVisual][from]" value="" style="width: 50px;" />
+					до <input type="text" name="filter[dateVisual][to]" value="" style="width: 50px;" />
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<input type="submit" value="<?= Lng::get('task-set.filter') ?>" />
+				</td>
+			</tr>
+			</table>
+		</div>
+		<!--div style="display: none;" id="searchbox-full">
+			<div style="margin-right: 0px;"><a href="#" onclick="$('#searchbox-short,#searchbox-full').slideToggle(); return false;">краткий поиск</a></div>
+			Пользователь:
+			<input type="text" name="filter[username]" value="<?= getVar($_GET['filter']['username']) ?>" />
+			<br />
+			Имя задачи:
+			<input type="text" name="filter[taskname]" value="<?= getVar($_GET['filter']['taskname']) ?>" />
+			<br />
+			Профиль:
+			<input type="text" name="filter[profile]" value="<?= getVar($_GET['filter']['profile']) ?>" />
+			<br />
+			Кол-во запусков:
+			от <input type="text" name="filter[num_submits][from]" value="<?= getVar($_GET['filter']['num_submits']['from']) ?>" size=5 />
+			до <input type="text" name="filter[num_submits][to]" value="<?= getVar($_GET['filter']['num_submits']['to']) ?>" size=5 />
+			<br />
+			Дата создания:
+			<input type="hidden" name="filter[date][from]" value="<?= getVar($_GET['filter']['date']['from']) ?>" />
+			<input type="hidden" name="filter[date][to]" value="<?= getVar($_GET['filter']['date']['to']) ?>" />
+			от <input type="text" name="filter[dateVisual][from]" value="" size=10 />
+			до <input type="text" name="filter[dateVisual][to]" value="" size=10 />
+			<br />
+			<input type="submit" value="<?= Lng::get('task-set.filter') ?>" />
+		</div-->
 	</form>
+		
 </div>
+<div style="clear: both;"></div>
 
 <?= $this->pagination; ?>
 

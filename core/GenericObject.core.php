@@ -113,8 +113,6 @@ class GenericObject{
 			throw new Exception404($this->getConst('NOT_FOUND_MESSAGE'));
 			
 		$this->afterLoad($this->dbFieldValues);
-		$this->fieldValuesForDisplay = $this->beforeDisplay($this->dbFieldValues);
-		$this->hasPreparedFieldsValues = TRUE;
 	}
 	
 	/**
@@ -131,9 +129,6 @@ class GenericObject{
 		
 		if(!$this->id || !is_array($this->dbFieldValues) || !count($this->dbFieldValues))
 			throw new Exception404($this->getConst('NOT_FOUND_MESSAGE'));
-			
-		$this->fieldValuesForDisplay = $this->beforeDisplay($this->dbFieldValues);
-		$this->hasPreparedFieldsValues = TRUE;
 	}
 	
 	/**

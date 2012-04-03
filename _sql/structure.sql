@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 	myproxy_login			VARCHAR(255),
 	myproxy_password		VARCHAR(255),
 	myproxy_server_id		INT,
-	myproxy_expire_date		INT DEFAULT 0
+	myproxy_expire_date		INT DEFAULT 0,
+	`lng`					CHAR(2) DEFAULT 'ru'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 INSERT INTO users (login, password, surname, name, level, regdate) VALUES('root', 'b1a838a7ee5413752554941c22926a1615866622', 'root', 'root', 50, 0);
@@ -262,16 +263,27 @@ CREATE TABLE `task_states` (
   `title`			VARCHAR(255)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+DROP TABLE IF EXISTS `mail`;
 CREATE TABLE `mail` (
   `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   `uid`				int(10) UNSIGNED,
   `email`			VARCHAR(255),
   `lng`				VARCHAR(10),
+  `template_name`	VARCHAR(255),
   `title`			TEXT,
   `text`			TEXT,
   `add_date`		int(10) UNSIGNED,
   `send_date`		int(10) UNSIGNED,
   `status`			SMALLINT DEFAULT 0, /* 0 - ожидает отправки; 1 - отправлено; -1 - ошибка отправки */
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+DROP TABLE IF EXISTS `mail_templates`;
+CREATE TABLE `mail_templates` (
+  `id`				int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `name`			VARCHAR(255) COMMENT 'машинное имя шаблона',
+  `family`			VARCHAR(255) COMMENT 'семейство шаблона (письма одного семейства могут отправляться по несколько штук за раз)',
+  `title_lng`		VARCHAR(255) COMMENT 'Заголовок письма (lng snippet)',
+  `title_multi_lng`	VARCHAR(255) COMMENT 'Заголовок письма, если за раз отправляется несколько писем (lng snippet)'
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 

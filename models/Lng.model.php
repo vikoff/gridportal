@@ -203,6 +203,9 @@ class Lng {
 		
 		$this->_check();
 		$this->_loadSnippets();
+		
+		if (USER_AUTH_ID)
+			$this->_saveUsrLng();
 	}
 	
 	/**
@@ -216,6 +219,25 @@ class Lng {
 			$this->save(array('id' => 0, 'name' => $key, 'num_placeholders' => count($placeholders)));
 		
 		$text = $this->snippets[$key];
+		
+		if (!empty($placeholders)) {
+			foreach (array_values($placeholders) as $index => $val)
+				$text = str_replace('$'.($index + 1), $val, $text);
+		}
+		return $text;
+	}
+	
+	/** извлечение языкового фрагмента указанного языка (осторжно, не кэшируемый SQL) */
+	public function getLngSnippet($lng, $key, $placeholders = array()){
+		
+		$db = db::get();
+		
+		$text = $db->getOne('
+			SELECT COALESCE(lng.text, lng_default.text, s.name) AS text FROM lng_snippets s
+			LEFT JOIN lng_'.$lng.' lng ON lng.snippet_id = s.id
+			LEFT JOIN lng_'.self::$defaultLng.' lng_default ON lng_default.snippet_id = s.id
+			WHERE s.name='.$db->qe($key).'
+		');		
 		
 		if (!empty($placeholders)) {
 			foreach (array_values($placeholders) as $index => $val)
@@ -291,6 +313,16 @@ class Lng {
 		// echo'<pre>'; print_r($this->snippets); die;
 	}
 	
+	private function _saveUsrLng(){
+		
+		if (empty($_SESSION['usr-lng']) || $_SESSION['usr-lng'] != $this->_curLng) {
+			
+			$curUser = CurUser::get();
+			$curUser->setField('lng', $this->_curLng);
+			$curUser->_save();
+			$_SESSION['usr-lng'] = $this->_curLng;
+		}
+	}
 	public static function getAll(){
 		
 		$fields = '';
