@@ -12,18 +12,33 @@ class TaskVisualization {
 	public function __construct($fullname){
 		
 		$this->fullname = $fullname;
-		$this->type = $this->_getVisualType();
+		$this->type = self::getVisualType($this->fullname);
 	}
 	
-	protected function _getVisualType(){
+	public static function getVisualType($fullname){
 		
-		$ext = Tools::getExt($this->fullname);
+		$ext = Tools::getExt($fullname);
 		if ($ext == 'csv')
 			return self::TYPE_CSV_CHART;
 		elseif ($ext == 'jpg' || $ext == 'jpeg' || $ext == 'gif' || $ext == 'png')
 			return self::TYPE_IMAGE;
 		else
 			return self::TYPE_TABLE;
+	}
+	
+	public function getHtml(){
+		
+		switch ($this->type) {
+			case self::TYPE_TABLE:
+				return $this->_buildTable();
+			case self::TYPE_IMAGE:
+				return $this->_buildImage();
+			case self::TYPE_CSV_CHART:
+				return $this->_buildCsvChart();
+			default:
+				return 'no type detected';
+		}
+		
 	}
 	
 	protected function _buildTable(){
@@ -64,21 +79,6 @@ class TaskVisualization {
 			'filename' => WWW_ROOT.substr($this->fullname, strlen(FS_ROOT))
 		);
 		return FrontendViewer::get()->getContentPhpFile(TaskSubmitController::TPL_PATH.'visualization/image.php', $data);
-	}
-	
-	public function getHtml(){
-		
-		switch ($this->type) {
-			case self::TYPE_TABLE:
-				return $this->_buildTable();
-			case self::TYPE_IMAGE:
-				return $this->_buildImage();
-			case self::TYPE_CSV_CHART:
-				return $this->_buildCsvChart();
-			default:
-				return 'no type detected';
-		}
-		
 	}
 	
 }

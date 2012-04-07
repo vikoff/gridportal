@@ -14,31 +14,31 @@
 		<div style="margin-right: 0px;"><a href="#" onclick="$('#searchbox-short,#searchbox-full').slideToggle(); return false;"><?= Lng::get('top-menu.short-search') ?></a></div>
 			<table class="table-tiny" style="margin: 0;" align="right">
 			<tr>	
-				<td>Пользователь:</td>
+				<td><?= Lng::get('user') ?>:</td>
 				<td><input type="text" name="filter[username]" value="<?= getVar($_GET['filter']['username']) ?>" /></td>
 			</tr>
 			<tr>
-				<td>Имя задачи:</td>
+				<td><?= Lng::get('tasklist.name') ?>:</td>
 				<td><input type="text" name="filter[taskname]" value="<?= getVar($_GET['filter']['taskname']) ?>" /></td>
 			</tr>
 			<tr>
-				<td>Профиль:</td>
+				<td><?= Lng::get('taskset.list.profile') ?>:</td>
 				<td><input type="text" name="filter[profile]" value="<?= getVar($_GET['filter']['profile']) ?>" /></td>
 			</tr>
 			<tr>
-				<td>Кол-во запусков:</td>
+				<td><?= Lng::get('taskset.list.num-submits') ?>:</td>
 				<td>
-					от <input type="text" name="filter[num_submits][from]" value="<?= getVar($_GET['filter']['num_submits']['from']) ?>" size=5 />
-					до <input type="text" name="filter[num_submits][to]" value="<?= getVar($_GET['filter']['num_submits']['to']) ?>" size=5 />
+					<?= Lng::get('taskset.list.from') ?><input type="text" name="filter[num_submits][from]" value="<?= getVar($_GET['filter']['num_submits']['from']) ?>" size=5 />
+					<?= Lng::get('taskset.list.to') ?><input type="text" name="filter[num_submits][to]" value="<?= getVar($_GET['filter']['num_submits']['to']) ?>" size=5 />
 				</td>
 			</tr>
 			<tr>
-				<td>Дата создания:</td>
+				<td><?= Lng::get('taskset.list.create-date') ?>:</td>
 				<td>
 					<input type="hidden" name="filter[date][from]" value="<?= getVar($_GET['filter']['date']['from']) ?>" />
 					<input type="hidden" name="filter[date][to]" value="<?= getVar($_GET['filter']['date']['to']) ?>" />
-					от <input type="text" name="filter[dateVisual][from]" value="" style="width: 50px;" />
-					до <input type="text" name="filter[dateVisual][to]" value="" style="width: 50px;" />
+					<?= Lng::get('taskset.list.from') ?><input type="text" name="filter[dateVisual][from]" value="" style="width: 50px;" />
+					<?= Lng::get('taskset.list.to') ?><input type="text" name="filter[dateVisual][to]" value="" style="width: 50px;" />
 				</td>
 			</tr>
 			<tr>

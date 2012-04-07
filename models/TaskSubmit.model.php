@@ -422,8 +422,20 @@ class TaskSubmit extends GenericObject{
 			if($elm == '.' || $elm == '..')
 				continue;
 			
-			$isDir = is_dir($path.$elm);
-			$files[$isDir ? 'dirs' : 'files'][] = $elm;
+			$fullName = $path.$elm;
+			$isDir = is_dir($fullName);
+			
+			if ($isDir) {
+				$files['dirs'][] = $elm;
+			} else {
+				$size = filesize($fullName);
+				$files['files'][] = array(
+					'name' => $elm,
+					'size' => $size,
+					'empty' => empty($size),
+					'visualizationType' => TaskVisualization::getVisualType($fullName),
+				);
+			}
 		}
 		
 		// echo '<pre>'; print_r($files); die;

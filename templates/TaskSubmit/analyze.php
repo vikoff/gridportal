@@ -26,38 +26,60 @@
 			<div class="task-file-manager">
 				
 				<table align="center" style="width: auto; text-align: left;" border>
-					<? if(!$this->fileTree['isRootDir']): ?>
-						<tr>
-							<td>UP</td>
-							<td><a href="<?= href('task-submit/analyze?submit='.$this->curSubmitId.'&path='.$this->fileTree['relpath'].'..'); ?>">..</a></td>
-							<td>SIZE</td>
-							<td></td>
-						</tr>
-					<? endif; ?>
-					<? foreach($this->fileTree['dirs'] as $elm): ?>
-					<? 
-						$res = array();
-						exec('du -s -b ' . $this->fileTree['curpath'] . $elm, $res);
-						$size = isset($res[0]) ? intval($res[0]) : 0;
-					?>
-						<tr>
-							<td>DIR</td>
-							<td><a href="<?= href('task-submit/analyze?submit='.$this->curSubmitId.'&path='.$this->fileTree['relpath'].$elm); ?>"><?= $elm; ?></a></td>
-							<td><?= formatHumanReadableSize($size) ?></td>
-							<td><a href="<?= href('task-submit/download-dir/'.$this->curSubmitId.'/archive?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small"><?= Lng::get('task.analyze-download-in-archive') ?></a></td>
-						</tr>
-					<? endforeach; ?>
-
-					<? foreach($this->fileTree['files'] as $elm): ?>
-						<tr>
-							<td>FILE</td>
-							<td><?= $elm; ?></td>
-							<td><?= formatHumanReadableSize(filesize($this->fileTree['curpath'] . $elm)) ?></td>
-							<td><a target="_blank" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small"><?= Lng::get('task.analyze-download') ?></a>
-							<a href="<?= href('task-submit/visualize/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm); ?>" class="visualize">визуализация</a></td>
-						</tr>
-					<? endforeach; ?>
-				</table>
+				<? if(!$this->fileTree['isRootDir']): ?>
+					<tr>
+						<td>UP</td>
+						<td><a href="<?= href('task-submit/analyze?submit='.$this->curSubmitId.'&path='.$this->fileTree['relpath'].'..'); ?>">..</a></td>
+						<td>SIZE</td>
+						<td></td>
+					</tr>
+				<? endif; ?>
+				<? foreach($this->fileTree['dirs'] as $elm): ?>
+				<? 
+					$res = array();
+					exec('du -s -b ' . $this->fileTree['curpath'] . $elm, $res);
+					$size = isset($res[0]) ? intval($res[0]) : 0;
+				?>
+					<tr>
+						<td>DIR</td>
+						<td><a href="<?= href('task-submit/analyze?submit='.$this->curSubmitId.'&path='.$this->fileTree['relpath'].$elm); ?>"><?= $elm; ?></a></td>
+						<td><?= formatHumanReadableSize($size) ?></td>
+						<td><a href="<?= href('task-submit/download-dir/'.$this->curSubmitId.'/archive?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small"><?= Lng::get('task.analyze-download-in-archive') ?></a></td>
+					</tr>
+				<? endforeach; ?>
+				
+				<? // echo '<pre>'; print_r($this->fileTree); die; ?>
+				<? foreach($this->fileTree['files'] as $elm): ?>
+					<tr>
+						<td>FILE</td>
+						<td><?= $elm['name']; ?></td>
+						<td><?= formatHumanReadableSize($elm['size']) ?></td>
+						<td>
+							<? if (!$elm['empty']): ?>
+								<a target="_blank" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm['name']); ?>" class="button-small"><?= Lng::get('task.analyze-download') ?></a>
+								<a href="<?= href('task-submit/visualize/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm['name']); ?>" class="visualize" title="<?= Lng::get('task-submits.visualize') ?>">
+									<? 
+									switch ($elm['visualizationType']) {
+										case TaskVisualization::TYPE_TABLE:
+											echo '<img src="images/icons-stat/txt-ico.gif" alt="Таблица" />';
+											break;
+										case TaskVisualization::TYPE_CSV_CHART:
+											echo '<img src="images/icons-stat/statistica-ico.png" alt="График" />';
+											break;
+										case TaskVisualization::TYPE_IMAGE:
+											echo '<img src="images/icons-stat/pic-ico.png" alt="Изображение" />';
+											break;
+										default: echo 'визуализация';
+									}
+									?>
+								</a>
+							<? else: ?>
+								<?= Lng::get('task-submits.empty-file') ?>
+							<? endif; ?>
+						</td>
+					</tr>
+				<? endforeach; ?>
+			</table>
 			</div>
 			
 			<script type="text/javascript">

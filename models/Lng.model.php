@@ -204,7 +204,7 @@ class Lng {
 		$this->_check();
 		$this->_loadSnippets();
 		
-		if (USER_AUTH_ID)
+		if (defined('USER_AUTH_ID') && USER_AUTH_ID)
 			$this->_saveUsrLng();
 	}
 	
