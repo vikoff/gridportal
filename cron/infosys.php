@@ -23,8 +23,9 @@ $script = CUR_PATH.'get_submits.php';
 
 $db = db::get();
 $jobs = $db->getAllIndexed('
-	SELECT ts.*, u.lng FROM task_submits ts
+	SELECT ts.*, sets.name, sets.gridjob_name, u.lng FROM task_submits ts
 	JOIN users u ON u.id=ts.uid
+	JOIN task_sets sets ON sets.id=ts.set_id
 	WHERE 
 		jobid IS NOT NULL AND LENGTH(jobid) > 0 AND
 		is_submitted > 0 AND
@@ -33,6 +34,7 @@ $jobs = $db->getAllIndexed('
 ', 'jobid');
 
 echo "TASKS ".print_r($jobs, 1)."\n";
+// die; // DEBUG
 
 if(empty($jobs))
 	die('no jobs');
@@ -80,11 +82,16 @@ foreach($statuses as $jobid => $data){
 	if ($isCompleted) {
 		$fields['finish_date'] = time();
 		if ($jobs[$jobid]['email_notify']) {
-			Mail::create()->send($jobs[$jobid]['uid'], 'fetch_success', array(
+			
+			$template = $isCompleted == 2 ? 'fetch_fail' : 'fetch_success';
+			$taskHref = 'https://thei.org.ua/'.$jobs[$jobid]['lng'].'/task-set/view/'.$jobs[$jobid]['set_id'];
+			// $taskHref = 'https://thei.org.ua/'.$jobs[$jobid]['lng'].'/task-submit/analyze?submit='.$jobs[$jobid]['id'];
+			
+			Mail::create()->send($jobs[$jobid]['uid'], $template, array(
 				'jobid' => $jobid,
+				'task_name' => TaskSubmit::getSubmitName($jobs[$jobid]['name'], $jobs[$jobid]['gridjob_name'], $jobs[$jobid]['index']),
 				'task_status' => $allStatuses[$status]['title'],
-				'task_href' => 'https://thei.org.ua/'.$jobs[$jobid]['lng'].'/task-set/view/'.$jobs[$jobid]['set_id'],
-				// 'task_href' => 'https://thei.org.ua/'.$jobs[$jobid]['lng'].'/task-submit/analyze?submit='.$jobs[$jobid]['id'],
+				'task_href' => $taskHref,
 			));
 		}
 	}

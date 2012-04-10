@@ -3,15 +3,49 @@
 	<?= Lng::get('top-menu.results') ?>
 </h1>
 
+<script type="text/javascript">
+function searchToggle(){
+	var small = $('#searchbox-short').slideToggle();
+	var full = $('#searchbox-full').slideToggle();
+	var input = $('#is-full-view').slideToggle();
+	
+	// показать полный вид
+	if (full.hasClass('hidden')) {
+		small.slideUp();
+		full.removeClass('hidden').slideDown();
+		input.removeAttr('disabled');
+	}
+	// показать краткий вид
+	else {
+		small.slideDown();
+		full.addClass('hidden').slideUp();
+		input.attr('disabled', 'disabled');
+	}
+}
+</script>
+<?
+$isFull = !empty($_GET['full-view']);
+$shortStyle = $isFull ? 'display: none;' : '';
+$shortClass = $isFull ? 'hidden' : '';
+$fullStyle = $isFull ? '' : 'display: none;';
+$fullClass = $isFull ? '' : 'hidden';
+?>
 <div style="text-align:right; ">
-	<form name="filter" action="">
-		<div id="searchbox-short">
+	<div id="searchbox-short" style="<?= $shortStyle; ?>" class="<?= $shortClass ?>">
+		<form name="filter" action="">
 			<input type="text" name="search" value="<?= getVar($_GET['search']) ?>" placeholder="<?= Lng::get('task-set.search-by-statistics') ?>" />
 			<input type="submit" value="<?= Lng::get('task-set.search') ?>" />
-			<div style="margin-right: 80px;"><a href="#" onclick="$('#searchbox-short,#searchbox-full').slideToggle(); return false;"><?= Lng::get('top-menu.advanced-search') ?></a></div>
-		</div>
-		<div style="display: none;" id="searchbox-full">
-		<div style="margin-right: 0px;"><a href="#" onclick="$('#searchbox-short,#searchbox-full').slideToggle(); return false;"><?= Lng::get('top-menu.short-search') ?></a></div>
+			<div style="margin-right: 80px;">
+				<a href="#" onclick="searchToggle(); return false;"><?= Lng::get('top-menu.advanced-search') ?></a>
+			</div>
+		</form>
+	</div>
+	<div id="searchbox-full" style="<?= $fullStyle; ?>" class="<?= $fullClass ?>">
+		<form name="filter" action="">
+			<input id="is-full-view" type="hidden" name="full-view" value="1" />
+			<div style="margin-right: 0px;">
+				<a href="#" onclick="searchToggle(); return false;"><?= Lng::get('top-menu.short-search') ?></a>
+			</div>
 			<table class="table-tiny" style="margin: 0;" align="right">
 			<tr>	
 				<td><?= Lng::get('user') ?>:</td>
@@ -45,35 +79,12 @@
 				<td></td>
 				<td>
 					<input type="submit" value="<?= Lng::get('task-set.filter') ?>" />
+					<a href="<?= href('task-set/statistics'); ?>">Сброс</a>
 				</td>
 			</tr>
 			</table>
-		</div>
-		<!--div style="display: none;" id="searchbox-full">
-			<div style="margin-right: 0px;"><a href="#" onclick="$('#searchbox-short,#searchbox-full').slideToggle(); return false;">краткий поиск</a></div>
-			Пользователь:
-			<input type="text" name="filter[username]" value="<?= getVar($_GET['filter']['username']) ?>" />
-			<br />
-			Имя задачи:
-			<input type="text" name="filter[taskname]" value="<?= getVar($_GET['filter']['taskname']) ?>" />
-			<br />
-			Профиль:
-			<input type="text" name="filter[profile]" value="<?= getVar($_GET['filter']['profile']) ?>" />
-			<br />
-			Кол-во запусков:
-			от <input type="text" name="filter[num_submits][from]" value="<?= getVar($_GET['filter']['num_submits']['from']) ?>" size=5 />
-			до <input type="text" name="filter[num_submits][to]" value="<?= getVar($_GET['filter']['num_submits']['to']) ?>" size=5 />
-			<br />
-			Дата создания:
-			<input type="hidden" name="filter[date][from]" value="<?= getVar($_GET['filter']['date']['from']) ?>" />
-			<input type="hidden" name="filter[date][to]" value="<?= getVar($_GET['filter']['date']['to']) ?>" />
-			от <input type="text" name="filter[dateVisual][from]" value="" size=10 />
-			до <input type="text" name="filter[dateVisual][to]" value="" size=10 />
-			<br />
-			<input type="submit" value="<?= Lng::get('task-set.filter') ?>" />
-		</div-->
-	</form>
-		
+		</form>
+	</div>
 </div>
 <div style="clear: both;"></div>
 

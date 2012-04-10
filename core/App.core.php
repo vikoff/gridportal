@@ -319,12 +319,11 @@ class App{
 	
 	public static function getHrefLngReplaced($lng){
 		
-		$qs = array();
-		foreach($_GET as $k => $v)
-			if($k != 'r')
-				$qs[] = $k.'='.$v;
+		$GET_copy = $_GET;
+		unset($GET_copy['r']);
+		$qs = http_build_query($GET_copy);
 		
-		return App::href(Request::get()->getString().(count($qs) ? '?'.implode('&', $qs) : ''), $lng);
+		return App::href(Request::get()->getString().(!empty($qs) ? '?'.$qs : ''), $lng);
 	}
 	
 	#### ПРОЧЕЕ ####

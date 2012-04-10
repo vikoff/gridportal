@@ -547,15 +547,15 @@ class TaskSetCollection extends GenericObjectCollection{
 		}
 		
 		if (!empty($options['withUsers']) && !empty($_GET['filter']['username'])){
-			$whereArr[] = "LOWER(CONCAT(u.surname,' ',u.name)) LIKE LOWER('%" . getVar($_GET['filter']['username']) . "%')";
+			$whereArr[] = "LOWER(CONCAT(u.surname,' ',u.name)) LIKE LOWER('%" . $_GET['filter']['username'] . "%')";
 		}
 		
 		if (!empty($_GET['filter']['taskname'])){
-			$whereArr[] = "LOWER(s.name) LIKE LOWER('%" . getVar($_GET['filter']['taskname']) . "%')";
+			$whereArr[] = "LOWER(s.name) LIKE LOWER('%" . $_GET['filter']['taskname'] . "%')";
 		}
 		
 		if (!empty($_GET['filter']['profile'])){
-			$whereArr[] = "LOWER(prof.name) LIKE LOWER('%" . getVar($_GET['filter']['profile']) . "%')";
+			$whereArr[] = "LOWER(prof.name) LIKE LOWER('%" . $_GET['filter']['profile'] . "%')";
 		}
 			
 		$whereStr = !empty($whereArr) ? ' WHERE '.implode(' AND ', $whereArr) : '';
@@ -577,7 +577,6 @@ class TaskSetCollection extends GenericObjectCollection{
 		
 		$data = $db->getAllIndexed($paginator->getSql(), 'id', array());
 		
-		// echo '<pre>'; print_r($data); die;
 		if (empty($data))
 			return array();
 			

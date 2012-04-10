@@ -237,7 +237,12 @@ class Lng {
 			LEFT JOIN lng_'.$lng.' lng ON lng.snippet_id = s.id
 			LEFT JOIN lng_'.self::$defaultLng.' lng_default ON lng_default.snippet_id = s.id
 			WHERE s.name='.$db->qe($key).'
-		');		
+		');
+		
+		if ($text === null) {
+			$text = $key;
+			$this->save(array('id' => 0, 'name' => $key, 'num_placeholders' => count($placeholders)));
+		}
 		
 		if (!empty($placeholders)) {
 			foreach (array_values($placeholders) as $index => $val)

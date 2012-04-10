@@ -7,7 +7,7 @@ class Mail extends GenericObject{
 	const NOT_FOUND_MESSAGE = 'Страница не найдена';
 	
 	/** данные для шаблонов */
-	protected $_tplData = array();
+	protected $_tplVars = array();
 	
 	/** ТОЧКА ВХОДА В КЛАСС (СОЗДАНИЕ НОВОГО ОБЪЕКТА) */
 	public static function create(){
@@ -36,8 +36,10 @@ class Mail extends GenericObject{
 		if (!file_exists($tplFile))
 			trigger_error('Шаблон email сообщения '.$template.' не найден.', E_USER_ERROR);
 		
+		$tplData = self::getTemplateData($template);
+		
 		$data['lng'] = $lng;
-		$tplData = $this->getFile($tplFile, $data);
+		$html = $this->getFile($tplFile, $data);
 		
 		$profile = $user->getFieldPrepared('profile');
 		$email = getVar($profile['email']);
@@ -51,26 +53,35 @@ class Mail extends GenericObject{
 			'email' => $email,
 			'lng' => $lng,
 			'template_name' => $template,
-			'title' => $tplData['title'],
-			'text' => $tplData['text'],
+			// 'title' => $tplData['title'],
+			'text' => $html,
 			'add_date' => time(),
 		));
 		$this->_save();
 	}
 	
+	public static function getTemplateData($template){
+		
+		$db = db::get();
+		return $db->getRow('SELECT * FROM mail_templates WHERE name='.$db->qe($template));
+	}
+	
 	public function getFile($file, $data) {
 		
-		$this->_tplData = $data;
-		$tplContent = include($file);
-		$this->_tplData = array();
+		$this->_tplVars = $data;
+		ob_start();
+		// $tplContent = include($file);
+		include($file);
+		$tplContent = ob_get_clean();
+		$this->_tplVars = array();
 		
 		return $tplContent;
 	}
 	
 	public function __get($key){
 		
-		return isset($this->_tplData[$key])
-			? $this->_tplData[$key]
+		return isset($this->_tplVars[$key])
+			? $this->_tplVars[$key]
 			: '';
 	}
 }

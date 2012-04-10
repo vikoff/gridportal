@@ -1,11 +1,5 @@
-<?php
-
-return array(
-	'title' => 'Task finish',
-	'text' => '
-		Task '.$this->jobid.' finished with status '.Lng::get()->getLngSnippet($this->lng, $this->task_status).'.
-		Task link: '.$this->task_href.'.
-	',
-);
-
-?>
+<div>
+	Задача <?= $this->jobid; ?> (имя в системе <?= $this->task_name; ?>)
+	выполнена со статусом <?= Lng::get()->getLngSnippet($this->lng, $this->task_status); ?><br />
+	Ссылка на задачу: <a href="<?= $this->task_href; ?>"><?= $this->task_href; ?></a>
+</div>

@@ -24,7 +24,8 @@ require_once(FS_ROOT.'includes/PHPMailer_5.2.1/class.phpmailer.php');
 
 function send($address, $title, $body){
 	
-	// print_r(func_get_args()); die; // DEBUG
+	// print_r(func_get_args()); // DEBUG
+	// return; // DEBUG
 	
 	$fromHost = 'localhost';
 	$fromAddress = 'vlad@thei.org.ua';
@@ -63,6 +64,17 @@ function send($address, $title, $body){
 	}
 }
 
+function getLayout($title, $content) {
+	
+	$layoutFile = FS_ROOT.'templates/Mail/layout.php';
+	
+	ob_start();
+	include($layoutFile);
+	$tplContent = ob_get_clean();
+	
+	return $tplContent;
+}
+
 $db = db::get();
 
 $users = array();
@@ -77,10 +89,13 @@ foreach ($mailData as $m) {
 	if (!isset($mailToSend[$email]))
 		$mailToSend[$email] = array();
 	
-	$mailToSend[$email][] = array(
-		'title' => $m['title'],
-		'text' => trim($m['text']),
-	);
+	if (!isset($mailToSend[$email][ $m['template_name'] ]))
+		$mailToSend[$email][ $m['template_name'] ] = array();
+	
+	if (!isset($mailToSend[$email][ $m['template_name'] ][ $m['lng'] ]))
+		$mailToSend[$email][ $m['template_name'] ][ $m['lng'] ] = array();
+	
+	$mailToSend[$email][ $m['template_name'] ][ $m['lng'] ][] = $m['text'];
 }
 
 // echo '<pre>'; print_r($mailToSend); die;
@@ -88,21 +103,19 @@ foreach ($mailData as $m) {
 if (empty($mailToSend))
 	die("no mail to send\n");
 	
-foreach ($mailToSend as $email => $data) {
-	
-	$title = '';
-	$text = '';
-	if (count ($data == 1)) {
-		$title = $data[0]['title'];
-		$text = $data[0]['text'];
-	} else {
-		$title = 'Изменение статуса нескольких задач';
-		foreach ($data as $msg) {
-			$text .= $msg['text'].'<br />';
+foreach ($mailToSend as $email => $templates) {
+	foreach ($templates as $template => $lngs) {
+		foreach ($lngs as $lng => $htmls) {
+			
+			$tplData = Mail::getTemplateData($template);
+			$titleSnippet = count($htmls) > 1 ? $tplData['title_multi_lng'] : $tplData['title_lng'];
+			$title = Lng::get()->getLngSnippet($lng, $titleSnippet);
+			$text = getLayout($title, implode('<br />', $htmls));
+			
+			echo "mail to $email ($title)\n\n";
+			send($email, $title, $text);
 		}
 	}
-	echo "mail to $email\n$title\n\n";
-	send($email, $title, $text);
 }
 
 ?>

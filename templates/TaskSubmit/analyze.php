@@ -44,7 +44,11 @@
 						<td>DIR</td>
 						<td><a href="<?= href('task-submit/analyze?submit='.$this->curSubmitId.'&path='.$this->fileTree['relpath'].$elm); ?>"><?= $elm; ?></a></td>
 						<td><?= formatHumanReadableSize($size) ?></td>
-						<td><a href="<?= href('task-submit/download-dir/'.$this->curSubmitId.'/archive?path='.$this->fileTree['relpath'].$elm); ?>" class="button-small"><?= Lng::get('task.analyze-download-in-archive') ?></a></td>
+						<td>
+							<a class="visualize" href="<?= href('task-submit/download-dir/'.$this->curSubmitId.'/archive?path='.$this->fileTree['relpath'].$elm); ?>">
+								<img src="images/icons-stat/winrar-ico.png" alt="Скачать одним архивом" title="Скачать одним архивом" />
+							</a>
+						</td>
 					</tr>
 				<? endforeach; ?>
 				
@@ -56,23 +60,31 @@
 						<td><?= formatHumanReadableSize($elm['size']) ?></td>
 						<td>
 							<? if (!$elm['empty']): ?>
-								<a target="_blank" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm['name']); ?>" class="button-small"><?= Lng::get('task.analyze-download') ?></a>
-								<a href="<?= href('task-submit/visualize/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm['name']); ?>" class="visualize" title="<?= Lng::get('task-submits.visualize') ?>">
-									<? 
+								<a target="_blank" class="visualize" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm['name']); ?>"
+									><img src="images/icons-stat/download-ico.png" alt="Скачать файл" title="Скачать файл" 
+								/></a>
+								<a href="<?= href('task-submit/visualize/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm['name']); ?>" class="visualize"><?
+									 
 									switch ($elm['visualizationType']) {
 										case TaskVisualization::TYPE_TABLE:
-											echo '<img src="images/icons-stat/txt-ico.gif" alt="Таблица" />';
+											echo '<img src="images/icons-stat/txt-ico.gif" title="Таблица" alt="Таблица" />';
 											break;
 										case TaskVisualization::TYPE_CSV_CHART:
-											echo '<img src="images/icons-stat/statistica-ico.png" alt="График" />';
+											echo '<img src="images/icons-stat/statistica-ico.png" title="График" alt="График" />';
 											break;
 										case TaskVisualization::TYPE_IMAGE:
-											echo '<img src="images/icons-stat/pic-ico.png" alt="Изображение" />';
+											echo '<img src="images/icons-stat/pic-ico.png" title="Изображение" alt="Изображение" />';
+											break;
+										case TaskVisualization::TYPE_VIDEO:
+											echo '<img src="images/icons-stat/avi-ico.png" title="Видео" alt="Видео" />';
+											break;
+										case TaskVisualization::TYPE_PDF:
+											echo '<img src="images/icons-stat/pdf-ico.jpg" title="PDF" alt="PDF" />';
 											break;
 										default: echo 'визуализация';
 									}
-									?>
-								</a>
+									
+								?></a>
 							<? else: ?>
 								<?= Lng::get('task-submits.empty-file') ?>
 							<? endif; ?>

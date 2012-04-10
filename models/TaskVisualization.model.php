@@ -5,6 +5,8 @@ class TaskVisualization {
 	const TYPE_TABLE = 'table';
 	const TYPE_CSV_CHART = 'chart_csv';
 	const TYPE_IMAGE = 'image';
+	const TYPE_VIDEO = 'video';
+	const TYPE_PDF = 'pdf';
 	
 	public $fullname = null;
 	public $type = null;
@@ -22,6 +24,10 @@ class TaskVisualization {
 			return self::TYPE_CSV_CHART;
 		elseif ($ext == 'jpg' || $ext == 'jpeg' || $ext == 'gif' || $ext == 'png')
 			return self::TYPE_IMAGE;
+		elseif ($ext == 'avi' || $ext == 'mpeg' || $ext == 'mp4')
+			return self::TYPE_VIDEO;
+		elseif ($ext == 'pdf')
+			return self::TYPE_PDF;
 		else
 			return self::TYPE_TABLE;
 	}
