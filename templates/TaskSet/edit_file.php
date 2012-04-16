@@ -49,7 +49,7 @@
 			document.forms['editor'].submit();
 		});
 		$('.file-editor-help').click(function(){
-			$('#help').slideToggle();
+			$('#help').slideToggle({ step: function(){ $('#content').css({ paddingTop: 20 + $(this).height() }) } });
 		});
 	</script>
 </body>

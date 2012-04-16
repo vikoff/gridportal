@@ -32,6 +32,12 @@ class FdsFileConstructor extends AbstractFileConstructor {
 				)
 			)
 		),
+		'OBST' => array(
+			'allowed' => false,
+		),
+		'SURF' => array(
+			'allowed' => false,
+		),
 		/*
 		'PARAM' => array(				// PARAM - имя параметра (* - любой)
 			'allowed' => true,			// разрешение на отображение (true/false)
@@ -247,7 +253,6 @@ class FdsFileConstructor extends AbstractFileConstructor {
 		if (isset($fileWrap[2])) $content .= $fileWrap[2];
 		
 		file_put_contents($this->filename, $content);
-		
 	}
 	
 	protected function isAllowedParam($param){

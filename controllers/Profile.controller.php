@@ -210,7 +210,7 @@ class ProfileController extends Controller{
 			Messenger::get()->ns('profile-edit')->addSuccess(Lng::get('profile-personal-data-is-stored'));
 			return TRUE;
 		}else{
-			Messenger::get()->ns('profile-edit')->addError('Не удалось сохранить данные:<div style="margin-left: 10px; font-size: 13px;">'.$user->getError().'</div>');
+			Messenger::get()->ns('profile-edit')->addError(Lng::get('profile.could-not-save-data') . ':<div style="margin-left: 10px; font-size: 13px;">'.$user->getError().'</div>');
 			return FALSE;
 		}
 	}
@@ -258,14 +258,14 @@ class ProfileController extends Controller{
 		// ручная авторизация
 		if(!empty($_POST['manual-login']) && !$user->getField('myproxy_manual_login')){
 			$user->setManualMyproxyLogon(TRUE);
-			Messenger::get()->ns('check-cert')->addInfo('Выбран ручной способ авторизации');
+			Messenger::get()->ns('check-cert')->addInfo(Lng::get('profile.selected-manual-method'));
 			return TRUE;
 		}
 		
 		// автоматическая авторизация
 		if(empty($_POST['manual-login']) && $user->getField('myproxy_manual_login')){
 			$user->setManualMyproxyLogon(FALSE);
-			Messenger::get()->ns('check-cert')->addInfo('Выбран автоматический способ авторизации');
+			Messenger::get()->ns('check-cert')->addInfo(Lng::get('profile.selected-automatic-method'));
 		}
 		
 		if($user->getField('myproxy_manual_login'))
@@ -275,7 +275,7 @@ class ProfileController extends Controller{
 		try{
 			$connector = MyproxyConnector::createByConnectForm($_POST);
 			if($user->checkCert($connector)){
-				Messenger::get()->ns('check-cert')->addSuccess('Авторизационные данные сохранены');
+				Messenger::get()->ns('check-cert')->addSuccess(Lng::get('profile.authorization-data-is-stored'));
 				return TRUE;
 			}else{
 				Messenger::get()->ns('check-cert')->addError($user->getError());

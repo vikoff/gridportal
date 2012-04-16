@@ -103,9 +103,30 @@ html, body, form, #main {
 	margin: 0 15px;
 	padding: 20px;
 	background: #c4dffe;
-	border-top-left-radius: 10px;
 	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
+}
+
+#save {
+	display: none;
+	position: fixed;
+	top: 46px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+#save-message {
+	position: absolute;
+	right: 0;
+	width: 100px;
+	margin: 0 15px;
+	padding: 20px;
+	background: #c4dffe;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	text-align: center;
+	font-weight: bold;
+	color: #0470f8;
 }
 
 .cl {
@@ -145,7 +166,20 @@ html, body, form, #main {
 }
 
 .fds-file-param-spoiler {
+	float: left;
+	width: 16px;
+	height: 16px;
 	cursor: pointer;
+	background-image: url(/css/redmond/images/ui-icons_c4dffe_256x240.png);
+	background-position: -48px 0;
+}
+
+.fds-file-param-spoiler-hidden {
+	background-position: -32px 0;
+}
+
+.fds-file-param-title {
+	float: left;
 }
 
 .fds-file-arg {
@@ -240,23 +274,14 @@ html, body, form, #main {
 }
 
 .fds-file-param-delete {
-	background-image: url(https://thei.org.ua/css/redmond/images/ui-icons_469bdd_256x240.png);
+	background-image: url(/css/redmond/images/ui-icons_469bdd_256x240.png);
 	background-position: -96px -128px;
 }
 
 .fds-file-param-range {
-	background-image: url(https://thei.org.ua/css/redmond/images/ui-icons_469bdd_256x240.png);
+	background-image: url(/css/redmond/images/ui-icons_469bdd_256x240.png);
 	background-position: -144px 0;
 }
-/*
-.ui-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
-.ui-icon { width: 16px; height: 16px; background-image: url(/css/redmond/images/ui-icons_469bdd_256x240.png); }
-.ui-icon-plusthick { background-position: -32px -128px; }
-.ui-icon-closethick { background-position: -96px -128px; }
-.ui-icon-arrow-1-e { background-position: -32px -32px; }
-.ui-icon-arrow-1-se { background-position: -48px -32px; }
-.ui-icon-carat-2-e-w { background-position: -144px 0; }
-*/
 
 .fds-file-arg-add {
 	display: none;
@@ -266,7 +291,7 @@ html, body, form, #main {
 	right: 0;
 	bottom: 2px;
 	cursor: pointer;
-	background-image: url(https://thei.org.ua/css/redmond/images/ui-icons_469bdd_256x240.png);
+	background-image: url(/css/redmond/images/ui-icons_469bdd_256x240.png);
 	background-position: -32px -128px;
 	opacity: .5;
 }
@@ -276,5 +301,133 @@ html, body, form, #main {
 }
 
 .fds-file-arg-add:hover {
+	opacity: 1;
+}
+
+.nordujob-file-param {
+	max-width: 400px;
+	margin: auto;
+	padding: 2px 5px;
+}
+
+.nordujob-file-param:hover {
+	background: #e5f1fe;
+}
+
+.nordujob-file-param-title {
+	float: left;
+	width: 40%;
+}
+
+.nordujob-file-param-values {
+	position: relative;
+	min-height: 18px;
+	float: left;
+	width: 60%;
+}
+
+.nordujob-file-param-value {
+	margin-bottom: 2px;
+}
+
+.nordujob-file-param-value:last-child {
+	margin-bottom: 0;
+}
+
+.nordujob-file-param-value-single {
+	float: left;
+	box-sizing: border-box;
+	width: 100%;
+	padding-right: 54px;
+}
+
+.nordujob-file-param-value-single input {
+	box-sizing: border-box;
+	width: 100%;
+	background: #fff;
+	border: solid #c4dffe 1px;
+}
+
+.nordujob-file-param-value-range {
+	float: left;
+	box-sizing: border-box;
+	width: 100%;
+	padding-right: 54px;
+}
+
+.nordujob-file-param-value-range div {
+	box-sizing: border-box;
+	width: 100%;
+	background: #e5f1fe;
+	border: solid #c4dffe 1px;
+}
+
+.nordujob-file-param-value-range input {
+	box-sizing: border-box;
+	width: 23%;
+	background: #fff;
+	border: none;
+}
+
+.nordujob-file-param-value-range span {
+	display: inline-block;
+	box-sizing: border-box;
+	width: 10.33%;
+	padding-right: 1%;
+	text-align: right;
+	color: #111;
+	border: none;
+}
+
+.nordujob-file-param-value-options {
+	float: left;
+	margin-left: -54px;
+}
+
+.nordujob-file-param-value-options span {
+	display: none;
+	width: 16px;
+	height: 16px;
+	margin-left: 2px;
+	cursor: pointer;
+	opacity: .5;
+}
+
+.nordujob-file-param:hover .nordujob-file-param-value-options span {
+	display: inline-block;
+}
+
+.nordujob-file-param-value-options span:hover {
+	opacity: 1;
+}
+
+.nordujob-file-param-delete {
+	background-image: url(/css/redmond/images/ui-icons_469bdd_256x240.png);
+	background-position: -96px -128px;
+}
+
+.nordujob-file-param-range {
+	background-image: url(/css/redmond/images/ui-icons_469bdd_256x240.png);
+	background-position: -144px 0;
+}
+
+.nordujob-file-param-add {
+	display: none;
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	right: 0;
+	bottom: 2px;
+	cursor: pointer;
+	background-image: url(/css/redmond/images/ui-icons_469bdd_256x240.png);
+	background-position: -32px -128px;
+	opacity: .5;
+}
+
+.nordujob-file-param:hover .nordujob-file-param-add {
+	display: block;
+}
+
+.nordujob-file-param-add:hover {
 	opacity: 1;
 }

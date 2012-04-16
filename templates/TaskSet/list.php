@@ -75,7 +75,7 @@ $fullClass = $isFull ? '' : 'hidden';
 				<td></td>
 				<td>
 					<input type="submit" value="<?= Lng::get('task-set.filter') ?>" />
-					<a href="<?= href('task-set'); ?>">Сброс</a>
+					<a href="<?= href('task-set'); ?>"><?= Lng::get('search-box.reset') ?></a>
 				</td>
 			</tr>
 			</table>

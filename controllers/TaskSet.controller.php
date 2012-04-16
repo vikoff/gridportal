@@ -181,7 +181,7 @@ class TaskSetController extends Controller{
 		FrontendViewer::get()
 			->setTitle('Задача '.$data['name'])
 			->setTopMenuActiveItem('tasks')
-			->setContentPhpFile(self::TPL_PATH.'set_statistics.php', $variables)
+			->setContentPhpFile(self::TPL_PATH.'statistics.php', $variables)
 			->render();
 	}
 	
@@ -513,6 +513,8 @@ class TaskSetController extends Controller{
 			throw new Exception('Неизвестный тип файла');
 		
 		TaskSet::getFileConstructor($fileType, $fullname)->saveConstructorFormData(Tools::unescape($_POST['items']), $instance);
+		
+		FrontendViewer::get()->setVariables(array('saved_success' => true));
 		return TRUE;
 	}
 	

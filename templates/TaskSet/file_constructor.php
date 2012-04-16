@@ -23,7 +23,7 @@
 <script type="text/javascript">
 var Multiplier = {
 	
-	/** создать интервал */
+	/* создать интервал */
 	interval: function(id, index){
 		
 		$('#m-interval-' + id + '-' + index).hide();
@@ -35,7 +35,7 @@ var Multiplier = {
 		this._createIntervalTd(id, index, {from: val, to: val, step: 1}, td);
 	},
 	
-	/** удалить интервал (оставить одиночное значение) */
+	/* удалить интервал (оставить одиночное значение) */
 	removeInterval: function(id, index){
 		
 		$('#m-interval-' + id + '-' + index).show();
@@ -50,7 +50,7 @@ var Multiplier = {
 			
 	},
 	
-	/** добавить комбинацию */
+	/* добавить комбинацию */
 	add: function(id, value){
 		
 		var parent = $('#multiplier-' + id);
@@ -74,20 +74,20 @@ var Multiplier = {
 			.appendTo(parent);
 	},
 	
-	/** удалить кобминацию */
+	/* удалить кобминацию */
 	remove: function(id, index){
 		
 		$('#m-combination-'+id+'-'+index).parent().remove();
 	},
 	
-	/** создание ячейки с одиночным значением */
+	/* создание ячейки с одиночным значением */
 	_createSingleValueTd: function(id, index, value){
 		
 		return $('<td id="m-combination-'+id+'-'+index+'" style="text-align: right; width: 220px;" />')
 			.append('<input type="text" class="mult" name="items['+id+'][value]['+index+'][single]" value="' + value + '" />')
 	},
 	
-	/** создание ячейки с интервалом */
+	/* создание ячейки с интервалом */
 	_createIntervalTd: function(id, index, value, td){
 		
 		if (td)
@@ -119,42 +119,30 @@ $(function(){
 					
 				</div>
 				<div id="bottom-right">
-					<!--Тип файла: файл модели FDS&nbsp;&nbsp;&nbsp;
-					Размер файла: 1.8 Мб&nbsp;&nbsp;&nbsp;
-					Вариантов: 16&nbsp;&nbsp;&nbsp;
-					Общий размер: 28.8 Мб-->
+					
 				</div>
 				<div class="cl"></div>
 			</div>
 			<div id="help">
-				<div id="help-content">Some help will be here</div>
+				<div id="help-content"><?= Lng::get('workflow-help-text'); ?></div>
+			</div>
+			<div id="save">
+				<div id="save-message"><?= Lng::get('saved'); ?></div>
 			</div>
 		</div>
 	</form>
 	<script type="text/javascript">
 		<? if ($this->saved_success): ?>
-			$('#bottom-left').text('<?= Lng::get('saved'); ?>');
+			$('#save').show();
+			setTimeout(function(){
+				$('#save').fadeOut(2000);
+			}, 4000);
 		<? endif; ?>
 		$('.file-editor-save').click(function(){
 			document.forms['editor'].submit();
 		});
 		$('.file-editor-help').click(function(){
-			$('#help').slideToggle();
-		});
-		$('.fds-file-param-spoiler').click(function(){
-			$('.fds-file-spoiler-' + $(this).attr('spoiler')).slideToggle();
-		});
-		$('.fds-file-param-delete').click(function(){
-			var $value = $(this).parent().parent();
-			$value.slideUp(function(){
-				$value.remove();
-			});
-		});
-		$('.fds-file-arg-add').click(function(){
-			$('<div class="fds-file-arg-value"><div class="fds-file-arg-value-single"><input type="text" name="items[][value][][single]" value="" /></div><div class="fds-file-arg-value-options"><span class="fds-file-param-range">  </span><span class="fds-file-param-delete">  </span>	</div><div class="cl"></div></div>')
-				.css({ display: 'none' })
-				.appendTo($(this).parent())
-				.slideDown();
+			$('#help').slideToggle({ step: function(){ $('#content').css({ paddingTop: 20 + $(this).height() }) } });
 		});
 	</script>
 </body>
