@@ -29,8 +29,8 @@
 					
 				</div>
 				<div id="bottom-right">
+					Размер файла: <?= $this->file_size; ?>&nbsp;&nbsp;&nbsp;
 					<!--Тип файла: файл модели FDS&nbsp;&nbsp;&nbsp;
-					Размер файла: 1.8 Мб&nbsp;&nbsp;&nbsp;
 					Вариантов: 16&nbsp;&nbsp;&nbsp;
 					Общий размер: 28.8 Мб-->
 				</div>

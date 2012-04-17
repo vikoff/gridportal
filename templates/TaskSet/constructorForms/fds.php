@@ -132,6 +132,11 @@ $(function(){
 			.appendTo($(this).parent())
 			.slideDown();
 	});
-	$('#bottom-right').html('<?= Lng::get('fds-construct-form.file-type-fds') ?><!--&nbsp;&nbsp;&nbsp;Размер файла: &nbsp;&nbsp;&nbsp;Вариантов: &nbsp;&nbsp;&nbsp;Общий размер: -->');
+	$('#bottom-right').html(''
+		+ '<?= Lng::get('fds-construct-form.file-type-fds') ?>'
+		+ '&nbsp;&nbsp;&nbsp;Размер файла: <?= $this->file_size; ?>'
+		+ '&nbsp;&nbsp;&nbsp;Вариантов: <?= $this->num_submits; ?>'
+		// + '&nbsp;&nbsp;&nbsp;Общий размер:'
+	);
 });
 </script>

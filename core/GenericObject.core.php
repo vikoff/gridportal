@@ -338,6 +338,12 @@ class GenericObject{
 		return count($this->_errors);
 	}
 	
+	public function __get($key){
+
+		return isset($this->dbFieldValues[$key])
+			? $this->dbFieldValues[$key]
+			: $this->getFieldPrepared($key);
+	}	
 	
 	#### ОПЕРАЦИИ С БАЗОЙ ДАННЫХ ####
 	

@@ -1,37 +1,51 @@
-<?
+	<?
 if (empty($this->formData)) {
 	Lng::get('tast-set-file-constructor-no-data-to-edit');
 	return;
 }
 ?>
 
-<? foreach($this->formData as $i => $row): ?>
+<? foreach($this->formData as $row): ?>
 	<input type="hidden" name="items[<?= $row['row']; ?>][pre_text]" value="<?= htmlspecialchars($row['pre_text']); ?>" />
 	<input type="hidden" name="items[<?= $row['row']; ?>][post_text]" value="<?= htmlspecialchars($row['post_text']); ?>" />
 	<input type="hidden" name="items[<?= $row['row']; ?>][field]" value="<?= htmlspecialchars($row['field']); ?>" />
 	<div class="nordujob-file-param">
 		<div class="nordujob-file-param-title"><?= $row['field']; ?></div>
-		<div class="nordujob-file-param-values" data-row-no="<?= $i ?>" data-last-index="<?= is_array($row['value']) ? count($row['value']) - 1 : 0 ?>">
+		<div class="nordujob-file-param-values" data-row-no="<?= $row['row']; ?>" data-last-index="<?= is_array($row['value']) ? count($row['value']) - 1 : 0 ?>">
 			<? if ($row['allow_multiple']){ ?>
 				<? if (is_array($row['value'])){ ?>
+					<? $i = 0; ?>
 					<? foreach($row['value'] as $r){ ?>
-						<div class="nordujob-file-param-value" data-index="<?= $i ?>">
-							<div class="nordujob-file-param-value-range">
-								<div>
-									<span>от:
-									</span><input type="text" name="items[<?= $row['row']; ?>][value][<?= $i ?>][from]" value="<?= htmlspecialchars($r['from']); ?>" class="nordujob-file-param-value-from"
-									/><span>до:
-									</span><input type="text" name="items[<?= $row['row']; ?>][value][<?= $i ?>][to]" value="<?= htmlspecialchars($r['to']); ?>" class="nordujob-file-param-value-to"
-									/><span>шаг:
-									</span><input type="text" name="items[<?= $row['row']; ?>][value][<?= $i ?>][step]" value="<?= htmlspecialchars($r['step']); ?>" class="nordujob-file-param-value-step"
-									/><!-- "заворот кишок" © // dont push -->
+						<? if (is_array($r)){ ?>
+							<div class="nordujob-file-param-value" data-index="<?= $i; ?>">
+								<div class="nordujob-file-param-value-range">
+									<div>
+										<span>от:
+										</span><input type="text" name="items[<?= $row['row']; ?>][value][<?= $i ?>][from]" value="<?= htmlspecialchars($r['from']); ?>" class="nordujob-file-param-value-from"
+										/><span>до:
+										</span><input type="text" name="items[<?= $row['row']; ?>][value][<?= $i ?>][to]" value="<?= htmlspecialchars($r['to']); ?>" class="nordujob-file-param-value-to"
+										/><span>шаг:
+										</span><input type="text" name="items[<?= $row['row']; ?>][value][<?= $i ?>][step]" value="<?= htmlspecialchars($r['step']); ?>" class="nordujob-file-param-value-step"
+										/><!-- "заворот кишок" © // dont push -->
+									</div>
 								</div>
+								<div class="nordujob-file-param-value-options">
+									<? if ($row['allow_multiple']){ ?><span class="nordujob-file-param-range" title="<?= Lng::get('range') ?>">  </span><? } ?><span class="nordujob-file-param-delete" title="<?= Lng::get('delete') ?>">  </span>
+								</div>
+								<div class="cl"></div>
 							</div>
-							<div class="nordujob-file-param-value-options">
-								<? if ($row['allow_multiple']){ ?><span class="nordujob-file-param-range" title="<?= Lng::get('range') ?>">  </span><? } ?><span class="nordujob-file-param-delete" title="<?= Lng::get('delete') ?>">  </span>
+						<? } else { ?>
+							<div class="nordujob-file-param-value" data-index="0">
+								<div class="nordujob-file-param-value-single">
+									<input type="text" name="items[<?= $row['row']; ?>][value][0][single]" value="<?= htmlspecialchars($r); ?>" />
+								</div>
+								<div class="nordujob-file-param-value-options">
+									<? if ($row['allow_multiple']){ ?><span class="nordujob-file-param-range" title="<?= Lng::get('range') ?>">  </span><? } ?><span class="nordujob-file-param-delete" title="<?= Lng::get('delete') ?>">  </span>
+								</div>
+								<div class="cl"></div>
 							</div>
-							<div class="cl"></div>
-						</div>
+						<? } ?>
+					<? $i++; ?>
 					<? } ?>
 				<? } else { ?>
 					<div class="nordujob-file-param-value" data-index="0">
@@ -69,21 +83,21 @@ $(function(){
 		var value = $('input', $(this).parent().parent()).val();
 		var rowNo = $valuesContainer.attr('data-row-no');
 		var index = $(this).parent().parent().attr('data-index');
-		if ($value.hasClass('nordujob-file-arg-value-single')){
+		if ($value.hasClass('nordujob-file-param-value-single')){
 			$value
-				.removeClass('nordujob-file-arg-value-single')
-				.addClass('nordujob-file-arg-value-range')
+				.removeClass('nordujob-file-param-value-single')
+				.addClass('nordujob-file-param-value-range')
 				.html('<div>'
-					+ '<span>от: </span><input type="text" name="items[' + rowNo + '][value][' + index + '][from]" value="' + value + '" class="nordujob-file-arg-value-from" />'
-					+ '<span>до: </span><input type="text" name="items[' + rowNo + '][value][' + index + '][to]" value="' + value + '" class="nordujob-file-arg-value-to" />'
-					+ '<span>шаг: </span><input type="text" name="items[' + rowNo + '][value][' + index + '][step]" value="1" class="nordujob-file-arg-value-step" />'
+					+ '<span>от: </span><input type="text" name="items[' + rowNo + '][value][' + index + '][from]" value="' + value + '" class="nordujob-file-param-value-from" />'
+					+ '<span>до: </span><input type="text" name="items[' + rowNo + '][value][' + index + '][to]" value="' + value + '" class="nordujob-file-param-value-to" />'
+					+ '<span>шаг: </span><input type="text" name="items[' + rowNo + '][value][' + index + '][step]" value="1" class="nordujob-file-param-value-step" />'
 					+ '</div>'
 				);
 		}
 		else {
 			$value
-				.addClass('nordujob-file-arg-value-single')
-				.removeClass('nordujob-file-arg-value-range')
+				.addClass('nordujob-file-param-value-single')
+				.removeClass('nordujob-file-param-value-range')
 				.html('<input type="text" name="items[' + rowNo + '][value][' + index + '][single]" value="' + value + '" />');
 		}
 	});
@@ -103,6 +117,11 @@ $(function(){
 			.appendTo($(this).parent())
 			.slideDown();
 	});
-	$('#bottom-right').html('<?= Lng::get('fds-construct-form.file-type-nordujob') ?><!--&nbsp;&nbsp;&nbsp;Размер файла: &nbsp;&nbsp;&nbsp;Вариантов: &nbsp;&nbsp;&nbsp;Общий размер: -->');
+	$('#bottom-right').html(''
+		+ '<?= Lng::get('fds-construct-form.file-type-nordujob') ?>'
+		+ '&nbsp;&nbsp;&nbsp;Размер файла: <?= $this->file_size; ?>'
+		+ '&nbsp;&nbsp;&nbsp;Вариантов: <?= $this->num_submits; ?>'
+		// + '&nbsp;&nbsp;&nbsp;Общий размер:'
+	);
 });
 </script>

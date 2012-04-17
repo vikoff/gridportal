@@ -1,3 +1,5 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+     "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 	<title><?= Lng::get('tast-set-edit-file.mega-workflow-editor'); ?></title>
@@ -124,7 +126,7 @@ $(function(){
 				<div class="cl"></div>
 			</div>
 			<div id="help">
-				<div id="help-content"><?= Lng::get('workflow-help-text'); ?></div>
+				<div id="help-content"><?= Page::loadByAlias('file-constructor-help')->body; ?></div>
 			</div>
 			<div id="save">
 				<div id="save-message"><?= Lng::get('saved'); ?></div>

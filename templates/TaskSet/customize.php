@@ -28,116 +28,126 @@
 </div>
 
 <script type="text/javascript">
-	var FileManager = {
+var FileManager = {
+	
+	editUrl: 'task-set/edit-file/<?= $this->instanceId; ?>',
+	constructUrl: 'task-set/file-constructor/<?= $this->instanceId; ?>',
+	getUrl: href('task-set/get-task-files/<?= $this->instanceId; ?>'),
+	delUrl: href('task-set/delete-task-file/<?= $this->instanceId; ?>'),
+	htmlContainer: $('#task-uploaded-files-container'),
+	htmlComment: $('#task-uploaded-files-comment'),
+	
+	hasNordujob: false,
+	
+	getFiles: function(){
 		
-		editUrl: 'task-set/edit-file/<?= $this->instanceId; ?>',
-		constructUrl: 'task-set/file-constructor/<?= $this->instanceId; ?>',
-		getUrl: href('task-set/get-task-files/<?= $this->instanceId; ?>'),
-		delUrl: href('task-set/delete-task-file/<?= $this->instanceId; ?>'),
-		htmlContainer: $('#task-uploaded-files-container'),
-		htmlComment: $('#task-uploaded-files-comment'),
+		var self = this;
 		
-		hasNordujob: false,
-		
-		getFiles: function(){
+		$.get(this.getUrl, function(response){
 			
-			var self = this;
-			
-			$.get(this.getUrl, function(response){
-				
-				if (!response) {
-					trace('Ошибка получения данных');
-					return;
-				}
-				
-				if(response.error){
-					self.htmlContainer.empty().html('<div style="color: red;">' + response.error + '</div>');
-					return;
-				}
-				
-				var tbl = $('<table class="task-uploaded-files-list" />');
-				var delLink, editLink, constructorLink;
-				for(var i in response.data){
-				
-					type = '';
-					if(response.data[i].name == 'nordujob'){
-						type = '<?= Lng::get('task-set.nordujob-file'); ?>';
-						self.hasNordujob = true;
-					}
-					else if(/\.fds$/.test(response.data[i].name))
-						type = '<?= Lng::get('task-set.model-file'); ?>';
-					
-					editLink = (function(file){
-						var url = href(self.editUrl + '?file=' + encodeURIComponent(file));
-						return $('<a href="' + url + '" class="small" target="_blank"><?= Lng::get('task-set.edit'); ?></a>')
-							.click(function(){ self.editFile(url); return false; });
-					})(response.data[i].name);
-						
-					delLink = (function(file){
-						return $('<a href="#" class="small"><?= Lng::get('task-set.delete'); ?></a>')
-							.click(function(){ self.removeFile(file); return false; });
-					})(response.data[i].name);
-					
-					constructorLink = response.data[i].type
-						? (function(file){
-								var url = href(self.constructUrl + '?file=' + encodeURIComponent(file));
-								return $('<a href="' + url + '" class="small" target="_blank"><?= Lng::get('task-set.edit-in-master'); ?></a>')
-									.click(function(){ self.constructFile(url); return false; });
-							})(response.data[i].name)
-						: null;
-					tbl.append(
-						$('<tr />')
-							.append('<td>' + (type ? '<span class="small" style="color: #888;">' + type + '</span>' : '') + '</td>')
-							.append('<td>' + response.data[i].name + '</td>')
-							.append($('<td></td>').append(editLink))
-							.append($('<td></td>').append(delLink))
-							.append( constructorLink ? $('<td></td>').append(constructorLink) : $('<td></td>') )
-					);
-				}
-				
-				self.htmlContainer.empty().append(tbl);
-				
-				if(self.hasNordujob){
-					self.htmlComment.html('<span class="small green"><?= Lng::get('task-set.nordujob-file-loaded'); ?></span>');
-				}else{
-					self.htmlComment.html('<span class="small red"><?= Lng::get('task-set.nordujob-file-not-loaded'); ?></span>');
-				}
-					
-			}, 'json');
-		},
-		
-		editFile: function(url){
-			
-			var iframe = $('<iframe src="' + url + '" style="width: 800px; height: 500px;" />');
-			$.modal($('<div />').append(iframe));
-		},
-		
-		removeFile: function(name){
-			
-			if(!confirm('<?= Lng::get('task-set.delete-file'); ?> "' + name + '"?'))
+			if (!response) {
+				trace('Ошибка получения данных');
 				return;
+			}
 			
-			var self = this;
+			if(response.error){
+				self.htmlContainer.empty().html('<div style="color: red;">' + response.error + '</div>');
+				return;
+			}
 			
-			$.post(this.delUrl, {file: name}, function(response){
-				
-				if(response != 'ok')
-					alert(response);
-					
-				self.getFiles();
-			});
-		},
+			self._outputHtml(response.data);
+			
+		}, 'json');
+	},
+	
+	loadFiles: function(data){
+		this._outputHtml(data);
+	},
+	
+	_outputHtml: function(data){
 		
-		constructFile: function(url){
+		var self = this;
+		var tbl = $('<table class="task-uploaded-files-list" />');
+		var delLink, editLink, constructorLink;
+		for(var i in data){
+		
+			type = '';
+			if(data[i].name == 'nordujob'){
+				type = 'nordujob файл';
+				this.hasNordujob = true;
+			}
+			else if(/\.fds$/.test(data[i].name))
+				type = 'файл модели';
 			
-			var iframe = $('<iframe src="' + url + '" style="width: 800px; height: 500px;" />');
-			$.modal($('<div />').append(iframe));
-		},
-	};
+			editLink = (function(file){
+				var url = href(self.editUrl + '?file=' + encodeURIComponent(file));
+				return $('<a href="' + url + '" class="small" target="_blank">редактировать</a>')
+					.click(function(){ self.editFile(url); return false; });
+			})(data[i].name);
+				
+			delLink = (function(file){
+				return $('<a href="#" class="small">удалить</a>')
+					.click(function(){ self.removeFile(file); return false; });
+			})(data[i].name);
+			
+			constructorLink = data[i].type
+				? (function(file){
+						var url = href(self.constructUrl + '?file=' + encodeURIComponent(file));
+						return $('<a href="' + url + '" class="small" target="_blank">редактировать в мастере</a>')
+							.click(function(){ self.constructFile(url); return false; });
+					})(data[i].name)
+				: null;
+			tbl.append(
+				$('<tr />')
+					.append('<td>' + (type ? '<span class="small" style="color: #888;">' + type + '</span>' : '') + '</td>')
+					.append('<td>' + data[i].name + '</td>')
+					.append($('<td></td>').append(editLink))
+					.append($('<td></td>').append(delLink))
+					.append( constructorLink ? $('<td></td>').append(constructorLink) : $('<td></td>') )
+			);
+		}
+		
+		this.htmlContainer.empty().append(tbl);
+		
+		if(this.hasNordujob){
+			this.htmlComment.html('<span class="small green">Файл nordujob загружен</span>');
+		}else{
+			this.htmlComment.html('<span class="small red">Файл nordujob не загружен</span>');
+		}
+	},
+	
+	editFile: function(url){
+		
+		var iframe = $('<iframe src="' + url + '" style="width: 800px; height: 500px;" />');
+		$.modal($('<div />').append(iframe));
+	},
+	
+	removeFile: function(name){
+		
+		if(!confirm('<?= Lng::get('task-set.delete-file'); ?> "' + name + '"?'))
+			return;
+		
+		var self = this;
+		
+		$.post(this.delUrl, {file: name}, function(response){
+			
+			if(response != 'ok')
+				alert(response);
+				
+			self.getFiles();
+		});
+	},
+	
+	constructFile: function(url){
+		
+		var iframe = $('<iframe src="' + url + '" style="width: 800px; height: 500px;" />');
+		$.modal($('<div />').append(iframe));
+	},
+};
+
 $(function() {
 	
-	
-	FileManager.getFiles();
+	FileManager.loadFiles(<?= json_encode($this->files); ?>);
 	
 });
 </script>

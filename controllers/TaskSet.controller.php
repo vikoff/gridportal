@@ -36,10 +36,10 @@ class TaskSetController extends Controller{
 		
 		'ajax_get_task_files'	=> PERMS_REG,
 		'ajax_delete_task_file'	=> PERMS_REG,
-		'ajax_get_statuses'	=> PERMS_REG,
-		'ajax_list'	=> PERMS_REG, /* ужасный костыль, pt #1 */
-		'ajax_view'	=> PERMS_REG,
-		'ajax_statistics'	=> PERMS_REG,
+		'ajax_get_statuses'		=> PERMS_REG,
+		'ajax_list'				=> PERMS_REG, /* ужасный костыль, pt #1 */
+		'ajax_view'				=> PERMS_REG,
+		'ajax_statistics'		=> PERMS_REG,
 	);
 	
 	protected $_title = null;
@@ -132,6 +132,7 @@ class TaskSetController extends Controller{
 		
 		$variables = array(
 			'instanceId' => $instanceId,
+			'files' => $instance->getAllFilesWithTypes(),
 		);
 		
 		FrontendViewer::get()
@@ -207,18 +208,11 @@ class TaskSetController extends Controller{
 			return;
 		}
 		
-		$numSubmits = 1;
-		foreach($instance->getAllFilesList() as $f)
-			if ( $ftype = TaskSet::getFileType($f) )
-				if ($mults = TaskSet::getFileConstructor($ftype, $instance->getValidFileName($f))->getMultipliers())
-					foreach($mults as $mult)
-						$numSubmits *= count($mult['values']);
-		
 		$userProfile = CurUser::get()->getFieldPrepared('profile');
 		
 		$variables = array_merge($instance->GetAllFieldsPrepared(), array(
 			'myproxyLoginForm' => MyproxyServerController::snippet_myproxy_login(),
-			'numSubmits' => $numSubmits,
+			'numSubmits' => $instance->getNumSubmits(),
 			'taskFetchNotify' => !empty($userProfile['task_fetch_notify']),
 		));
 		
@@ -247,6 +241,7 @@ class TaskSetController extends Controller{
 				'instanceId' => $id,
 				'fname' => $fname,
 				'content' => file_get_contents($fullname),
+				'file_size' => formatHumanReadableSize(filesize($fullname)),
 			);
 			
 			// if (!empty($_POST))
@@ -284,6 +279,8 @@ class TaskSetController extends Controller{
 			'fname' => $fname,
 			'formData' => TaskSet::getFileConstructor($fileType, $fullname)->getConstructorFormData(),
 			'formFile' => TaskSet::getFormPath($fileType),
+			'file_size' => formatHumanReadableSize(filesize($fullname)),
+			'num_submits' => $instance->getNumSubmits(),
 		);
 		
 		echo FrontendViewer::get()->getContentPhpFile(self::TPL_PATH.'file_constructor.php', $vars);
@@ -597,6 +594,7 @@ class TaskSetController extends Controller{
 			echo '{"error": "", "data": ['.implode(',', $elms).']}';
 			return TRUE;
 		}
+		
 		catch(Exception $e){
 			echo '{"error": "Задача не найдена"}';
 			return FALSE;

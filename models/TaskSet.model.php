@@ -272,6 +272,15 @@ class TaskSet extends GenericObject{
 		return $elms;
 	}
 	
+	public function getAllFilesWithTypes(){
+		
+		$output = array();
+		foreach($this->getAllFilesList() as $elm)
+			$output[] = array('name' => $elm, 'type' => self::getFileType($elm));
+		
+		return $output;
+	}
+	
 	/** ПОЛУЧИТЬ ПОЛНЫЙ ПУТЬ ФАЙЛА ПО ИМЕНИ */
 	public function getValidFileName($fname){
 		
@@ -349,6 +358,19 @@ class TaskSet extends GenericObject{
 		} else {
 			return null;
 		}
+	}
+	
+	/** получить количество субмитов, которые будут запущены */
+	public function getNumSubmits(){
+		
+		$numSubmits = 1;
+		foreach($this->getAllFilesList() as $f)
+			if ( $ftype = self::getFileType($f) )
+				if ( $mults = self::getFileConstructor($ftype, $this->getValidFileName($f))->getMultipliers() )
+					foreach($mults as $mult)
+						$numSubmits *= count($mult['values']);
+		
+		return $numSubmits;
 	}
 	
 	public function submit(MyproxyConnector $connector, $preferServer = '', $emailNotify = FALSE){

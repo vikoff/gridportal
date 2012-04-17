@@ -34,6 +34,7 @@ html, body, form, #main {
 	border-bottom: solid #c4dffe 1px;
 	background: #81bbfc;
 	color: #fff;
+	z-index: 1;
 }
 
 #toolbar {
@@ -138,6 +139,7 @@ html, body, form, #main {
 	width: 24px;
 	height: 24px;
 	background-repeat: no-repeat;
+	background-position: center center;
 	background-size: cover;
 	cursor: pointer;
 }
@@ -145,9 +147,8 @@ html, body, form, #main {
 .file-editor-save {
 	background-image: url(/images/icon-save.png);
 }
-
 .file-editor-help {
-	background-image: url(/images/help.png);
+	background-image: url("/images/help3.png");
 }
 
 .fds-file-param {
@@ -257,7 +258,8 @@ html, body, form, #main {
 }
 
 .fds-file-arg-value-options span {
-	display: none;
+	display: inline-block;
+	visibility: hidden;
 	width: 16px;
 	height: 16px;
 	margin-left: 2px;
@@ -266,7 +268,7 @@ html, body, form, #main {
 }
 
 .fds-file-arg:hover .fds-file-arg-value-options span {
-	display: inline-block;
+	visibility: visible;
 }
 
 .fds-file-arg-value-options span:hover {
@@ -385,7 +387,8 @@ html, body, form, #main {
 }
 
 .nordujob-file-param-value-options span {
-	display: none;
+	display: inline-block;
+	visibility: hidden;
 	width: 16px;
 	height: 16px;
 	margin-left: 2px;
@@ -394,7 +397,7 @@ html, body, form, #main {
 }
 
 .nordujob-file-param:hover .nordujob-file-param-value-options span {
-	display: inline-block;
+	visibility: visible;
 }
 
 .nordujob-file-param-value-options span:hover {

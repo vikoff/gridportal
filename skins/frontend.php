@@ -38,16 +38,19 @@
 			taskSetUpdateUpdating: '<?= Lng::get('task-set.update.updating'); ?>',
 		};
 	</script>
-	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+	<!--script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.18.custom.min.js"></script>
-	<script type="text/javascript" src="js/jquery.address-1.4.min.js"></script>
+	<script type="text/javascript" src="js/jquery.address-1.4.min.js"></script-->
 	<script type="text/javascript" src="
+		js/jquery-1.7.1.min.js,
+		js/jquery-ui-1.8.18.custom.min.js,
+		js/jquery.address-1.4.min.js,
 		js/jquery.ctrlentersend.min.js,
 		js/jquery.browser.min.js,
 		js/common.js,
 		js/frontend.js,
-		js/jquery.simplemodal.js"></script>
-	<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
+		js/jquery.simplemodal.js,
+		js/debug.js"></script>
 </head>
 <body>
 	<div id="wrapper">

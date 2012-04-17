@@ -1,5 +1,5 @@
 <div>
-	Задача <?= $this->jobid; ?> (имя в системе <?= $this->task_name; ?>)
-	завершена с ошибкой <?= Lng::get()->getLngSnippet($this->lng, $this->task_status); ?><br />
-	Ссылка на задачу: <a href="<?= $this->task_href; ?>"><?= $this->task_href; ?></a>
+	Завдання <?= $this->jobid; ?> (ім'я в системі <?= $this->task_name; ?>)
+	завершена з помилкою.<br />
+	Посилання на задачу: <a href="<?= $this->task_href; ?>"><?= $this->task_href; ?></a>
 </div>
