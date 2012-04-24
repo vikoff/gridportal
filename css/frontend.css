@@ -486,7 +486,7 @@ table.std-grid.narrow{
 	display: inline-block;
 }
 
-.visualize img{
+.visualize img, .download img{
 	height: 20px;
 	vertical-align: middle;
 	margin: 0 5px;

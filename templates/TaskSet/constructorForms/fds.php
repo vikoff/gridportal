@@ -135,7 +135,8 @@ $(function(){
 	$('#bottom-right').html(''
 		+ '<?= Lng::get('fds-construct-form.file-type-fds') ?>'
 		+ '&nbsp;&nbsp;&nbsp;Размер файла: <?= $this->file_size; ?>'
-		+ '&nbsp;&nbsp;&nbsp;Вариантов: <?= $this->num_submits; ?>'
+		+ '&nbsp;|&nbsp;&nbsp;Всего вариантов: <?= $this->num_submits; ?>'
+		+ '&nbsp;|&nbsp;&nbsp;Вариантов в файле: <?= $this->num_variants_in_file; ?>'
 		// + '&nbsp;&nbsp;&nbsp;Общий размер:'
 	);
 });

@@ -52,15 +52,18 @@ abstract class AbstractFileConstructor {
 	public function getMultipliers(){
 		
 		$multipliers = array();
-		foreach (file($this->filename) as $index => $row) {
-			if (preg_match_all('/\{\*(.+?)\*\}/', $row, $matches)) {
-				foreach ($matches[1] as $mult) {
-					$multipliers[] = array(
-						'file' => $this->basename,
-						'row' => $index,
-						'valuesStr' => $mult,
-						'values' => $this->resolveMultiplier($this->parseStrMultiplier($mult)),
-					);
+		$rowsArr = file($this->filename);
+		if ($rowsArr) {
+			foreach ($rowsArr as $index => $row) {
+				if (preg_match_all('/\{\*(.+?)\*\}/', $row, $matches)) {
+					foreach ($matches[1] as $mult) {
+						$multipliers[] = array(
+							'file' => $this->basename,
+							'row' => $index,
+							'valuesStr' => $mult,
+							'values' => $this->resolveMultiplier($this->parseStrMultiplier($mult)),
+						);
+					}
 				}
 			}
 		}

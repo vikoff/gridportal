@@ -457,13 +457,23 @@ class TaskSubmit extends GenericObject{
 		}
 		
 		$archive = substr($realpath, 0, -1).'.zip';
+		// echo $realpath."\n<br />";
+		// echo $archive; die;
 		//$archive = substr($realpath, strrpos($realpath, '/'), -1).'.zip';
 		
-		// echo ('/usr/bin/zip -r -9 '.escapeshellarg(basename($archive)).' '.escapeshellarg($realpath)); die;
-		exec('/usr/bin/zip -r -9 '.escapeshellarg($archive).' '.escapeshellarg($realpath));
+		$command = 'cd '.escapeshellarg($realpath)
+			.' && /usr/bin/zip -r -9 '.escapeshellarg('../'.basename($archive)).' .';
+			
+		// echo '<pre>'.$command; die;
+		exec($command, $output, $exitCode);
 		
 		if (!file_exists($archive))
 			die('archive file not found');
+		
+		if ($exitCode != 0) {
+			unlink($archive);
+			die('program error. Exit code: '.$exitCode);
+		}
 			
 		header('Expires: 0');
 		header('Cache-Control: private');
@@ -493,11 +503,11 @@ class TaskSubmit extends GenericObject{
 		
 		header('Content-type: text/plain; charset=utf-8');
 		
-		// header('Expires: 0');
-		// header('Cache-Control: private');
-		// header('Pragma: cache');
-		// header('Content-type: application/download');
-		// header('Content-Disposition: attachment; filename='.basename($fullname));
+		header('Expires: 0');
+		header('Cache-Control: private');
+		header('Pragma: cache');
+		header('Content-type: application/download');
+		header('Content-Disposition: attachment; filename='.basename($fullname));
 		
 		readfile($fullname);
 		exit;
@@ -506,19 +516,16 @@ class TaskSubmit extends GenericObject{
 	/**
 	 * ПОЛУЧИТЬ ДАННЫЕ ДЛЯ ВИЗУАЛИЗАЦИИ
 	 * @param string $relname - имя файла для визуализации
-	 * @param string $type - тип визуализации
 	 */
-	public function getVisualization($relname, $type){
+	public function getVisualization($relname){
 		
 		$rootDir = $this->getFilesDir().'results/';
 		$fullname = realpath($rootDir.$relname);
 		
 		if(strpos($fullname, $rootDir) !== 0){
-			echo $path.'<br />';
-			echo $fullname ; die;
-			FrontendViewer::get()->error404();
+			$msg = $path.' '.$fullname.' not found';
+			FrontendViewer::get()->error404($msg);
 		}
-		
 		
 		if (!file_exists($fullname))
 			die('file not found');

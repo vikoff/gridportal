@@ -182,9 +182,8 @@ class TaskSubmitController extends Controller{
 		$instanceId = getVar($params[0], 0 ,'int');
 		$instance = TaskSubmit::load($instanceId);
 		$viewer = FrontendViewer::get();
-		$type = 'table';
 		
-		$html = $instance->getVisualization(getVar($_GET['path']), $type);
+		$html = $instance->getVisualization(getVar($_GET['path']));
 		
 		$variables = array(
 			'visualization' => $html,

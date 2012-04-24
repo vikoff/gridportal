@@ -281,6 +281,7 @@ class TaskSetController extends Controller{
 			'formFile' => TaskSet::getFormPath($fileType),
 			'file_size' => formatHumanReadableSize(filesize($fullname)),
 			'num_submits' => $instance->getNumSubmits(),
+			'num_variants_in_file' => $instance->getFileVariantsNum($fullname, TRUE),
 		);
 		
 		echo FrontendViewer::get()->getContentPhpFile(self::TPL_PATH.'file_constructor.php', $vars);

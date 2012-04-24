@@ -2,11 +2,13 @@
 
 class TaskVisualization {
 	
+	const TYPE_RAW = 'raw';
 	const TYPE_TABLE = 'table';
 	const TYPE_CSV_CHART = 'chart_csv';
 	const TYPE_IMAGE = 'image';
 	const TYPE_VIDEO = 'video';
 	const TYPE_PDF = 'pdf';
+	const TYPE_ARCHIVE = 'archive';
 	
 	public $fullname = null;
 	public $type = null;
@@ -28,23 +30,34 @@ class TaskVisualization {
 			return self::TYPE_VIDEO;
 		elseif ($ext == 'pdf')
 			return self::TYPE_PDF;
+		elseif (in_array($ext, array('rar', 'zip', 'tar', 'gz', 'bz')))
+			return self::TYPE_ARCHIVE;
 		else
-			return self::TYPE_TABLE;
+			return self::TYPE_RAW;
 	}
 	
 	public function getHtml(){
 		
 		switch ($this->type) {
+			case self::TYPE_RAW:
+				return $this->_buildRaw();
 			case self::TYPE_TABLE:
 				return $this->_buildTable();
 			case self::TYPE_IMAGE:
 				return $this->_buildImage();
 			case self::TYPE_CSV_CHART:
 				return $this->_buildCsvChart();
+			case self::TYPE_VIDEO:
+				return $this->_buildVideo();
 			default:
 				return 'no type detected';
 		}
 		
+	}
+	
+	protected function _buildRaw(){
+		
+		return '<pre>'.file_get_contents($this->fullname).'</pre>';
 	}
 	
 	protected function _buildTable(){
@@ -85,6 +98,15 @@ class TaskVisualization {
 			'filename' => WWW_ROOT.substr($this->fullname, strlen(FS_ROOT))
 		);
 		return FrontendViewer::get()->getContentPhpFile(TaskSubmitController::TPL_PATH.'visualization/image.php', $data);
+	}
+	
+	protected function _buildVideo(){
+		
+		$data = array(
+			'fullname' => $this->fullname,
+			'filename' => WWW_ROOT.substr($this->fullname, strlen(FS_ROOT))
+		);
+		return FrontendViewer::get()->getContentPhpFile(TaskSubmitController::TPL_PATH.'visualization/video.php', $data);
 	}
 	
 }

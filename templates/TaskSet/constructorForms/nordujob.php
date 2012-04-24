@@ -1,9 +1,11 @@
-	<?
+<?
 if (empty($this->formData)) {
 	Lng::get('tast-set-file-constructor-no-data-to-edit');
 	return;
 }
 ?>
+
+<? //echo '<pre>'; print_r($this->formData); die; ?>
 
 <? foreach($this->formData as $row): ?>
 	<input type="hidden" name="items[<?= $row['row']; ?>][pre_text]" value="<?= htmlspecialchars($row['pre_text']); ?>" />
@@ -37,7 +39,7 @@ if (empty($this->formData)) {
 						<? } else { ?>
 							<div class="nordujob-file-param-value" data-index="0">
 								<div class="nordujob-file-param-value-single">
-									<input type="text" name="items[<?= $row['row']; ?>][value][0][single]" value="<?= htmlspecialchars($r); ?>" />
+									<input type="text" name="items[<?= $row['row']; ?>][value][<?= $i ?>][single]" value="<?= htmlspecialchars($r); ?>" />
 								</div>
 								<div class="nordujob-file-param-value-options">
 									<? if ($row['allow_multiple']){ ?><span class="nordujob-file-param-range" title="<?= Lng::get('range') ?>">  </span><? } ?><span class="nordujob-file-param-delete" title="<?= Lng::get('delete') ?>">  </span>
@@ -119,8 +121,9 @@ $(function(){
 	});
 	$('#bottom-right').html(''
 		+ '<?= Lng::get('fds-construct-form.file-type-nordujob') ?>'
-		+ '&nbsp;&nbsp;&nbsp;Размер файла: <?= $this->file_size; ?>'
-		+ '&nbsp;&nbsp;&nbsp;Вариантов: <?= $this->num_submits; ?>'
+		+ '&nbsp;|&nbsp;&nbsp;Размер файла: <?= $this->file_size; ?>'
+		+ '&nbsp;|&nbsp;&nbsp;Всего вариантов: <?= $this->num_submits; ?>'
+		+ '&nbsp;|&nbsp;&nbsp;Вариантов в файле: <?= $this->num_variants_in_file; ?>'
 		// + '&nbsp;&nbsp;&nbsp;Общий размер:'
 	);
 });

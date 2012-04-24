@@ -373,6 +373,18 @@ class TaskSet extends GenericObject{
 		return $numSubmits;
 	}
 	
+	/** получить количество вариантов в конкретном файле */
+	public function getFileVariantsNum($file, $isFullName = false){
+		
+		$numVariants = 1;
+		if ( $ftype = self::getFileType($file) )
+			if ( $mults = self::getFileConstructor($ftype, $isFullName ? $file : $this->getValidFileName($file))->getMultipliers() )
+				foreach($mults as $mult)
+					$numVariants *= count($mult['values']);
+		
+		return $numVariants;
+	}
+	
 	public function submit(MyproxyConnector $connector, $preferServer = '', $emailNotify = FALSE){
 		
 		$basedir = $this->getFilesDir().'src/';

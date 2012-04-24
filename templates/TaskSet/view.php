@@ -84,6 +84,7 @@
 <? endif; ?>
 
 <div style="margin: 1em 0; text-align: center;">
+	<a href="<?= href('task-set/submit/'.$this->instanceId); ?>" class="button"><?= Lng::get('upload_files.go-to-start'); ?></a>
 	<a href="<?= href('task-set/customize/'.$this->instanceId); ?>" class="button"><?= Lng::get('tast-set-view.run'); ?></a>
 	<a href="<?= href('task-set/delete/'.$this->instanceId); ?>" class="button"><?= Lng::get('task-set.delete'); ?></a>
 	<a href="<?= href('task-set/list'); ?>" class="button"><?= Lng::get('upload_files.returne-to-list'); ?></a>

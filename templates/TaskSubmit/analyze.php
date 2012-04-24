@@ -41,11 +41,11 @@
 					$size = isset($res[0]) ? intval($res[0]) : 0;
 				?>
 					<tr>
-						<td><?= Lng::get('analyze.dir') ?></td>
+						<td align="center"><img src="images/dir.png" alt="<?= Lng::get('analyze.dir') ?>" /></td>
 						<td><a href="<?= href('task-submit/analyze?submit='.$this->curSubmitId.'&path='.$this->fileTree['relpath'].$elm); ?>"><?= $elm; ?></a></td>
 						<td><?= formatHumanReadableSize($size) ?></td>
 						<td>
-							<a class="visualize" href="<?= href('task-submit/download-dir/'.$this->curSubmitId.'/archive?path='.$this->fileTree['relpath'].$elm); ?>">
+							<a class="download" href="<?= href('task-submit/download-dir/'.$this->curSubmitId.'/archive?path='.$this->fileTree['relpath'].$elm); ?>">
 								<img src="images/icons-stat/winrar-ico.png" alt="<?= Lng::get('analyze.download-one-archive') ?>" title="<?= Lng::get('analyze.download-one-archive') ?>" />
 							</a>
 						</td>
@@ -55,33 +55,35 @@
 				<? // echo '<pre>'; print_r($this->fileTree); die; ?>
 				<? foreach($this->fileTree['files'] as $elm): ?>
 					<tr>
-						<td><?= Lng::get('analyze.dir-file') ?></td>
+						<td align="center"><img src="images/txt.png" alt="<?= Lng::get('analyze.dir-file') ?>" /></td>
 						<td><?= $elm['name']; ?></td>
 						<td><?= formatHumanReadableSize($elm['size']) ?></td>
 						<td>
 							<? if (!$elm['empty']): ?>
-								<a target="_blank" class="visualize" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm['name']); ?>"
+								<a target="_blank" class="download" href="<?= href('task-submit/download-file/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm['name']); ?>"
 									><img src="images/icons-stat/download-ico.png" alt="<?= Lng::get('analyze.download-file') ?>" title="<?= Lng::get('analyze.download-file') ?>" 
 								/></a>
 								<a href="<?= href('task-submit/visualize/'.$this->curSubmitId.'?path='.$this->fileTree['relpath'].$elm['name']); ?>" class="visualize"><?
 									 
 									switch ($elm['visualizationType']) {
+										case TaskVisualization::TYPE_RAW:
 										case TaskVisualization::TYPE_TABLE:
-											echo '<img src="images/icons-stat/txt-ico.gif" title="'.Lng::get('analyze.table').'" alt="'.Lng::get('analyze.table').'" />';
+											echo ' <img src="images/icons-stat/txt-ico.gif" title="'.Lng::get('analyze.raw').'" alt="'.Lng::get('analyze.raw').'" /> ';
 											break;
 										case TaskVisualization::TYPE_CSV_CHART:
-											echo '<img src="images/icons-stat/statistica-ico.png" title="'.Lng::get('analyze.chart').'" alt="'.Lng::get('analyze.chart').'" />';
+											echo ' <img src="images/icons-stat/statistica-ico.png" title="'.Lng::get('analyze.chart').'" alt="'.Lng::get('analyze.chart').'" /> ';
 											break;
 										case TaskVisualization::TYPE_IMAGE:
-											echo '<img src="images/icons-stat/pic-ico.png" title="'.Lng::get('analyze.image').'" alt="'.Lng::get('analyze.image').'" />';
+											echo ' <img src="images/icons-stat/pic-ico.png" title="'.Lng::get('analyze.image').'" alt="'.Lng::get('analyze.image').'" /> ';
 											break;
 										case TaskVisualization::TYPE_VIDEO:
-											echo '<img src="images/icons-stat/avi-ico.png" title="'.Lng::get('analyze.video').'" alt="'.Lng::get('analyze.video').'" />';
+											echo ' <img src="images/icons-stat/avi-ico.png" title="'.Lng::get('analyze.video').'" alt="'.Lng::get('analyze.video').'" /> ';
 											break;
 										case TaskVisualization::TYPE_PDF:
-											echo '<img src="images/icons-stat/pdf-ico.jpg" title="'.Lng::get('analyze.pdf').'" alt="'.Lng::get('analyze.pdf').'" />';
+											echo ' <img src="images/icons-stat/pdf-ico.jpg" title="'.Lng::get('analyze.pdf').'" alt="'.Lng::get('analyze.pdf').'" /> ';
+										case TaskVisualization::TYPE_ARCHIVE:
 											break;
-										default: echo 'визуализация';
+										default: echo "'.Lng::get('analyze.visualization').'" ;
 									}
 									
 								?></a>

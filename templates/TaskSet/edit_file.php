@@ -39,11 +39,17 @@
 			<div id="help">
 				<div id="help-content">Some help will be here</div>
 			</div>
+			<div id="save">
+				<div id="save-message"><?= Lng::get('saved'); ?></div>
+			</div>
 		</div>
 	</form>
 	<script type="text/javascript">
 		<? if ($this->saved_success): ?>
-			$('#bottom-left').text('<?= Lng::get('saved'); ?>');
+			$('#save').show();
+			setTimeout(function(){
+				$('#save').fadeOut(2000);
+			}, 4000);
 		<? endif; ?>
 		$('.file-editor-save').click(function(){
 			document.forms['editor'].submit();
