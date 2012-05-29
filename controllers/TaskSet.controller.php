@@ -182,7 +182,7 @@ class TaskSetController extends Controller{
 		FrontendViewer::get()
 			->setTitle('Задача '.$data['name'])
 			->setTopMenuActiveItem('tasks')
-			->setContentPhpFile(self::TPL_PATH.'statistics.php', $variables)
+			->setContentPhpFile(self::TPL_PATH.'set_statistics.php', $variables)
 			->render();
 	}
 	

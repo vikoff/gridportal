@@ -42,8 +42,11 @@ if(empty($jobs))
 $allStatuses = $db->getAllIndexed('SELECT * FROM task_states', 'name');
 	
 $query = new BDIIQuery_ARCJobs(array( 
-	"server" => "bdii.grid.org.ua",
-	"port" => 2170,
+//	"server" => "bdii.grid.org.ua",
+//	"server" => "lcg.bitp.kiev.ua",
+	"server" => "index1.nordugrid.org",
+//	"port" => 2170,
+        "port" => 2135,
 	"basedn" => "Mds-Vo-name=local,o=grid"
 ));
 

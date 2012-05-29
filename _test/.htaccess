@@ -1,0 +1,3 @@
+
+php_value error_reporting E_ALL
+php_flag display_errors on

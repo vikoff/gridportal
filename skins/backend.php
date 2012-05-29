@@ -32,7 +32,7 @@
 		js/common.js,
 		js/backend.js,
 		js/jquery.simplemodal.js"></script>
-		<script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script>
+		<!--script type="text/javascript" src="http://scripts.vik-off.net/debug.js"></script-->
 	
 </head>
 <body>

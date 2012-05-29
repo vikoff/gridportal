@@ -10,7 +10,7 @@
 		<input type="hidden" name="action" value="task-set/upload-file" />
 		<input type="hidden" name="id" value="<?= $this->instanceId; ?>" />
 		<input type="file" name="Filedata" />
-		<input type="submit" value="Отправить" />
+		<input type="submit" value="<?= Lng::get('load'); ?>" />
 	</form>
 </div>
 
@@ -73,27 +73,27 @@ var FileManager = {
 		
 			type = '';
 			if(data[i].name == 'nordujob'){
-				type = 'nordujob файл';
+				type = '<?= Lng::get('task-set.nordujob-file'); ?>';
 				this.hasNordujob = true;
 			}
 			else if(/\.fds$/.test(data[i].name))
-				type = 'файл модели';
+				type = '<?= Lng::get('task-set.model-file'); ?>';
 			
 			editLink = (function(file){
 				var url = href(self.editUrl + '?file=' + encodeURIComponent(file));
-				return $('<a href="' + url + '" class="small" target="_blank">редактировать</a>')
+				return $('<a href="' + url + '" class="small" target="_blank"><?= Lng::get('task-set.edit'); ?></a>')
 					.click(function(){ self.editFile(url); return false; });
 			})(data[i].name);
 				
 			delLink = (function(file){
-				return $('<a href="#" class="small">удалить</a>')
+				return $('<a href="#" class="small"><?= Lng::get('task-set.delete'); ?></a>')
 					.click(function(){ self.removeFile(file); return false; });
 			})(data[i].name);
 			
 			constructorLink = data[i].type
 				? (function(file){
 						var url = href(self.constructUrl + '?file=' + encodeURIComponent(file));
-						return $('<a href="' + url + '" class="small" target="_blank">редактировать в мастере</a>')
+						return $('<a href="' + url + '" class="small" target="_blank"><?= Lng::get('task-set.edit-in-master'); ?></a>')
 							.click(function(){ self.constructFile(url); return false; });
 					})(data[i].name)
 				: null;
@@ -110,9 +110,9 @@ var FileManager = {
 		this.htmlContainer.empty().append(tbl);
 		
 		if(this.hasNordujob){
-			this.htmlComment.html('<span class="small green">Файл nordujob загружен</span>');
+			this.htmlComment.html('<span class="small green"><?= Lng::get('task-set.nordujob-file-loaded'); ?></span>');
 		}else{
-			this.htmlComment.html('<span class="small red">Файл nordujob не загружен</span>');
+			this.htmlComment.html('<span class="small red"><?= Lng::get('task-set.nordujob-file-not-loaded'); ?></span>');
 		}
 	},
 	
