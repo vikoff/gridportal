@@ -1,0 +1,15 @@
+arc.biomed.kiev.ua
+cluster-fti.ac.donetsk.ua
+cluster.immsp.kiev.ua
+energrid.ipme.kiev.ua
+felix.iap.sumy.org
+grid.imag.kiev.ua
+grid.ire.kharkov.ua
+grid.semicond.kiev.ua
+master.ri.kharkov.ua
+midas.iop.kiev.ua
+ng.grid.fcss.ukma.kiev.ua
+ng.ikd.kiev.ua
+nordu.hpcc.ntu-kpi.kiev.ua
+thei.org.ua
+uagrid.org.ua

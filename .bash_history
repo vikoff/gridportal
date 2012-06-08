@@ -22,3 +22,30 @@ history
 cd /var/www/portal
 git status
 exit
+cd /var/www/portal/
+git pull; git push
+cd ~/.ssh && ssh-keygen
+cat id_rsa.pub | xclip
+cat id_rsa.pub
+git config --global user.name "escaflwne"
+git config --global user.name "escaflowne"
+it config --global user.email vlad_dip@ukr.net
+git config --global user.email vlad_dip@ukr.net
+git pull; git push
+exit
+ls
+cd /
+ls
+mysql -p
+cd /var/www/portal/
+cd cron
+php cluster_avail_check.php 
+pwd
+whoami
+cd /var/www/portal
+pwd
+grep -r nordugrid .
+grep -r nordugrid . --exclude-dir files
+grep -r 'nordugrid-8' . --exclude-dir files
+pwd
+php cron/infosys.php 

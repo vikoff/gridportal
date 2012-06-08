@@ -1,5 +1,6 @@
 <?
-
+// Файл необходимо добавить в cron например так : 
+// */5 * * * *       root  /usr/bin/php -q /var/www/portal/cron/sendmail.php
 session_start();
 ini_set('display_errors', 1);
 

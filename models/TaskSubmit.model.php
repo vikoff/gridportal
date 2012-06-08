@@ -180,8 +180,8 @@ class TaskSubmit extends GenericObject{
 		$this->log(Lng::get('Task.model.myproxy-success-proceed'));
 		
 		
-		$env = "/bin/env";
-		$ngsub = "/opt/nordugrid-8.1/bin/ngsub";
+		$env = CFG_ENV;
+		$ngsub = CFG_NG_PATH."ngsub";
 		$taskdir = $this->getFilesDir().'src/';
 		$ngjob = $this->getNgjobStr();
 		
@@ -195,7 +195,7 @@ class TaskSubmit extends GenericObject{
 		$command  = ''
 			." cd ".$taskdir. " && "
 			.$env . " X509_USER_PROXY=".$connector->tmpfile." "
-			.$ngsub . " -d2 -o /home/apache/.ngjobs"
+			.$ngsub . " -d2 -o /home/apache/.ngjobs -C -".FS_ROOT."clusters_unavail.txt "
 			.(!empty($preferedServer) ? ' -c '.escapeshellarg($preferedServer) : '')
 			." -e ". escapeshellarg(stripslashes($ngjob))." 2>&1";
 		
@@ -248,8 +248,8 @@ class TaskSubmit extends GenericObject{
 			
 		$this->log(Lng::get('Task.model.myproxy-success-proceed'));
 		
-		$env = "/bin/env";
-		$ngkill = "/opt/nordugrid-8.1/bin/ngkill";
+		$env = CFG_ENV;
+		$ngkill = CFG_NG_PATH."ngkill";
 		
 		$command  = ''
 			.$env . " X509_USER_PROXY=".$connector->tmpfile." "
@@ -293,8 +293,9 @@ class TaskSubmit extends GenericObject{
 		$this->log('Запрос Майпрокси удачно! Продолжаем:');
 		
 		$taskdir = $this->getFilesDir().'results/';
-		$env = "/bin/env";
-		$ngget = "/opt/nordugrid-8.1/bin/ngget";
+		
+		$env = CFG_ENV;
+		$ngget = CFG_NG_PATH."ngget";
 		
 		if (!is_dir($taskdir))
 			mkdir($taskdir, 0777, TRUE);
@@ -462,7 +463,7 @@ class TaskSubmit extends GenericObject{
 		//$archive = substr($realpath, strrpos($realpath, '/'), -1).'.zip';
 		
 		$command = 'cd '.escapeshellarg($realpath)
-			.' && /usr/bin/zip -r -9 '.escapeshellarg('../'.basename($archive)).' .';
+			.' && '.CFG_ZIP_BIN.' -r -9 '.escapeshellarg('../'.basename($archive)).' .';
 			
 		// echo '<pre>'.$command; die;
 		exec($command, $output, $exitCode);
@@ -776,7 +777,7 @@ class TaskSubmitCollection extends GenericObjectCollection{
 		}
 		
 		$archive = substr($realpath, 0, -1).'.zip';
-		exec('/usr/bin/zip -r -9 '.escapeshellarg($archive).' '.escapeshellarg($realpath));
+		exec(CFG_ZIP_BIN.' -r -9 '.escapeshellarg($archive).' '.escapeshellarg($realpath));
 		
 		if (!file_exists($archive))
 			die('archive file not found');

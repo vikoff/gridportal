@@ -1,5 +1,6 @@
 <?
-
+// Файл необходимо добавить в cron например так : 
+// */1 * * * *       root  /usr/bin/php -q /var/www/portal/cron/infosys.php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -42,11 +43,11 @@ if(empty($jobs))
 $allStatuses = $db->getAllIndexed('SELECT * FROM task_states', 'name');
 	
 $query = new BDIIQuery_ARCJobs(array( 
-//	"server" => "bdii.grid.org.ua",
-//	"server" => "lcg.bitp.kiev.ua",
-	"server" => "index1.nordugrid.org",
-//	"port" => 2170,
-        "port" => 2135,
+	"server" => "bdii.grid.org.ua",
+	// "server" => "lcg.bitp.kiev.ua",
+	// "server" => "index1.nordugrid.org",
+	"port" => 2170,
+	// "port" => 2135,
 	"basedn" => "Mds-Vo-name=local,o=grid"
 ));
 

@@ -286,6 +286,22 @@ CREATE TABLE `mail_templates` (
   `title_multi_lng`	VARCHAR(255) COMMENT 'Заголовок письма, если за раз отправляется несколько писем (lng snippet)'
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+DROP TABLE IF EXISTS `clusters_availability`;
+CREATE TABLE `clusters_availability` (
+  `id`						 int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `host`					 VARCHAR(255),
+  `status`					 SMALLINT COMMENT '0: OK; 1: WARNING; 2: CRITICAL; 3: UNKNOWN',
+  `authentification_status` SMALLINT,
+  `certificate_status`		 SMALLINT,
+  `gcc_status`				 SMALLINT,
+  `grid_ftp_status`			 SMALLINT,
+  `host_alive_status`		 SMALLINT,
+  `infosys_status`			 SMALLINT,
+  `job_submit_status`		 SMALLINT,
+  `softver_status`			 SMALLINT
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+
 
 
 

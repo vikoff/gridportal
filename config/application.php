@@ -1,17 +1,19 @@
 <?
 
-if(!defined('WWW_ROOT'))
+if(!defined('FS_ROOT'))
 	die("access denided (config file)");
 
 // название сайта
-define('CFG_SITE_NAME', 'ng');
+define('CFG_SITE_NAME', 'Crimea Eco Grid-portal');
 
 // установить уровень сообщений об ошибках (максимальный)
 error_reporting(E_ALL | E_STRICT);
+ini_set('display_errors', 1);
 
 // установить текущий часовой пояс
 date_default_timezone_set('Europe/Kiev');
 
+define('CFG_USE_HTTPS', 0);
 
 ########## EMAIL АДРЕСА ##########
 
@@ -42,9 +44,9 @@ Error::config(array(
 db::create(array(
 	'adapter' => 'mysql',
 	'host' => 'localhost',
-	'user' => '',
-	'pass' => '',
-	'database' => '',
+	'user' => 'gridjobs',
+	'pass' => 'freedom2011gridjobs',
+	'database' => 'gridjobs',
 	'encoding' => 'utf8',
 	'fileLog' => FALSE,
 ));
@@ -75,5 +77,8 @@ define('CHECK_FORM_DUPLICATION', 0);
 
 // производить ли редирект на дефолтные display методы
 define('CFG_REDIRECT_DEFAULT_DISPLAY', 0);
+
+// сертификат локального узла для авторизации на java-voms сервисах
+define('SERVICE_CERTIFICATE', "/var/www/portal/includes/AuthCert/.hostcert.pem");
 
 ?>

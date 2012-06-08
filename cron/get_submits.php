@@ -1,4 +1,6 @@
 <?
+// Файл необходимо добавить в cron например так : 
+// */55 * * * *       root  /usr/bin/php -q /var/www/portal/cron/get_submits.php
 
 // обозначение текущий папки
 define('CUR_PATH', dirname(__FILE__).'/');
