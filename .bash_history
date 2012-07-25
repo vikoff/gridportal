@@ -49,3 +49,133 @@ grep -r nordugrid . --exclude-dir files
 grep -r 'nordugrid-8' . --exclude-dir files
 pwd
 php cron/infosys.php 
+cd /var/www/portal
+php cron/infosys.php 
+history 
+git status
+php cron/infosys.php 
+php cron/cluster_avail_check.php 
+mc
+
+php cron/cluster_avail_check.php 
+php cron/get_submits.php 
+php cron/sendmail.php 
+php cron/infosys.php 
+php cron/cluster_avail_check.php 
+php cron/get_submits.php 
+ps ax
+git status
+git add -A .\
+git add -A .
+git status
+git commit -m 'add server_avail_check_test'
+git pull; git push
+qstat
+qstat -f
+qstat -a
+ps ax
+php cron/infosys.php 
+php cron/submitter.php 
+php cron/get_submits.php 
+php cron/infosys.php 
+php cron/get_submits.php 
+php cron/infosys.php 
+php cron/get_submits.php 
+cd /var/www/portal
+mc
+php cron/get_submits.php 
+php /cron/get_submits.php 
+php cron/infosys.php 
+php cron/cluster_avail_check.php 
+mc
+ps ax
+exit
+php cron/cluster_avail_check.php 
+cd /var/www/portal
+php cron/cluster_avail_check.php 
+php cron/infosys.php 
+exit
+cd /var/www/portal
+php cron/infosys.php 
+mc
+php cron/infosys.php 
+ls
+dir
+cd ../
+ls
+cd html/vhosts
+ls
+cd zoogid-best
+ls
+cd images
+ls
+cd ../styles/images/
+ls
+cd bak
+ls
+cd ../
+ls
+cd list
+cat list
+mc
+wget -?
+wget --help
+wget -i=list2
+wget -i list2
+exit
+ls
+cd ../
+ls
+cd html/
+cd vhosts/zoogid-best
+cd styles/images/
+ls
+mc
+cd /var/log/httpd/
+cd /var/log/
+ls
+exit
+cd /var/log/httpd/
+ls
+cat zoogid-best.org.ua-
+cat zoogid-best.org.ua-error_log
+id
+su -
+exit
+ls
+cd ../
+ls
+cd html/vhosts/
+ls
+cd zoogid-best
+ls
+cd image
+ls
+cd data
+ls
+unzip --help
+unzip -Z
+unzip leader
+ls
+cd leader
+ls
+cd ../
+ls
+cd html/vhosts/zoogid-best
+ls
+zip --help
+zip ./
+zip ./ *
+zip ./ * -r
+ls
+cd ../
+;s
+ls
+cd html/vhosts/zoogid-best/image
+ls
+cd data/products/
+ls
+unzip tovar.zip
+ls
+cd ../
+ls

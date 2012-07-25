@@ -1,9 +1,30 @@
 
-[Dir Hist New Right Panel]
-0=/var/www/portal
+[mc.shared.search]
+0=styles
+1=images/images
+
+[replace]
+0=templates/tovari/images
+1=images
+
+[save-as]
+0=list
+1=list2
 
 [cmdline]
 0=
 
 [Dir Hist New Left Panel]
 0=/var/www/portal
+
+[Dir Hist New Right Panel]
+0=/var/www/portal/core
+1=/var/www/portal/cron
+2=/var/www/portal
+3=/var/www/html/vhosts/zoogid-best/styles/images
+
+[input-def]
+0=*
+
+[input2]
+0=/var/www/portal/
