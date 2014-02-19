@@ -14,7 +14,7 @@
 
 	<?=$this->_getHtmlLinkTags();?>
 
-	<link rel="stylesheet" href="
+	<link rel="stylesheet" href="/includes/smartoptimizer/index.php?
 		css/common.css,
 		css/frontend.css,
 		css/simplemodal.css,
@@ -41,7 +41,7 @@
 	<!--script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.18.custom.min.js"></script>
 	<script type="text/javascript" src="js/jquery.address-1.4.min.js"></script-->
-	<script type="text/javascript" src="
+	<script type="text/javascript" src="/includes/smartoptimizer/index.php?
 		js/jquery-1.7.1.min.js,
 		js/jquery-ui-1.8.18.custom.min.js,
 		js/jquery.address-1.4.min.js,

@@ -30,7 +30,7 @@ class Request{
 			exit;
 		}
 		
-		$this->_requestString = $requestString;
+		$this->_requestString = ltrim($requestString, '/');
 		$this->parseRequest();
 		
 		if (!empty($_GET))
